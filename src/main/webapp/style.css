@@ -1,0 +1,22 @@
+:root {
+    font-family: 'Roboto', sans-serif;
+  }
+
+select {
+  background-color: transparent;
+  border: none;
+  font: 16px 'Roboto', sans-serif;
+  padding: 10px;
+}
+
+select:focus {
+  outline: none;
+}
+
+/* Horizontally and vertically center */
+.wrapper {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
