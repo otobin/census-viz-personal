@@ -10,16 +10,16 @@
 <body>
   <main>
     <div id="query">
-      <form id="query-form">
+      <form id="query-form" action="/query" method="POST">
         <p>
           How many
-          <select>
+          <select name="person-type">
             <option value="under-18">children</option>
             <option value="over-18">adults</option>
             <option value="all-age">people</option>
           </select>
           live in every US
-          <select>
+          <select name="location">
             <option value="county">county</option>
             <option value="state">state</option>
           </select>
