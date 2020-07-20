@@ -6,4 +6,4 @@ command:
 ```bash
 mvn package appengine:run
 ```
-Created by kyraa, shulijones, and optobin, step interns 2020.
+Created by kyraa, shulijones, and optobin, STEP interns 2020.
