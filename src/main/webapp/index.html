@@ -10,7 +10,7 @@
 <body>
   <main>
     <div id="query">
-      <form id="query-form" action="/query" method="POST">
+      <form id="query-form" onsubmit="passQuery()">
         <p>
           How many
           <select name="person-type">
@@ -25,6 +25,7 @@
           </select>
           ?
         </p>
+        <input type="submit">Go!</input>
       </form>
     </div>
   </main>
