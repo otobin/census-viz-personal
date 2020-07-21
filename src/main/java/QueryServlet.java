@@ -3,33 +3,61 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.ArrayList;
+
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import com.google.gson.Gson;
 
 /** Servlet that handles census queries from users */
 @WebServlet("/query")
 public class QueryServlet extends HttpServlet {
 
-  // Hardcoded initial choices for which data tables are accessed
-  Map<String, List<String>> groupSelector = new HashMap<String, ArrayList<String>(
-      "under-18", new ArrayList<String>(List.of("/subject"), "S0101_C01_022E"),
-      "over-18", new ArrayList<String>(List.of("/subject"), "S0101_C01_026E"),
-      "all-ages", new ArrayList<String>(List.of("/subject"), "S0101_C01_001E"),
-  );
+  // Hardcoded initial choices for which lines of the data table are accessed
+  Map<String, String> lineSelector = Stream.of(new String[][]{
+			{"under-18", "023E"},
+			{"over-18", "026E"},
+			{"all-ages", "001E"}
+	}).collect(Collectors.toMap(k -> k[0], k -> k[1]));
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      String personType = request.getParameter("person-type");
-      String location = request.getParameter("location");
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String personType = request.getParameter("person-type");
+    String location = request.getParameter("location");
 
-      List<String> dataVars = groupSelector.get(personType);
-      dataTableType = dataVars.get(0);
-      dataTableID = dataVars.get(1);
+    URL fetchUrl = new URL("https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_" 
+        + lineSelector.get(personType) + "&for=" + location +
+        ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
-      String fetchURL = "https://api.census.gov/data/2018/acs/acs1" 
-          + dataTableType + "?get=NAME," + dataTableID + "&for=" + location +
-          ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc";
+    HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
+    connection.setRequestMethod("GET");
+
+    if (connection.getResponseCode() > 299) {
+      //an error occurred
+      response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+    }
+    else {
+      response.setStatus(HttpServletResponse.SC_OK);
+      String data = "";
+      BufferedReader reader = new BufferedReader(
+          new InputStreamReader(connection.getInputStream()));
+      String responseLine = reader.readLine();
+
+      while (responseLine != null) {
+          data += responseLine;
+          responseLine = reader.readLine();
+      }
+      reader.close();
+
+      response.setContentType("application/json;");
+      Gson gson = new Gson();
+      response.getWriter().println(gson.toJson(data));
+    }
   }
 }

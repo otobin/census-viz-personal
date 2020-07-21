@@ -10,13 +10,13 @@
 <body>
   <main>
     <div id="query">
-      <form id="query-form" onsubmit="passQuery()">
+      <form id="query-form" onsubmit="passQuery();return false;">
         <p>
           How many
           <select name="person-type">
             <option value="under-18">children</option>
             <option value="over-18">adults</option>
-            <option value="all-age">people</option>
+            <option value="all-ages">people</option>
           </select>
           live in every US
           <select name="location">
@@ -25,7 +25,7 @@
           </select>
           ?
         </p>
-        <input type="submit">Go!</input>
+        <input type="submit">
       </form>
     </div>
   </main>
