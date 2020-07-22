@@ -7,14 +7,13 @@ function passQuery() {
     .then((response) => {
       if (response.ok) {
         response.json().then((jsonResponse) => JSON.parse(jsonResponse))
-        .then((data) => { 
+        .then((data) => {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
-          callOliviaFunction(data);
+          displayVisualization(data);
         });
-      }
-      else {
-        console.log("There was an error");
+      } else {
+        console.log('There was an error');
       }
     });
 }

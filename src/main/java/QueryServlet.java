@@ -20,38 +20,43 @@ import com.google.gson.Gson;
 public class QueryServlet extends HttpServlet {
 
   // Hardcoded initial choices for which lines of the data table are accessed
-  Map<String, String> lineSelector = Stream.of(new String[][]{
-			{"under-18", "023E"},
-			{"over-18", "026E"},
-			{"all-ages", "001E"}
-	}).collect(Collectors.toMap(k -> k[0], k -> k[1]));
+  Map<String, String> lineSelector = 
+    Stream.of(
+      new String[][]{
+        {"under-18", "023E"},
+        {"over-18", "026E"},
+        {"all-ages", "001E"}
+    }).collect(Collectors.toMap(k -> k[0], k -> k[1]));
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String personType = request.getParameter("person-type");
     String location = request.getParameter("location");
 
-    URL fetchUrl = new URL("https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_" 
-        + lineSelector.get(personType) + "&for=" + location +
-        ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
+    URL fetchUrl = 
+      new URL(
+        "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_" 
+          + lineSelector.get(personType) 
+          + "&for=" 
+          + location 
+          + ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
 
     if (connection.getResponseCode() > 299) {
-      //an error occurred
+      // An error occurred
       response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
-    }
-    else {
+    } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
-      BufferedReader reader = new BufferedReader(
-          new InputStreamReader(connection.getInputStream()));
+      BufferedReader reader = 
+        new BufferedReader(new InputStreamReader(connection.getInputStream()));
       String responseLine = reader.readLine();
 
       while (responseLine != null) {
-          data += responseLine;
-          responseLine = reader.readLine();
+        data += responseLine;
+        responseLine = reader.readLine();
       }
       reader.close();
 
