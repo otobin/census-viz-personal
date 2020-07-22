@@ -10,7 +10,7 @@ function passQuery() {
         .then((data) => { 
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
-          callOliviaFunction(data);
+          displayVisualization(data);
         });
       }
       else {
