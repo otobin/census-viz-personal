@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 public class QueryServlet extends HttpServlet {
 
   // Hardcoded initial choices for which lines of the data table are accessed
-  Map<String, String> lineSelector = 
+  Map<String, String> queryToDataRow = 
     Stream.of(
       new String[][]{
         {"under-18", "023E"},
@@ -32,11 +32,16 @@ public class QueryServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String personType = request.getParameter("person-type");
     String location = request.getParameter("location");
+    if (!queryToDataRow.containsKey(personType)) {
+      // We don't have a data table for this query
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
 
     URL fetchUrl = 
       new URL(
         "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_" 
-          + lineSelector.get(personType) 
+          + queryToDataRow.get(personType) 
           + "&for=" 
           + location 
           + ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");

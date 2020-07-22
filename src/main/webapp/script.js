@@ -13,7 +13,8 @@ function passQuery() {
           displayVisualization(data);
         });
       } else {
-        console.log('There was an error');
+        console.log(
+          `An error occurred: ${response.status}: ${response.statusText}`);
       }
     });
 }
