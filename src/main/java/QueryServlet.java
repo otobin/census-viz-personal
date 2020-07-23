@@ -48,8 +48,8 @@ public class QueryServlet extends HttpServlet {
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
-      BufferedReader reader = new BufferedReader(
-          new InputStreamReader(connection.getInputStream()));
+      BufferedReader reader =
+          new BufferedReader(new InputStreamReader(connection.getInputStream()));
       String responseLine = reader.readLine();
 
       while (responseLine != null) {
