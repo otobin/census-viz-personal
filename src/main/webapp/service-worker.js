@@ -29,7 +29,6 @@ self.addEventListener('fetch', function(event) {
       return cache.match(event.request).then(function(response) {
         if (response) {
           // response found in cache
-          console.log('Response found in cache');
           return response;
         }
         // response not found in cache, we need to fetch
@@ -42,7 +41,6 @@ self.addEventListener('fetch', function(event) {
               // only cache if non-error response
               // make a copy of response because put() "consumes" requests
               // and we will return original response object
-              console.log('Caching response');
               cache.put(event.request, response.clone());
           }
           return response;
