@@ -1,6 +1,6 @@
 :root {
-    font-family: 'Roboto', sans-serif;
-  }
+  font-family: 'Roboto', sans-serif;
+}
 
 select {
   background-color: transparent;
@@ -22,8 +22,8 @@ select:focus {
 }
 
 #map {
-    position: relative;
-    width: 626px;
-    height: 391px;
-    font-size: 13px;
+  position: relative;
+  width: 626px;
+  height: 391px;
+  font-size: 13px;
 }
