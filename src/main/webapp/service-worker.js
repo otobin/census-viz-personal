@@ -6,7 +6,7 @@ const CURRENT_CACHES = {
 
 self.addEventListener('activate', function(event) {
   // Delete all caches that aren't named in CURRENT_CACHES.
-  // Useful if multiple versioned caches
+  // Useful if multiple versioned caches exist
   const expectedCacheNamesSet = new Set(Object.values(CURRENT_CACHES));
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
