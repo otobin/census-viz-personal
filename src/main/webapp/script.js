@@ -1,4 +1,7 @@
-function regiesterServiceWorker() {
+// Tell browser where to find service worker file,
+// so the service worker script can run in background.
+// We're using this service worker to intercept fetch requests. 
+function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
     .then(function(response) {
