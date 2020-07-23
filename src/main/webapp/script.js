@@ -1,3 +1,8 @@
+google.charts.load('current', {
+  'packages':['geochart'],
+  'mapsApiKey': 'AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ'
+});
+
 function passQuery() {
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
@@ -19,34 +24,40 @@ function passQuery() {
     });
 }
 
-// displayVisualization takes in a data array, which is a 2D array that 
-function displayVisualization(dataArray) {
-  google.charts.load('current', {
-    'packages':['geochart'],
-    // Note: you will need to get a mapsApiKey for your project.
-    // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
-    'mapsApiKey': 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'
-  });
-  google.charts.setOnLoadCallback(drawRegionsMap(dataArray));
+ // displayVisualization takes in a data array representing the 2D array returned by the 
+ // census API. The function creates the necessary visualization with the census data.
+function displayVisualization(censusDataArray) {
+  if (censusDataArray[0][2] == 'state' && censusDataArray[0][3] != 'county') {
+    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
+  } else {
+    // We currently do not have counties implemented
+    document.getElementById('map').innerHTML = "";
+    document.getElementById('more-info').innerHTML = 'We do not have this information yet.'
+  }
 }
 
-function drawRegionsMap(dataArray) {
-  const shortDataArray = [];
-  dataArray.forEach((state) => {
-    shortDataArray.push([state[0], state[1]/1000]);
-  });
-  shortDataArray[0][0] = 'State';
-  shortDataArray[0][1] = 'Population';
-  console.log(shortDataArray);
+// Takes in a 2D array from the census API and draws the appropriate visualization
+function drawRegionsMap(censusDataArray) {
+  const shortDataArray = createDataArray(censusDataArray);
   var data = google.visualization.arrayToDataTable(shortDataArray);
-
   var options = {
     'region': 'US',
     'resolution': 'provinces',
     'colorAxis': {colors: ['white', 'blue']}
   };
-
-  var chart = new google.visualization.GeoChart(document.getElementById('visualization'));
-
+  var chart = new google.visualization.GeoChart(document.getElementById('map'));
   chart.draw(data, options);
+  document.getElementById('more-info').innerHTML = 'These populations are divided by 1000';
+}
+
+// createDataArray takes in the data array returned by the census API and reformats it 
+// into a data table that can be processed by the visualization API.
+function createDataArray(censusDataArray) {
+  const vizDataArray = [];
+  censusDataArray.forEach((state) => {
+    vizDataArray.push([state[0], state[1]/1000]);
+  });
+  vizDataArray[0][0] = 'State';
+  vizDataArray[0][1] = 'Population';
+  return vizDataArray;
 }

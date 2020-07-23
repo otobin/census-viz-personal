@@ -4,13 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Census Viz</title>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="script.js"></script>
 </head>
 
 <body>
   <main>
     <div id="query">
-      <form id="query-form" onsubmit="passQuery();return false;">
+      <form id="query-form" onsubmit="passQuery(); return false;">
         <p>
           How many
           <select name="person-type">
@@ -28,7 +29,8 @@
         <input type="submit">
       </form>
     </div>
-    <div id="visualization"></div>
+    <div id="map"></div>
+    <div id="more-info"></div>
   </main>
 </body>
 
