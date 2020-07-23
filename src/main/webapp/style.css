@@ -28,7 +28,7 @@ select:focus {
 }
 
 input[type=submit] {
-  background: #bfbfbf;
+  background: #0dbd00;
   border: 0;
   border-radius: 2px;
   color: #fff;
@@ -40,7 +40,7 @@ input[type=submit] {
 }
 
 input[type=submit]:hover {
-  background: #9c9c9c;
+  background: #0ba600;
   transition: all .4s ease-in-out;
 }
 
