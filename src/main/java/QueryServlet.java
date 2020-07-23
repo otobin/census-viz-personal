@@ -1,32 +1,25 @@
-import java.io.IOException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
-import com.google.gson.Gson;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** Servlet that handles census queries from users */
 @WebServlet("/query")
 public class QueryServlet extends HttpServlet {
 
   // Hardcoded initial choices for which lines of the data table are accessed
-  Map<String, String> queryToDataRow = 
-    Stream.of(
-      new String[][]{
-        {"under-18", "023E"},
-        {"over-18", "026E"},
-        {"all-ages", "001E"}
-    }).collect(Collectors.toMap(k -> k[0], k -> k[1]));
+  Map<String, String> queryToDataRow =
+      Stream.of(
+              new String[][] {
+                {"under-18", "023E"},
+                {"over-18", "026E"},
+                {"all-ages", "001E"}
+              })
+          .collect(Collectors.toMap(k -> k[0], k -> k[1]));
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -38,13 +31,13 @@ public class QueryServlet extends HttpServlet {
       return;
     }
 
-    URL fetchUrl = 
-      new URL(
-        "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_" 
-          + queryToDataRow.get(personType) 
-          + "&for=" 
-          + location 
-          + ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
+    URL fetchUrl =
+        new URL(
+            "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_"
+                + lineSelector.get(personType)
+                + "&for="
+                + location
+                + ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
@@ -55,8 +48,8 @@ public class QueryServlet extends HttpServlet {
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
-      BufferedReader reader = 
-        new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      BufferedReader reader =
+          new BufferedReader(new InputStreamReader(connection.getInputStream()));
       String responseLine = reader.readLine();
 
       while (responseLine != null) {
