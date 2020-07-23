@@ -4,7 +4,7 @@
 
 select {
   background-color: transparent;
-  border: none;
+  border-style: none none solid none;
   font: 16px 'Roboto', sans-serif;
   padding: 10px;
 }
@@ -13,17 +13,55 @@ select:focus {
   outline: none;
 }
 
-/* Horizontally and vertically center */
 .wrapper {
-  left: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin: 0 60px 0 60px;
 }
 
-#map {
-  position: relative;
-  width: 626px;
-  height: 391px;
-  font-size: 13px;
+#header {
+  border-bottom: 1px solid #e7e7e9;
+  line-height: 1em;
+  padding-left: 30px;
+}
+
+#query {
+  text-align: center;
+}
+
+input[type=submit] {
+  background: #bfbfbf;
+  border: 0;
+  border-radius: 2px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bolder;
+  margin: 30px;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+input[type=submit]:hover {
+  background: #9c9c9c;
+  transition: all .4s ease-in-out;
+}
+
+input[type=submit]:focus {
+  outline: 0;
+}
+
+#result {
+  border-radius: 10px;
+  box-shadow: 5px 5px 15px #e7e7e9;
+  display: none;
+  margin-top: 60px;
+  padding: 30px;
+}
+
+footer {
+  background-color: white;
+  border-top: 1px solid #e7e7e9;
+  bottom: 0;
+  padding: 30px 0;
+  position: fixed;
+  text-align: center;
+  width: 100%;
 }
