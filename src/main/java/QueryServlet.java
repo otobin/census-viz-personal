@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class QueryServlet extends HttpServlet {
 
   // Hardcoded initial choices for which lines of the data table are accessed
-  Map<String, String> lineSelector =
+  Map<String, String> queryToDataRow =
       Stream.of(
               new String[][] {
                 {"under-18", "023E"},
