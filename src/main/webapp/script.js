@@ -25,14 +25,15 @@ function passQuery() {
 }
 
  // displayVisualization takes in a data array representing the 2D array returned by the 
- // census API. The function creates the necessary visualization with the census data.
+ // census API. The first row in the census Data array is the header, which describes the 
+ // type of data. Eg: Query for populations of all counties is ["NAME","S0201_001E","state","county"]
 function displayVisualization(censusDataArray) {
   if (censusDataArray[0][2] == 'state' && censusDataArray[0][3] != 'county') {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
     document.getElementById('map').innerHTML = "";
-    document.getElementById('more-info').innerHTML = 'We do not have this information yet.'
+    document.getElementById('more-info').innerHTML = 'We do not support this visualization yet.'
   }
 }
 
@@ -47,7 +48,7 @@ function drawRegionsMap(censusDataArray) {
   };
   var chart = new google.visualization.GeoChart(document.getElementById('map'));
   chart.draw(data, options);
-  document.getElementById('more-info').innerHTML = 'These populations are divided by 1000';
+  document.getElementById('more-info').innerHTML = 'Populations are in thousands.';
 }
 
 // createDataArray takes in the data array returned by the census API and reformats it 
@@ -57,6 +58,7 @@ function createDataArray(censusDataArray) {
   censusDataArray.forEach((state) => {
     vizDataArray.push([state[0], state[1]/1000]);
   });
+  // Changes the header of the vizDataArray to match the Visualization API
   vizDataArray[0][0] = 'State';
   vizDataArray[0][1] = 'Population';
   return vizDataArray;
