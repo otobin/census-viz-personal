@@ -19,23 +19,25 @@ google.charts.load('current', {
 });
 
 function passQuery() {
-  const mapContainer = document.getElementById('map')
-  mapContainer.innerText = 'Please wait. Loading...'
+  const information = document.getElementById('more-info')
+  information.innerText = 'Please wait. Loading...'
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
   const action = query.get('action');
   const location = query.get('location');
 
-  fetch('/query?person-type=' + personType 
+  const fetchUrl = '/query?person-type=' + personType 
       + '&action=' + action 
-      + '&location=' + location)
+      + '&location=' + location;
+  console.log(fetchUrl)
+  fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
         response.json().then((jsonResponse) => JSON.parse(jsonResponse))
         .then((data) => {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
-          mapContainer.innerText = '';
+          information.innerText = '';
           displayVisualization(data);
         });
       } else {
@@ -55,7 +57,7 @@ function displayVisualization(censusDataArray) {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
-    const errorMessage = 'We do not support this visualiztation yet';
+    const errorMessage = 'We do not support this visualization yet';
     document.getElementById('map').innerHTML = '';
     document.getElementById('more-info').innerHTML = errorMessage;
   }
