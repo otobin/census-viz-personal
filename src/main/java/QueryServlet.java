@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+import com.google.gson.Gson;
+=======
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,10 +14,14 @@ import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.net.HttpURLConnection;
 import java.net.URL;
+>>>>>>> shuli-query
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
-import com.google.gson.Gson;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** Servlet that handles census queries from users */
 @WebServlet("/query")
@@ -59,8 +66,8 @@ public class QueryServlet extends HttpServlet {
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
-      BufferedReader reader = 
-        new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      BufferedReader reader =
+          new BufferedReader(new InputStreamReader(connection.getInputStream()));
       String responseLine = reader.readLine();
 
       while (responseLine != null) {
