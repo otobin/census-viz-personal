@@ -1,12 +1,9 @@
-<<<<<<< HEAD
-import com.google.gson.Gson;
-=======
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import com.google.gson.Gson;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.HashMap;
@@ -14,7 +11,6 @@ import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.net.HttpURLConnection;
 import java.net.URL;
->>>>>>> shuli-query
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -41,7 +37,7 @@ public class QueryServlet extends HttpServlet {
     String personType = request.getParameter("person-type");
     String action = request.getParameter("action");
     String location = request.getParameter("location");
-
+  
     if (!queryToDataRow.containsKey(action) || 
         !queryToDataRow.get(action).containsKey(personType)) {
       // We don't have a data table for this query
