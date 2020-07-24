@@ -67,7 +67,8 @@ function drawRegionsMap(censusDataArray) {
   const mapElement = document.getElementById('map');
   const chart = new google.visualization.GeoChart(mapElement);
   chart.draw(data, options);
-  document.getElementById('more-info').innerHTML = 'Populations are in thousands.';
+  const mapNote = 'Populations are in thousands';
+  document.getElementById('more-info').innerHTML = mapNote;
 }
 
 // createDataArray takes in the data array returned by the census API
