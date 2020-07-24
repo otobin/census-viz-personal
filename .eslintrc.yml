@@ -9,21 +9,20 @@ rules:
   no-unused-vars: off
   require-jsdoc: off
   indent: [
-    "error", 2,  # Google use 2-space indents
-    # Google uses +4 space indents for line continuations.
+    "error", 2,
     {
         "SwitchCase": 1,
-        "MemberExpression": "off",
+        "MemberExpression": 0,
         "FunctionDeclaration": {
             "body": 1,
-            "parameters": "off"
+            "parameters": 0
         },
         "FunctionExpression": {
-            "body": "off",
+            "body": 0,
             "parameters": 2
         },
         "CallExpression": {
-            "arguments": "off"
+            "arguments": 0
         },
         # Ignore default rules for ternary expressions.
         "ignoredNodes": ["ConditionalExpression"]
