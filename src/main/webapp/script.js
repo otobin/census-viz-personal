@@ -19,7 +19,7 @@ google.charts.load('current', {
 });
 
 function passQuery() {
-  const information = document.getElementById('more-info');
+ const information = document.getElementById('more-info');
   information.innerText = 'Please wait. Loading...';
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');

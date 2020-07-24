@@ -13,17 +13,17 @@ rules:
     # Google uses +4 space indents for line continuations.
     {
         "SwitchCase": 1,
-        "MemberExpression": 2,
+        "MemberExpression": "off"
         "FunctionDeclaration": {
             "body": 1,
-            "parameters": 2
+            "parameters": "off"
         },
         "FunctionExpression": {
-            "body": 1,
+            "body": "off",
             "parameters": 2
         },
         "CallExpression": {
-            "arguments": 2
+            "arguments": "off"
         },
         # Ignore default rules for ternary expressions.
         "ignoredNodes": ["ConditionalExpression"]
