@@ -1,16 +1,16 @@
 // Tell browser where to find service worker file,
 // so the service worker script can run in background.
-// We're using this service worker to intercept fetch requests. 
+// We're using this service worker to intercept fetch requests.
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
-      .then(function(response) {
-        // Service worker registration done
-        console.log('Registration Successful', response);
-      }, function(error) {
-        // Service worker registration failed
-        console.log('Registration Failed', error);
-      });
+        .then(function(response) {
+          // Service worker registration done
+          console.log('Registration Successful', response);
+        }, function(error) {
+          // Service worker registration failed
+          console.log('Registration Failed', error);
+        });
   }
 }
 google.charts.load('current', {
@@ -28,8 +28,9 @@ function passQuery() {
         if (response.ok) {
           response.json().then((jsonResponse) => JSON.parse(jsonResponse))
               .then((data) => {
-                // data is a 2D array, where the first row is a header row and all
-                // subsequent rows are one piece of data (e.g. for a state or county)
+                // data is a 2D array, where the first row is a header row 
+                // and all subsequent rows are one piece of data 
+                // (e.g. for a state or county)
                 displayVisualization(data);
               });
         } else {
@@ -38,17 +39,17 @@ function passQuery() {
       });
 }
 
-// displayVisualization takes in a data array representing the 2D array returned 
-// by the census API. The first row in the census Data array is the header, which 
-// describes the type of data. 
-// Eg: Header for the query that finds for populations of all counties is 
+// displayVisualization takes in a data array representing the 2D array
+// returned  by the census API. The first row in the census Data array
+// is the header, which describes the type of data.
+// Eg: Header for the query that finds for populations of all counties is
 // ["NAME","S0201_001E","state","county"]
 function displayVisualization(censusDataArray) {
   if (censusDataArray[0][2] == 'state' && censusDataArray[0][3] != 'county') {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
-    document.getElementById('map').innerHTML = "";
+    document.getElementById('map').innerHTML = '';
     document.getElementById('more-info').innerHTML = 'We do not support this visualization yet.'
   }
 }
@@ -56,11 +57,11 @@ function displayVisualization(censusDataArray) {
 // Takes in a 2D array from the census API and draws the appropriate visualization
 function drawRegionsMap(censusDataArray) {
   const shortDataArray = createDataArray(censusDataArray);
-  var data = google.visualization.arrayToDataTable(shortDataArray);
-  var options = {
+  const data = google.visualization.arrayToDataTable(shortDataArray);
+  const options = {
     'region': 'US',
     'resolution': 'provinces',
-    'colorAxis': {colors: ['white', 'blue']}
+    'colorAxis': {colors: ['white', 'blue']},
   };
   var chart = new google.visualization.GeoChart(document.getElementById('map'));
   chart.draw(data, options);
