@@ -24,13 +24,11 @@ import java.util.stream.Stream;
 public class QueryServlet extends HttpServlet {
 
   // Hardcoded initial choices for which lines of the data table are accessed
-  Map<String, Map<String, String>> queryToDataRow = ImmutableMap.of(
-    "live", ImmutableMap.of("under-18", "023E",
-              "over-18", "026E",
-              "all-ages", "001E"),
-    "work", ImmutableMap.of("over-18", "154E,S0201_157E"),
-    "moved", ImmutableMap.of("all-ages", "119E,S0201_126E")
-  );
+  Map<String, Map<String, String>> queryToDataRow = 
+  ImmutableMap.of(
+      "live", ImmutableMap.of("under-18", "023E", "over-18", "026E", "all-ages", "001E"),
+      "work", ImmutableMap.of("over-18", "154E,S0201_157E"),
+     "moved", ImmutableMap.of("all-ages", "119E,S0201_126E"));
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -38,8 +36,8 @@ public class QueryServlet extends HttpServlet {
     String action = request.getParameter("action");
     String location = request.getParameter("location");
   
-    if (!queryToDataRow.containsKey(action) || 
-        !queryToDataRow.get(action).containsKey(personType)) {
+    if (!queryToDataRow.containsKey(action)
+        || !queryToDataRow.get(action).containsKey(personType)) {
       // We don't have a data table for this query
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return;

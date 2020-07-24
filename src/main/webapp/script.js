@@ -19,17 +19,17 @@ google.charts.load('current', {
 });
 
 function passQuery() {
-  const information = document.getElementById('more-info')
-  information.innerText = 'Please wait. Loading...'
+  const information = document.getElementById('more-info');
+  information.innerText = 'Please wait. Loading...';
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
   const action = query.get('action');
   const location = query.get('location');
 
-  const fetchUrl = '/query?person-type=' + personType 
-      + '&action=' + action 
-      + '&location=' + location;
-  console.log(fetchUrl)
+  const fetchUrl = '/query?person-type=' + personType +
+      '&action=' + action +
+      '&location=' + location;
+  
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
