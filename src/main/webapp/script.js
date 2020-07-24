@@ -30,7 +30,7 @@ function passQuery() {
       '&action=' + action +
       '&location=' + location;
   
-  fetch(fetchUrl)
+  fetch(fetchUrl) 
     .then((response) => {
       if (response.ok) {
         response.json().then((jsonResponse) => JSON.parse(jsonResponse))
