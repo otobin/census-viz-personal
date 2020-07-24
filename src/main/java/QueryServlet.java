@@ -37,7 +37,7 @@ public class QueryServlet extends HttpServlet {
     String location = request.getParameter("location");
   
     if (!queryToDataRow.containsKey(action)
-        || !queryToDataRow.get(action).containsKey(personType)) {
+        || !queryToDataRow.get(action).containsKey(personType)) { 
       // We don't have a data table for this query
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return;
