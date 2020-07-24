@@ -19,24 +19,32 @@ google.charts.load('current', {
 });
 
 function passQuery() {
+  const information = document.getElementById('more-info');
+  information.innerText = 'Please wait. Loading...';
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
+  const action = query.get('action');
   const location = query.get('location');
 
-  fetch('/query?person-type=' + personType + '&location=' + location)
-      .then((response) => {
-        if (response.ok) {
-          response.json().then((jsonResponse) => JSON.parse(jsonResponse))
-              .then((data) => {
-                // data is a 2D array, where the first row is a header row
-                // and all subsequent rows are one piece of data
-                // (e.g. for a state or county)
-                displayVisualization(data);
-              });
-        } else {
-          console.log('There was an error');
-        }
-      });
+  const fetchUrl = '/query?person-type=' + personType +
+      '&action=' + action +
+      '&location=' + location;
+  
+  fetch(fetchUrl)
+    .then((response) => {
+      if (response.ok) {
+        response.json().then((jsonResponse) => JSON.parse(jsonResponse))
+        .then((data) => {
+          // data is a 2D array, where the first row is a header row and all
+          // subsequent rows are one piece of data (e.g. for a state or county)
+          information.innerText = '';
+          displayVisualization(data);
+        });
+      } else {
+        console.log(
+          `An error occurred: ${response.status}: ${response.statusText}`);
+      }
+    });
 }
 
 // displayVisualization takes in a data array representing the 2D array
@@ -49,7 +57,7 @@ function displayVisualization(censusDataArray) {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
-    const errorMessage = 'We do not support this visualiztation yet';
+    const errorMessage = 'We do not support this visualization yet';
     document.getElementById('map').innerHTML = '';
     document.getElementById('more-info').innerHTML = errorMessage;
   }
