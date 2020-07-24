@@ -19,6 +19,7 @@ google.charts.load('current', {
 });
 
 function passQuery() {
+  document.getElementById('result').style.display = 'block';
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
   const location = query.get('location');
@@ -45,7 +46,6 @@ function displayVisualization(censusDataArray) {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
-    document.getElementById('result').style.display = 'block';
     document.getElementById('map').innerHTML = '';
     document.getElementById('more-info').innerHTML = 'We do not have this information yet.';
   }
