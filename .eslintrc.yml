@@ -8,19 +8,24 @@ parserOptions:
 rules:
   no-unused-vars: off
   require-jsdoc: off
-  indent:
-    - error
-    - 2
-    - SwitchCase: 1
-      MemberExpression: 2
-      FunctionDeclaration:
-        body: 1
-        parameters: 2
-      FunctionExpression:
-        body: 1
-        parameters: 2
-      CallExpression:
-        - arguments: 2
+  indent: [
+    "error", 2,  # Google use 2-space indents
+    # Google uses +4 space indents for line continuations.
+    {
+        "SwitchCase": 1,
+        "MemberExpression": 2,
+        "FunctionDeclaration": {
+            "body": 1,
+            "parameters": 2
+        },
+        "FunctionExpression": {
+            "body": 1,
+            "parameters": 2
+        },
+        "CallExpression": {
+            "arguments": 2
+        },
         # Ignore default rules for ternary expressions.
-      ignoredNodes:
-        'ConditionalExpression'
+        "ignoredNodes": ["ConditionalExpression"]
+    }
+  ]
