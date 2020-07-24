@@ -28,8 +28,8 @@ function passQuery() {
         if (response.ok) {
           response.json().then((jsonResponse) => JSON.parse(jsonResponse))
               .then((data) => {
-                // data is a 2D array, where the first row is a header row 
-                // and all subsequent rows are one piece of data 
+                // data is a 2D array, where the first row is a header row
+                // and all subsequent rows are one piece of data
                 // (e.g. for a state or county)
                 displayVisualization(data);
               });
@@ -49,12 +49,13 @@ function displayVisualization(censusDataArray) {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
+    const errorMessage = 'We do not support this visualiztation yet';
     document.getElementById('map').innerHTML = '';
-    document.getElementById('more-info').innerHTML = 'We do not support this visualization yet.'
+    document.getElementById('more-info').innerHTML = errorMessage;
   }
 }
 
-// Takes in a 2D array from the census API and draws the appropriate visualization
+// Takes in a 2D array from the census API and displays the visualization
 function drawRegionsMap(censusDataArray) {
   const shortDataArray = createDataArray(censusDataArray);
   const data = google.visualization.arrayToDataTable(shortDataArray);
@@ -63,13 +64,14 @@ function drawRegionsMap(censusDataArray) {
     'resolution': 'provinces',
     'colorAxis': {colors: ['white', 'blue']},
   };
-  var chart = new google.visualization.GeoChart(document.getElementById('map'));
+  const mapElement = document.getElementById('map');
+  const chart = new google.visualization.GeoChart(mapElement);
   chart.draw(data, options);
   document.getElementById('more-info').innerHTML = 'Populations are in thousands.';
 }
 
-// createDataArray takes in the data array returned by the census API and reformats it 
-// into a data table that can be processed by the visualization API.
+// createDataArray takes in the data array returned by the census API
+// and reformats it into a data table for the visualization API.
 function createDataArray(censusDataArray) {
   const vizDataArray = [];
   censusDataArray.forEach((state) => {
