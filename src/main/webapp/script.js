@@ -1,3 +1,23 @@
+// Tell browser where to find service worker file,
+// so the service worker script can run in background.
+// We're using this service worker to intercept fetch requests.
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+        .then(function(response) {
+          // Service worker registration done
+          console.log('Registration Successful', response);
+        }, function(error) {
+          // Service worker registration failed
+          console.log('Registration Failed', error);
+        });
+  }
+}
+google.charts.load('current', {
+  'packages': ['geochart'],
+  'mapsApiKey': 'AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ',
+});
+
 function passQuery() {
   const mapContainer = document.getElementById('map')
   mapContainer.innerText = 'Please wait. Loading...'
