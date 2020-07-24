@@ -19,7 +19,8 @@ jobs:
         run: |
           for file in $(git diff --name-only origin/master HEAD -- . ':!node_modules' | grep -E "(.*)\.(java)$"); do
             echo -e "Running google-java-format on:\n $file\n"
-            if ! java -jar ./google-java-format-1.8-all-deps.jar $file | cat - | diff $file -; then
+            echo -e "Corrected file will be printed below if formatting errors found."
+            if java -jar ./google-java-format-1.8-all-deps.jar $file; then
               EXIT=1
             fi
             echo ""
