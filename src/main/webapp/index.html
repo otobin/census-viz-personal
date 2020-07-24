@@ -5,33 +5,41 @@
   <meta charset="UTF-8">
   <title>Census Viz</title>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <link rel="stylesheet" href="style.css">
   <script src="script.js"></script>
 </head>
 
 <body onload="registerServiceWorker()">
   <main>
-    <div id="query">
-      <form id="query-form" onsubmit="passQuery(); return false;">
-        <p>
-          How many
-          <select name="person-type">
-            <option value="under-18">children</option>
-            <option value="over-18">adults</option>
-            <option value="all-ages">people</option>
-          </select>
-          live in every US
-          <select name="location">
-            <option value="county">county</option>
-            <option value="state">state</option>
-          </select>
-          ?
-        </p>
-        <input type="submit">
-      </form>
+    <div id="header">
+      <h1>Census Viz</h1>
     </div>
-    <div id="map"></div>
-    <div id="more-info"></div>
+    <div class="wrapper">
+      <div id="query">
+        <form id="query-form" onsubmit="passQuery(); return false;">
+            How many
+            <select name="person-type">
+              <option value="under-18">children</option>
+              <option value="over-18">adults</option>
+              <option value="all-ages">people</option>
+            </select>
+            live in every US
+            <select name="location">
+              <option value="county">county</option>
+              <option value="state">state</option>
+            </select>
+            ?
+          <input type="submit" value="go">
+        </form>
+      </div>
+      <div id="result">
+        <div id="more-info"></div>
+        <div id="map"></div>
+      </div>
+    </div>
+    <footer>
+      Made by Kyra Acquah, Shuli Jones, and Olivia Tobin.
+    </footer>
   </main>
 </body>
-
 </html>
