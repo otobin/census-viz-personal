@@ -12,13 +12,13 @@ self.addEventListener('activate', function(event) {
       caches.keys().then(function(cacheNames) {
         return Promise.all(
             cacheNames.map(function(cacheName) {
-          if (!expectedCacheNamesSet.has(cacheName)) {
+              if (!expectedCacheNamesSet.has(cacheName)) {
                 return caches.delete(cacheName);
               }
             }),
         );
-      })
-  )
+      }),
+  );
 });
 
 // Check cache and cache data if necessary on every fetch()
@@ -51,6 +51,6 @@ self.addEventListener('fetch', function(event) {
           console.error('Error in fetch handler:', error);
           throw error;
         });
-      })
+      }),
   );
 });
