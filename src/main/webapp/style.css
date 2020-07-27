@@ -11,8 +11,7 @@ select {
 }
 
 input[type=list]:focus,
-select:focus
- {
+select:focus {
   outline: none;
 }
 
