@@ -19,17 +19,17 @@ google.charts.load('current', {
 });
 
 function passQuery() {
+  document.getElementById('result').style.display = 'block';
   const information = document.getElementById('more-info');
   information.innerText = 'Please wait. Loading...';
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
   const action = query.get('action');
   const location = query.get('location');
-
   const fetchUrl = '/query?person-type=' + personType +
       '&action=' + action +
       '&location=' + location;
-  
+
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
@@ -69,6 +69,7 @@ function drawRegionsMap(censusDataArray) {
   const data = google.visualization.arrayToDataTable(shortDataArray);
   const options = {
     'region': 'US',
+    'height': 550,
     'resolution': 'provinces',
     'colorAxis': {colors: ['white', 'blue']},
   };
@@ -91,3 +92,9 @@ function createDataArray(censusDataArray) {
   vizDataArray[0][1] = 'Population';
   return vizDataArray;
 }
+
+function resizeVisualization() {
+  passQuery();
+}
+
+window.addEventListener('resize', resizeVisualization);
