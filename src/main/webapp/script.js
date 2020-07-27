@@ -53,7 +53,9 @@ function passQuery() {
 // Eg: Header for the query that finds for populations of all counties is
 // ["NAME","S0201_001E","state","county"]
 function displayVisualization(censusDataArray) {
-  if (censusDataArray[0][2] == 'state' && censusDataArray[0][3] != 'county') {
+  console.log(censusDataArray[0]);
+  const dataLength = censusDataArray[0].length;
+  if (censusDataArray[0][length - 1] != 'county') {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
@@ -85,20 +87,21 @@ function createDataArray(censusDataArray) {
   const vizDataArray = []
   if (censusDataArray[0].length == 4) {
     censusDataArray.forEach((state) => {
-      vizDataArray.push([state[0], state[1]/1000, state[2]]);
+      vizDataArray.push([state[0], percentToTotal(state[1], state[2])]);
     });
-    // Changes the header of the vizDataArray to match the Visualization API
-    vizDataArray[0][0] = 'State';
-    vizDataArray[0][1] = 'Population';
-    vizDataArray[0][2] = 'Percentage';
-    return vizDataArray;
   } else {
     censusDataArray.forEach((state) => {
       vizDataArray.push([state[0], state[1]/1000]);
     });
-    // Changes the header of the vizDataArray to match the Visualization API
-    vizDataArray[0][0] = 'State';
-    vizDataArray[0][1] = 'Population';
-    return vizDataArray;
   }
+  // Changes the header of the vizDataArray to match the Visualization API
+  vizDataArray[0][0] = 'State';
+  vizDataArray[0][1] = 'Population';
+  return vizDataArray;
+}
+
+// percentToTotal takes in the total number of people in a category and the percentage and 
+// returns the total 
+function percentToTotal(totalNumber, percentage) {
+  return (totalNumber/100) * percentage;
 }
