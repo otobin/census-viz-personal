@@ -19,6 +19,7 @@ google.charts.load('current', {
 });
 
 function passQuery() {
+  document.getElementById('map-title').innerHTML = '';
   document.getElementById('result').style.display = 'block';
   const information = document.getElementById('more-info');
   information.innerText = 'Please wait. Loading...';
@@ -26,6 +27,10 @@ function passQuery() {
   const personType = query.get('person-type');
   const action = query.get('action');
   const location = query.get('location');
+  const region =
+      location === 'state' ? 'U.S. state' : 'State Name county';
+  const title = 'Population who ' + action +
+      ' in each ' + region + ' (' + personType + ')';
   const fetchUrl = '/query?person-type=' + personType +
       '&action=' + action +
       '&location=' + location;
@@ -38,7 +43,7 @@ function passQuery() {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
           information.innerText = '';
-          displayVisualization(data);
+          displayVisualization(data, title);
         });
       } else {
         console.log(
@@ -52,9 +57,9 @@ function passQuery() {
 // is the header, which describes the type of data.
 // Eg: Header for the query that finds for populations of all counties is
 // ["NAME","S0201_001E","state","county"]
-function displayVisualization(censusDataArray) {
+function displayVisualization(censusDataArray, title) {
   if (censusDataArray[0][2] == 'state' && censusDataArray[0][3] != 'county') {
-    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
+    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray, title));
   } else {
     // We currently do not have counties implemented
     const errorMessage = 'We do not support this visualization yet';
@@ -64,7 +69,7 @@ function displayVisualization(censusDataArray) {
 }
 
 // Takes in a 2D array from the census API and displays the visualization
-function drawRegionsMap(censusDataArray) {
+function drawRegionsMap(censusDataArray, title) {
   const shortDataArray = createDataArray(censusDataArray);
   const data = google.visualization.arrayToDataTable(shortDataArray);
   const options = {
@@ -73,6 +78,7 @@ function drawRegionsMap(censusDataArray) {
     'resolution': 'provinces',
     'colorAxis': {colors: ['white', 'blue']},
   };
+  document.getElementById('map-title').innerHTML = title;
   const mapElement = document.getElementById('map');
   const chart = new google.visualization.GeoChart(mapElement);
   chart.draw(data, options);
