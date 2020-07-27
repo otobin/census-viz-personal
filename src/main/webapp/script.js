@@ -53,9 +53,8 @@ function passQuery() {
 // Eg: Header for the query that finds for populations of all counties is
 // ["NAME","S0201_001E","state","county"]
 function displayVisualization(censusDataArray) {
-  console.log(censusDataArray[0]);
   const dataLength = censusDataArray[0].length;
-  if (censusDataArray[0][length - 1] != 'county') {
+  if (censusDataArray[0][dataLength - 1] != 'county') {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
@@ -85,6 +84,9 @@ function drawRegionsMap(censusDataArray) {
 // and reformats it into a data table for the visualization API.
 function createDataArray(censusDataArray) {
   const vizDataArray = []
+  // If the length of the census data array is four, the census call has generated
+  // a percentage and total population so we do a calculation. If the length is not four
+  // then we can just return given population. 
   if (censusDataArray[0].length == 4) {
     censusDataArray.forEach((state) => {
       vizDataArray.push([state[0], percentToTotal(state[1], state[2])]);
