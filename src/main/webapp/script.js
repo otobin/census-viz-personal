@@ -22,10 +22,13 @@ function passQuery() {
   document.getElementById('result').style.display = 'block';
   const information = document.getElementById('more-info');
   information.innerText = 'Please wait. Loading...';
+
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
   const action = query.get('action');
-  const location = query.get('location');
+  const locationName = query.get('location');
+  const location = document.querySelector("#location option[value='"+locationName+"']").dataset.value;
+
   const fetchUrl = '/query?person-type=' + personType +
       '&action=' + action +
       '&location=' + location;
