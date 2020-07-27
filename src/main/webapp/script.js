@@ -82,12 +82,23 @@ function drawRegionsMap(censusDataArray) {
 // createDataArray takes in the data array returned by the census API
 // and reformats it into a data table for the visualization API.
 function createDataArray(censusDataArray) {
-  const vizDataArray = [];
-  censusDataArray.forEach((state) => {
-    vizDataArray.push([state[0], state[1]/1000]);
-  });
-  // Changes the header of the vizDataArray to match the Visualization API
-  vizDataArray[0][0] = 'State';
-  vizDataArray[0][1] = 'Population';
-  return vizDataArray;
+  const vizDataArray = []
+  if (censusDataArray[0].length == 4) {
+    censusDataArray.forEach((state) => {
+      vizDataArray.push([state[0], state[1]/1000, state[2]]);
+    });
+    // Changes the header of the vizDataArray to match the Visualization API
+    vizDataArray[0][0] = 'State';
+    vizDataArray[0][1] = 'Population';
+    vizDataArray[0][2] = 'Percentage';
+    return vizDataArray;
+  } else {
+    censusDataArray.forEach((state) => {
+      vizDataArray.push([state[0], state[1]/1000]);
+    });
+    // Changes the header of the vizDataArray to match the Visualization API
+    vizDataArray[0][0] = 'State';
+    vizDataArray[0][1] = 'Population';
+    return vizDataArray;
+  }
 }
