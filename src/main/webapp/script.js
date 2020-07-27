@@ -29,7 +29,7 @@ function passQuery() {
   const fetchUrl = '/query?person-type=' + personType +
       '&action=' + action +
       '&location=' + location;
-  
+
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
