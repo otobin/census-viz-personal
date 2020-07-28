@@ -2,6 +2,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
+input[type=list],
 select {
   background-color: transparent;
   border-style: none none solid none;
@@ -9,6 +10,7 @@ select {
   padding: 10px;
 }
 
+input[type=list]:focus,
 select:focus {
   outline: none;
 }

@@ -28,11 +28,14 @@
             <option value="work">work in</option>
             <option value="moved">moved to</option>
           </select>
-          every US
-          <select name="location">
-            <option value="county">county</option>
-            <option value="state">state</option>
-          </select>
+          <input type="list" list="location" name="location" pattern="every US state|California|New Jersey">
+            <datalist id="location">
+              <option data-value="state" value="every US state">
+              <option data-value="county" value="California">
+              <option data-value="county" value="New Jersey">
+              <!-- will change latter two to 06 and 31 (state numbers) when counties are ready -->
+            </datalist>
+          </input>
           ?
         </p>
         <input type="submit" value="go">
