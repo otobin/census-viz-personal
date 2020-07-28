@@ -53,7 +53,7 @@ public class QueryServlet extends HttpServlet {
     if (connection.getResponseCode() > 299) {
       // An error occurred
       response.sendError(
-          HttpServletResponse.SC_BAD_GATEWAY, 
+          HttpServletResponse.SC_BAD_GATEWAY,
           "An error occurred while trying to retrieve census data.");
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
