@@ -112,7 +112,8 @@ function createDataArray(censusDataArray, description) {
   // Changes the header of the vizDataArray to match Visualization API
   vizDataArray[0][0] = 'State';
   // Add a more accurate descriptor for each state
-  vizDataArray[0][1] = 'Population of people ' + description.age + ' who ' + description.action;
+  vizDataArray[0][1] = 'Population of people ' + 
+    description.age + ' who ' + description.action;
   // make it moved to
   if (description.action === 'moved') {
     vizDataArray[0][1] += ' to'; 
