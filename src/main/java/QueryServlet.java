@@ -34,7 +34,7 @@ public class QueryServlet extends HttpServlet {
     if (!queryToDataRow.containsKey(action)
         || !queryToDataRow.get(action).containsKey(personType)) {
       // We don't have a data table for this query
-      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "We do not support this visualization yet.");
       return;
     }
 
@@ -51,7 +51,8 @@ public class QueryServlet extends HttpServlet {
 
     if (connection.getResponseCode() > 299) {
       // An error occurred
-      response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+      response.sendError(HttpServletResponse.SC_BAD_GATEWAY, 
+          "An error occurred while trying to retrieve census data.");
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
