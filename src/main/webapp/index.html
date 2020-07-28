@@ -5,11 +5,15 @@
   <meta charset="UTF-8">
   <title>Census Viz</title>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <link rel="stylesheet" href="style.css">
   <script src="script.js"></script>
 </head>
 
 <body onload="registerServiceWorker()">
   <main>
+    <div id="header">
+      <h1>Census Viz</h1>
+    </div>
     <div id="query">
       <form id="query-form" onsubmit="passQuery(); return false;">
         <p>
@@ -37,8 +41,11 @@
     <div id="result">
       <div id="map-title"></div>
       <div id="more-info"></div>
-      <dv id="map"></div> 
+      <div id="map"></div>
     </div>
+    <footer>
+      Made by Kyra Acquah, Shuli Jones, and Olivia Tobin.
+    </footer>
   </main>
 </body>
 </html>

@@ -19,17 +19,25 @@ google.charts.load('current', {
 });
 
 function passQuery() {
+  document.getElementById('map-title').innerText = '';
+  document.getElementById('result').style.display = 'block';
   const information = document.getElementById('more-info');
   information.innerText = 'Please wait. Loading...';
+
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
   const action = query.get('action');
   const location = query.get('location');
+  const description = {age: personType, action: action};
+
+  const region =
+      location === 'state' ? 'U.S. state' : 'State Name county';
+  const title = 'Population who ' + action +
+      ' in each ' + region + ' (' + personType.replace('-', ' ') + ')';
 
   const fetchUrl = '/query?person-type=' + personType +
       '&action=' + action +
       '&location=' + location;
-  
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
@@ -38,7 +46,7 @@ function passQuery() {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
           information.innerText = '';
-          displayVisualization(data);
+          displayVisualization(data, description, title);
         });
       } else {
         console.log(
@@ -52,10 +60,11 @@ function passQuery() {
 // is the header, which describes the type of data.
 // Eg: Header for the query that finds for populations of all counties is
 // ["NAME","S0201_001E","state","county"]
-function displayVisualization(censusDataArray) {
+function displayVisualization(censusDataArray, description, title) {
   const dataLength = censusDataArray[0].length;
-  if (censusDataArray[0][dataLength - 1] != 'county') {
-    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
+  // Check to see that it's not a county query
+  if (censusDataArray[0][dataLength - 1] !== 'county') {
+    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray, description, title));
   } else {
     // We currently do not have counties implemented
     const errorMessage = 'We do not support this visualization yet';
@@ -65,14 +74,16 @@ function displayVisualization(censusDataArray) {
 }
 
 // Takes in a 2D array from the census API and displays the visualization
-function drawRegionsMap(censusDataArray) {
-  const shortDataArray = createDataArray(censusDataArray);
+function drawRegionsMap(censusDataArray, description, title) {
+  const shortDataArray = createDataArray(censusDataArray, description);
   const data = google.visualization.arrayToDataTable(shortDataArray);
   const options = {
     'region': 'US',
+    'height': 550,
     'resolution': 'provinces',
     'colorAxis': {colors: ['white', 'blue']},
   };
+  document.getElementById('map-title').innerText = title;
   const mapElement = document.getElementById('map');
   const chart = new google.visualization.GeoChart(mapElement);
   chart.draw(data, options);
@@ -82,12 +93,12 @@ function drawRegionsMap(censusDataArray) {
 
 // createDataArray takes in the data array returned by the census API
 // and reformats it into a data table for the visualization API.
-function createDataArray(censusDataArray) {
+function createDataArray(censusDataArray, description) {
   const vizDataArray = []
   // If the length of the census data array is four, the census call has generated
-  // a percentage and total population so we do a calculation. If the length is not four
-  // then we can just return given population. 
-  if (censusDataArray[0].length == 4) {
+  // a percentage and total population so we do a calculation to find the % of the total.
+  // If the length is not four then we can just return given population. 
+  if (censusDataArray[0].length === 4) {
     censusDataArray.forEach((state) => {
       vizDataArray.push([state[0], percentToTotal(state[1], state[2])]);
     });
@@ -98,7 +109,12 @@ function createDataArray(censusDataArray) {
   }
   // Changes the header of the vizDataArray to match the Visualization API
   vizDataArray[0][0] = 'State';
-  vizDataArray[0][1] = 'Population';
+  // Add a more accurate descriptor for each state
+  vizDataArray[0][1] = 'Population of people ' + description.age + ' who ' + description.action;
+  // make it moved to
+  if (description.action === 'moved') {
+    vizDataArray[0][1] += ' to'; 
+  }
   return vizDataArray;
 }
 
@@ -107,3 +123,9 @@ function createDataArray(censusDataArray) {
 function percentToTotal(totalNumber, percentage) {
   return (totalNumber/100) * percentage;
 }
+
+function resizeVisualization() {
+  passQuery();
+}
+
+window.addEventListener('resize', resizeVisualization);
