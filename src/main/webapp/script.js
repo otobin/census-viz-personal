@@ -28,7 +28,8 @@ function passQuery() {
   const action = query.get('action');
 
   const locationName = query.get('location');
-  const location = document.querySelector("#location option[value='"+locationName+"']").dataset.value;
+  const location = document.querySelector(
+    "#location option[value='"+locationName+"']").dataset.value;
 
   const region =
       location === 'state' ? 'U.S. state' : 'State Name county';
@@ -69,7 +70,7 @@ function displayVisualization(censusDataArray, title) {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray, title));
   } else {
     // We currently do not have counties implemented
-    displayError(400, 'We do not support this visualization yet.');  
+    displayError(400, 'We do not support this visualization yet.');
   }
 }
 
