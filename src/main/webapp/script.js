@@ -18,8 +18,20 @@ google.charts.load('current', {
   'mapsApiKey': 'AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ',
 });
 
+const states = {
+  'California': {
+    number: '06',
+    geoData: am4geodata_region_usa_caLow,
+  },
+  'New Jersey': {
+    number: '34',
+    geoData: am4geodata_region_usa_njLow,
+  },
+};
+
 function passQuery() {
   document.getElementById('map-title').innerText = '';
+  am4core.disposeAllCharts();
   document.getElementById('result').style.display = 'block';
   const information = document.getElementById('more-info');
   information.innerText = 'Please wait. Loading...';
@@ -29,16 +41,22 @@ function passQuery() {
   const action = query.get('action');
 
   const locationName = query.get('location');
-  const location = document.querySelector("#location option[value='"+locationName+"']").dataset.value;
+  const location = document.querySelector(
+      '#location option[value=\''+locationName+'\']').dataset.value;
 
-  const region =
-      location === 'state' ? 'U.S. state' : 'State Name county';
+  const isCountyQuery = location !== 'state'
+  const region = isCountyQuery ? locationName + ' county' : 'U.S. state';
   const title = 'Population who ' + action +
       ' in each ' + region + ' (' + personType.replace('-', ' ') + ')';
+  document.getElementById('map-title').innerText = title;
+  
+  let fetchUrl = '/query?person-type=' + personType +
+    '&action=' + action +
+    '&location=' + location;
 
-  const fetchUrl = '/query?person-type=' + personType +
-      '&action=' + action +
-      '&location=' + location;
+  if (isCountyQuery) {
+    fetchUrl += '&state-number=' + states[locationName].number;
+  }
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
@@ -47,7 +65,12 @@ function passQuery() {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
           information.innerText = '';
-          displayVisualization(data, title);
+
+          if(isCountyQuery) {
+            displayAmChartsMap(data, locationName);
+          } else {
+            displayVisualization(data);
+          }
         });
       } else {
         console.log(
@@ -56,14 +79,84 @@ function passQuery() {
     });
 }
 
+function displayAmChartsMap(data, stateName) {
+  am4core.useTheme(am4themes_animated);
+  const chart = am4core.create('map', am4maps.MapChart);
+  chart.height = 550;
+
+  // Create map instance
+  chart.geodata = states[stateName].geoData;
+  chart.projection = new am4maps.projections.AlbersUsa();
+  const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+
+  // Set min/max fill color for each area
+  polygonSeries.heatRules.push({
+    property: 'fill',
+    target: polygonSeries.mapPolygons.template,
+    min: chart.colors.getIndex(1).brighten(1),
+    max: chart.colors.getIndex(1).brighten(-0.3),
+    logarithmic: true,
+  });
+  polygonSeries.useGeodata = true;
+
+  const countyData = data.map((value) => {
+      return {id: value[2] + value[3], value: value[1]};
+  });
+  polygonSeries.data = countyData;
+
+  // Set up heat legend
+  const heatLegend = chart.createChild(am4maps.HeatLegend);
+  heatLegend.series = polygonSeries;
+  heatLegend.align = 'right';
+  heatLegend.valign = 'bottom';
+  heatLegend.height = am4core.percent(80);
+  heatLegend.orientation = 'vertical';
+  heatLegend.valign = 'middle';
+  heatLegend.marginRight = am4core.percent(4);
+  heatLegend.valueAxis.renderer.opposite = true;
+  heatLegend.valueAxis.renderer.dx = - 25;
+  heatLegend.valueAxis.strictMinMax = false;
+  heatLegend.valueAxis.fontSize = 9;
+  heatLegend.valueAxis.logarithmic = true;
+
+  // Configure series tooltip
+  const polygonTemplate = polygonSeries.mapPolygons.template;
+  polygonTemplate.tooltipText = '{name}: {value}';
+  polygonTemplate.nonScalingStroke = true;
+  polygonTemplate.strokeWidth = 0.5;
+
+  // Create hover state and set alternative fill color
+  const hs = polygonTemplate.states.create('hover');
+  hs.properties.fill = am4core.color('#3c5bdc');
+
+
+  // heat legend behavior
+  polygonSeries.mapPolygons.template.events.on('over', function(event) {
+    handleHover(event.target);
+  });
+  polygonSeries.mapPolygons.template.events.on('hit', function(event) {
+    handleHover(event.target);
+  });
+  function handleHover(column) {
+    if (!isNaN(column.dataItem.value)) {
+      heatLegend.valueAxis.showTooltipAt(column.dataItem.value);
+    } else {
+      heatLegend.valueAxis.hideTooltip();
+    }
+  }
+  polygonSeries.mapPolygons.template.events.on('out', function(event) {
+    heatLegend.valueAxis.hideTooltip();
+  });
+}
+
 // displayVisualization takes in a data array representing the 2D array
 // returned  by the census API. The first row in the census Data array
 // is the header, which describes the type of data.
 // Eg: Header for the query that finds for populations of all counties is
 // ["NAME","S0201_001E","state","county"]
-function displayVisualization(censusDataArray, title) {
+function displayVisualization(censusDataArray) {
   if (censusDataArray[0][2] == 'state' && censusDataArray[0][3] != 'county') {
-    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray, title));
+    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray));
   } else {
     // We currently do not have counties implemented
     const errorMessage = 'We do not support this visualization yet';
@@ -73,7 +166,7 @@ function displayVisualization(censusDataArray, title) {
 }
 
 // Takes in a 2D array from the census API and displays the visualization
-function drawRegionsMap(censusDataArray, title) {
+function drawRegionsMap(censusDataArray) {
   const shortDataArray = createDataArray(censusDataArray);
   const data = google.visualization.arrayToDataTable(shortDataArray);
   const options = {
@@ -82,7 +175,6 @@ function drawRegionsMap(censusDataArray, title) {
     'resolution': 'provinces',
     'colorAxis': {colors: ['white', 'blue']},
   };
-  document.getElementById('map-title').innerText = title;
   const mapElement = document.getElementById('map');
   const chart = new google.visualization.GeoChart(mapElement);
   chart.draw(data, options);

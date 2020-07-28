@@ -30,6 +30,7 @@ public class QueryServlet extends HttpServlet {
     String personType = request.getParameter("person-type");
     String action = request.getParameter("action");
     String location = request.getParameter("location");
+    String stateNumber = request.getParameter("state-number");
 
     if (!queryToDataRow.containsKey(action)
         || !queryToDataRow.get(action).containsKey(personType)) {
@@ -38,13 +39,20 @@ public class QueryServlet extends HttpServlet {
       return;
     }
 
+    String locationQuery;
+    if (location == "county" && stateNumber != null) {
+      locationQuery = "county:*&in=state:" + stateNumber;
+    } else {
+      locationQuery = "state:*";
+    }
+    
     URL fetchUrl =
         new URL(
             "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_"
                 + queryToDataRow.get(action).get(personType)
                 + "&for="
-                + location
-                + ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
+                + locationQuery
+                + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
