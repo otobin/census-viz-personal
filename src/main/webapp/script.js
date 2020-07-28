@@ -28,7 +28,12 @@ function passQuery() {
   const personType = query.get('person-type');
   const action = query.get('action');
   const location = query.get('location');
-  const description = {age: personType, action: action};
+  const actionToText = new Map();
+  actionToText['moved'] = 'moved to';
+  if (actionToText.has(action)) {
+    action = actionToText[action];
+  } 
+  const description = {action: action, age: personType};
 
   const region =
       location === 'state' ? 'U.S. state' : 'State Name county';
@@ -96,11 +101,8 @@ function drawRegionsMap(censusDataArray, description, title) {
 // and reformats it into a data table for the visualization API.
 function createDataArray(censusDataArray, description) {
   const vizDataArray = [];
-  // If the length of the census data array is four, the census call has
-  // generated a percentage and total population so we do a calculation
-  //  to find the % of the total.If the length is not four then we can
-  // just return given population.
-  if (censusDataArray[0].length === 4) {
+  // Check to see if an extra calculation for percentages is needed
+  if (checkPercentage(censusDataArray[0])) {
     censusDataArray.forEach((state) => {
       vizDataArray.push([state[0], percentToTotal(state[1], state[2])]);
     });
@@ -125,6 +127,25 @@ function createDataArray(censusDataArray, description) {
 // and the percentage and returns the total
 function percentToTotal(totalNumber, percentage) {
   return (totalNumber/100) * percentage;
+}
+
+// checkPercentage() Takes in the header of a census query and returns 
+// whether or not the total needs to be calculated using the percentToTotal() function
+function checkPercentage(headerColumn) {
+  // percentageQueries is a list of queries that return percents and not raw
+  // data. It is hard coded for now.
+  const percentageQueries = ['S0201_157E', 'S0201_126E'];
+  let i;
+  // Iterate through all the data variables in the header.
+  // Eg: ["NAME","S0201_119E","S0201_126E","state"]
+  // We need to return true
+  for (i = 1; i < headerColumn.length - 1; i++) {
+    // if the current data is in the percentage array
+    if (percentageQueries.indexOf(headerColumn[i]) > -1) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function resizeVisualization() {
