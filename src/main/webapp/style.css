@@ -25,12 +25,16 @@ select:focus {
   padding-left: 30px;
 }
 
+#query-form {
+  display: inline-flex;
+}
+
 #query {
   text-align: center;
 }
 
+button,
 input[type=submit] {
-  background: #0dbd00;
   border: 0;
   border-radius: 2px;
   color: #fff;
@@ -41,13 +45,23 @@ input[type=submit] {
   text-transform: uppercase;
 }
 
+button,
 input[type=submit]:hover {
-  background: #0ba600;
+  filter: brightness(90%);
   transition: all .4s ease-in-out;
 }
 
+button,
 input[type=submit]:focus {
   outline: 0;
+}
+
+input[type=submit] {
+  background: #0dbd00;
+}
+
+button {
+  background: blue;
 }
 
 #result {
@@ -56,6 +70,7 @@ input[type=submit]:focus {
   display: none;
   margin: 60px 0 60px 0;
   padding: 30px;
+  text-align: center;
 }
 
 #map-title {
@@ -66,6 +81,15 @@ input[type=submit]:focus {
 
 #more-info {
   text-align: center;
+}
+
+#data-table {
+  display: none;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 footer {

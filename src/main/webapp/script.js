@@ -47,6 +47,7 @@ function passQuery() {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
           information.innerText = '';
+          document.getElementById('data-table').innerHTML = '';
           displayVisualization(data, title);
         });
       } else {
@@ -68,6 +69,7 @@ function displayVisualization(censusDataArray, title) {
     // We currently do not have counties implemented
     const errorMessage = 'We do not support this visualization yet';
     document.getElementById('map').innerHTML = '';
+    document.getElementById('data-table').innerHTML = '';
     document.getElementById('more-info').innerHTML = errorMessage;
   }
 }
@@ -88,6 +90,8 @@ function drawRegionsMap(censusDataArray, title) {
   chart.draw(data, options);
   const mapNote = 'Populations are in thousands';
   document.getElementById('more-info').innerHTML = mapNote;
+  document.getElementById('data-table')
+      .appendChild(createDataTable(shortDataArray));
 }
 
 // createDataArray takes in the data array returned by the census API
@@ -108,3 +112,48 @@ function resizeVisualization() {
 }
 
 window.addEventListener('resize', resizeVisualization);
+
+
+/**
+ * Create and return an HTML table using the data in dataArray.
+ * Uses first row in dataArray as table headers.
+ */
+function createDataTable(dataArray) {
+  const table = document.createElement('table');
+  table.innerHTML = '';
+  let tableRow = document.createElement('tr');
+  let region = document.createElement('th');
+  let value = document.createElement('th');
+  region.innerText = dataArray[0][0];
+  value.innerText = dataArray[0][1];
+  tableRow.appendChild(region);
+  tableRow.appendChild(value);
+  table.appendChild(tableRow);
+
+  for (let i = 1; i < dataArray.length; i++) {
+    tableRow = document.createElement('tr');
+    region = document.createElement('td');
+    value = document.createElement('td');
+    region.innerText = dataArray[i][0];
+    value.innerText = dataArray[i][1];
+    tableRow.appendChild(region);
+    tableRow.appendChild(value);
+    table.appendChild(tableRow);
+  }
+  return table;
+}
+
+/**
+ * Show/hide the raw data table.
+ */
+function toggleDataTable() {
+  const dataTable = document.getElementById('data-table');
+  if (window.getComputedStyle(dataTable)
+      .getPropertyValue('display') === 'none') {
+    dataTable.style.display = 'inline';
+    document.getElementById('toggle-data-btn').innerText = 'Hide raw data';
+  } else {
+    dataTable.style.display = 'none';
+    document.getElementById('toggle-data-btn').innerText = 'Display raw data';
+  }
+}
