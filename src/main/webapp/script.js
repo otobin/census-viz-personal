@@ -44,12 +44,12 @@ function passQuery() {
   const location = document.querySelector(
       '#location option[value=\''+locationName+'\']').dataset.value;
 
-  const isCountyQuery = location !== 'state'
+  const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationName + ' county' : 'U.S. state';
   const title = 'Population who ' + action +
       ' in each ' + region + ' (' + personType.replace('-', ' ') + ')';
   document.getElementById('map-title').innerText = title;
-  
+
   let fetchUrl = '/query?person-type=' + personType +
     '&action=' + action +
     '&location=' + location;
@@ -57,9 +57,9 @@ function passQuery() {
   if (isCountyQuery) {
     fetchUrl += '&state-number=' + states[locationName].number;
   } else {
-    fetchUrl += '&state-number='
+    fetchUrl += '&state-number=';
   }
-  
+
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
@@ -69,7 +69,7 @@ function passQuery() {
           // subsequent rows are one piece of data (e.g. for a state or county)
           information.innerText = '';
 
-          if(isCountyQuery) {
+          if (isCountyQuery) {
             displayAmChartsMap(data, locationName);
           } else {
             displayVisualization(data);

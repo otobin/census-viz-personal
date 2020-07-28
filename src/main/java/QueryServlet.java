@@ -24,7 +24,7 @@ public class QueryServlet extends HttpServlet {
           ImmutableMap.of("over-18", "154E,S0201_157E"),
           "moved",
           ImmutableMap.of("all-ages", "119E,S0201_126E"));
-  
+
   Map<String, String> locationTypeToQuery =
       ImmutableMap.of("county", "county:*&in=state:", "state", "state:*");
 
