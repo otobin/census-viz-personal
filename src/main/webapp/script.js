@@ -56,7 +56,10 @@ function passQuery() {
 
   if (isCountyQuery) {
     fetchUrl += '&state-number=' + states[locationName].number;
+  } else {
+    fetchUrl += '&state-number='
   }
+  
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {

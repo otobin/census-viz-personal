@@ -24,6 +24,9 @@ public class QueryServlet extends HttpServlet {
           ImmutableMap.of("over-18", "154E,S0201_157E"),
           "moved",
           ImmutableMap.of("all-ages", "119E,S0201_126E"));
+  
+  Map<String, String> locationTypeToQuery =
+      ImmutableMap.of("county", "county:*&in=state:", "state", "state:*");
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -39,19 +42,13 @@ public class QueryServlet extends HttpServlet {
       return;
     }
 
-    String locationQuery;
-    if (location == "county" && stateNumber != null) {
-      locationQuery = "county:*&in=state:" + stateNumber;
-    } else {
-      locationQuery = "state:*";
-    }
-    
     URL fetchUrl =
         new URL(
             "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_"
                 + queryToDataRow.get(action).get(personType)
                 + "&for="
-                + locationQuery
+                + locationTypeToQuery.get(location)
+                + stateNumber
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
