@@ -64,7 +64,7 @@ function displayVisualization(censusDataArray, description, title) {
   const dataLength = censusDataArray[0].length;
   // Check to see that it's not a county query
   if (censusDataArray[0][dataLength - 1] !== 'county') {
-    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray, 
+    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray,
       description, title));
   } else {
     // We currently do not have counties implemented
@@ -112,16 +112,16 @@ function createDataArray(censusDataArray, description) {
   // Changes the header of the vizDataArray to match Visualization API
   vizDataArray[0][0] = 'State';
   // Add a more accurate descriptor for each state
-  vizDataArray[0][1] = 'Population of people ' + 
+  vizDataArray[0][1] = 'Population of people ' +
     description.age + ' who ' + description.action;
   // make it moved to
   if (description.action === 'moved') {
-    vizDataArray[0][1] += ' to'; 
+    vizDataArray[0][1] += ' to';
   }
   return vizDataArray;
 }
 
-// percentToTotal takes in the total number of people in a category 
+// percentToTotal takes in the total number of people in a category
 // and the percentage and returns the total
 function percentToTotal(totalNumber, percentage) {
   return (totalNumber/100) * percentage;
