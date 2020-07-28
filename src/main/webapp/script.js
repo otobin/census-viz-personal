@@ -64,7 +64,8 @@ function displayVisualization(censusDataArray, description, title) {
   const dataLength = censusDataArray[0].length;
   // Check to see that it's not a county query
   if (censusDataArray[0][dataLength - 1] !== 'county') {
-    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray, description, title));
+    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray, 
+      description, title));
   } else {
     // We currently do not have counties implemented
     const errorMessage = 'We do not support this visualization yet';
@@ -94,10 +95,11 @@ function drawRegionsMap(censusDataArray, description, title) {
 // createDataArray takes in the data array returned by the census API
 // and reformats it into a data table for the visualization API.
 function createDataArray(censusDataArray, description) {
-  const vizDataArray = []
-  // If the length of the census data array is four, the census call has generated
-  // a percentage and total population so we do a calculation to find the % of the total.
-  // If the length is not four then we can just return given population. 
+  const vizDataArray = [];
+  // If the length of the census data array is four, the census call has
+  // generated a percentage and total population so we do a calculation
+  //  to find the % of the total.If the length is not four then we can
+  // just return given population.
   if (censusDataArray[0].length === 4) {
     censusDataArray.forEach((state) => {
       vizDataArray.push([state[0], percentToTotal(state[1], state[2])]);
@@ -107,7 +109,7 @@ function createDataArray(censusDataArray, description) {
       vizDataArray.push([state[0], state[1]/1000]);
     });
   }
-  // Changes the header of the vizDataArray to match the Visualization API
+  // Changes the header of the vizDataArray to match Visualization API
   vizDataArray[0][0] = 'State';
   // Add a more accurate descriptor for each state
   vizDataArray[0][1] = 'Population of people ' + description.age + ' who ' + description.action;
@@ -118,8 +120,8 @@ function createDataArray(censusDataArray, description) {
   return vizDataArray;
 }
 
-// percentToTotal takes in the total number of people in a category and the percentage and 
-// returns the total 
+// percentToTotal takes in the total number of people in a category 
+// and the percentage and returns the total
 function percentToTotal(totalNumber, percentage) {
   return (totalNumber/100) * percentage;
 }
