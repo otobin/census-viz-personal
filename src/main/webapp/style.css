@@ -54,7 +54,7 @@ input[type=submit]:focus {
   border-radius: 10px;
   box-shadow: 5px 5px 15px #e7e7e9;
   display: none;
-  margin: 60px 0 60px 0;
+  margin: 30px 0 60px 0;
   padding: 30px;
 }
 

@@ -20,16 +20,16 @@ google.charts.load('current', {
 
 function passQuery() {
   document.getElementById('map-title').innerText = '';
+  document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('result').style.display = 'block';
-  const information = document.getElementById('more-info');
-  information.innerText = 'Please wait. Loading...';
 
   const query = new FormData(document.getElementById('query-form'));
   const personType = query.get('person-type');
   const action = query.get('action');
 
   const locationName = query.get('location');
-  const location = document.querySelector("#location option[value='"+locationName+"']").dataset.value;
+  const location = document.querySelector(
+    '#location option[value=\''+locationName+'\']').dataset.value;
 
   const region =
       location === 'state' ? 'U.S. state' : 'State Name county';
@@ -46,14 +46,18 @@ function passQuery() {
         .then((data) => {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
-          information.innerText = '';
           displayVisualization(data, title);
         });
       } else {
-        console.log(
-          `An error occurred: ${response.status}: ${response.statusText}`);
+        displayError(response.status, response.statusText);
       }
     });
+}
+
+// Display an error on the front end
+function displayError(status, statusText) {
+  document.getElementById('map').innerHTML = '';
+  document.getElementById('more-info').innerText = `Error ${status}: ${statusText}`;
 }
 
 // displayVisualization takes in a data array representing the 2D array
@@ -66,9 +70,7 @@ function displayVisualization(censusDataArray, title) {
     google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray, title));
   } else {
     // We currently do not have counties implemented
-    const errorMessage = 'We do not support this visualization yet';
-    document.getElementById('map').innerHTML = '';
-    document.getElementById('more-info').innerHTML = errorMessage;
+    displayError(400, 'We do not support this visualization yet.');
   }
 }
 
