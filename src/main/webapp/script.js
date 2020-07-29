@@ -60,6 +60,27 @@ function passQuery() {
     });
 }
 
+function validateLocation() {
+  const datalist = document.getElementById('location');
+  const inputlist = document.getElementById('locationlist');
+
+  const options = datalist.options;
+  const typedSoFar = inputlist.value;
+  let matchesAnOption = false;
+
+  for (let option of options) {
+    if (option.value.includes(typedSoFar)) {
+      matchesAnOption = true;
+      inputlist.style.borderColor = '#767676'; // dark gray
+      inputlist.style.borderStyle = 'none none solid none';
+    }
+  }
+  if (!matchesAnOption) {
+    inputlist.style.borderColor = 'red';
+    inputlist.style.borderStyle = 'solid';
+  }
+}
+
 // Display an error on the front end
 function displayError(status, statusText) {
   document.getElementById('map').innerHTML = '';

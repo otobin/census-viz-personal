@@ -28,7 +28,8 @@
             <option value="work">work in</option>
             <option value="moved">moved to</option>
           </select>
-          <input type="list" list="location" name="location" pattern="every US state|California|New Jersey">
+          <input type="list" list="location" name="location" id="locationlist"
+          required onkeyup="validateLocation()" pattern="every US state|California|New Jersey">
             <datalist id="location">
               <option data-value="state" value="every US state">
               <option data-value="county" value="California">
