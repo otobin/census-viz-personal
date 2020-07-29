@@ -19,7 +19,7 @@ public class QueryServlet extends HttpServlet {
   Map<String, Map<String, String>> queryToDataRow =
       ImmutableMap.of(
           "live",
-          ImmutableMap.of("under-18", "023E", "over-18", "026E", "all-ages", "001E"),
+          ImmutableMap.of("under-18", "0019E", "over-18", "0021E", "all-ages", "0001E"),
           "work",
           ImmutableMap.of("over-18", "154E,S0201_157E"),
           "moved",
@@ -44,7 +44,8 @@ public class QueryServlet extends HttpServlet {
 
     URL fetchUrl =
         new URL(
-            "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_"
+            "https://api.census.gov/data/2018/acs/acs1/"
+                + (action.equals("live") ? "profile?get=NAME,DP05_" : "spp?get=NAME,S0201_")
                 + queryToDataRow.get(action).get(personType)
                 + "&for="
                 + locationTypeToQuery.get(location)
