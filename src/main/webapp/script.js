@@ -30,7 +30,7 @@ function passQuery() {
   actionToText['moved'] = 'moved to';
   if (actionToText.has(action)) {
     action = actionToText[action];
-  } 
+  }
   const description = {action: action, age: personType};
 
   const locationName = query.get('location');
@@ -68,7 +68,7 @@ function validateLocation() {
   const typedSoFar = inputlist.value.toLowerCase();
   let matchesAnOption = false;
 
-  for (let option of options) {
+  for (const option of options) {
     if (option.value.toLowerCase().includes(typedSoFar)) {
       matchesAnOption = true;
       inputlist.style.borderColor = '#767676'; // dark gray
@@ -154,7 +154,7 @@ function percentToTotal(totalNumber, percentage) {
   return (totalNumber/100) * percentage;
 }
 
-// checkPercentage() Takes in the header of a census query and returns 
+// checkPercentage() Takes in the header of a census query and returns
 // whether or not the total needs to be calculated using the percentToTotal() function
 function checkPercentage(headerColumn) {
   // percentageQueries is a list of queries that return percents and not raw
