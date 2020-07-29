@@ -65,11 +65,11 @@ function validateLocation() {
   const inputlist = document.getElementById('locationlist');
 
   const options = datalist.options;
-  const typedSoFar = inputlist.value;
+  const typedSoFar = inputlist.value.toLowerCase();
   let matchesAnOption = false;
 
   for (let option of options) {
-    if (option.value.includes(typedSoFar)) {
+    if (option.value.toLowerCase().includes(typedSoFar)) {
       matchesAnOption = true;
       inputlist.style.borderColor = '#767676'; // dark gray
       inputlist.style.borderStyle = 'none none solid none';
