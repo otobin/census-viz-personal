@@ -29,7 +29,7 @@ function passQuery() {
 
   const locationName = query.get('location');
   const location = document.querySelector(
-    "#location option[value='"+locationName+"']").dataset.value;
+    '#location option[value=\''+locationName+'\']').dataset.value;
 
   const region =
       location === 'state' ? 'U.S. state' : 'State Name county';
