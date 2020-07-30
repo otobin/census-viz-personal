@@ -27,9 +27,9 @@ public class QueryServlet extends HttpServlet {
 
   Map<String, String> locationTypeToQuery =
       ImmutableMap.of(
-        "06", "county:*&in=state:06",
-        "34", "county:*&in=state:34", 
-        "state", "state:*");
+          "06", "county:*&in=state:06",
+          "34", "county:*&in=state:34",
+          "state", "state:*");
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

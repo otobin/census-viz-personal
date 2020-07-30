@@ -45,7 +45,7 @@ function passQuery() {
       ' in each ' + region + ' (' + personType.replace('-', ' ') + ')';
   document.getElementById('map-title').innerText = title;
 
-  let fetchUrl = '/query?person-type=' + personType +
+  const fetchUrl = '/query?person-type=' + personType +
     '&action=' + action +
     '&location=' + location;
 
@@ -73,19 +73,20 @@ function displayAmChartsMap(data, description, location, isCountyQuery) {
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons
   chart.mouseWheelBehavior = 'none';
-  
+
   // Create map instance
   if (isCountyQuery) {
-    chart.geodata = location === '06' ? am4geodata_region_usa_caLow : am4geodata_region_usa_njLow;
+    chart.geodata = location ===
+        '06' ? am4geodata_region_usa_caLow : am4geodata_region_usa_njLow;
   } else {
     chart.geodata = am4geodata_usaLow;
   }
 
   // Add button to zoom out
   const home = chart.chartContainer.createChild(am4core.Button);
-  home.label.text = "Home";
-  home.align = "right";
-  home.events.on("hit", function(ev) {
+  home.label.text = 'Home';
+  home.align = 'right';
+  home.events.on('hit', function(ev) {
     chart.goHome();
   });
 
@@ -139,7 +140,7 @@ function displayAmChartsMap(data, description, location, isCountyQuery) {
   polygonSeries.mapPolygons.template.events.on('over', function(event) {
     handleHover(event.target);
   });
-  polygonTemplate.events.on('hit', function (event) {
+  polygonTemplate.events.on('hit', function(event) {
     chart.zoomToMapObject(event.target);
   });
   function handleHover(column) {
@@ -173,7 +174,8 @@ function validateInput(dataListId) {
 // Display an error on the front end
 function displayError(status, statusText) {
   document.getElementById('map').innerHTML = '';
-  document.getElementById('more-info').innerText = `Error ${status}: ${statusText}`;
+  document.getElementById('more-info').innerText =
+      `Error ${status}: ${statusText}`;
 }
 
 // Note the value of a field and then empty it.
@@ -184,9 +186,9 @@ function storeValueAndEmpty(dataListId) {
   inputlist.value = '';
 }
 
-// If a field is empty, replace it with the value it had directly prior to being emptied.
-// Since this function is called on focus out, it will always be called
-// directly after storeValueAndEmpty, which is called on focus in.
+// If a field is empty, replace it with the value it had directly prior to
+// being emptied. Since this function is called on focus out, it will always
+// be called directly after storeValueAndEmpty, which is called on focus in.
 // Therefore, the most recently stored value will always be the one we want.
 function replaceValueIfEmpty(dataListId) {
   const inputlist = document.getElementById(dataListId+'-list');
@@ -232,7 +234,8 @@ function percentToTotal(totalNumber, percentage) {
 }
 
 // checkPercentage() Takes in the header of a census query and returns
-// whether or not the total needs to be calculated using the percentToTotal() function
+// whether or not the total needs to be calculated using the
+// percentToTotal() function
 function checkPercentage(headerColumn) {
   // percentageQueries is a list of queries that return percents and not raw
   // data. It is hard coded for now.
