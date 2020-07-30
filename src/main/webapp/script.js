@@ -60,25 +60,20 @@ function passQuery() {
     });
 }
 
-function validateLocation() {
-  const datalist = document.getElementById('location');
-  const inputlist = document.getElementById('locationlist');
-
+function validateInput(dataListId, inputListId) {
+  const datalist = document.getElementById(dataListId);
+  const inputlist = document.getElementById(inputListId);
   const options = datalist.options;
   const typedSoFar = inputlist.value.toLowerCase();
-  let matchesAnOption = false;
 
   for (const option of options) {
     if (option.value.toLowerCase().includes(typedSoFar)) {
-      matchesAnOption = true;
-      inputlist.style.borderColor = '#767676'; // dark gray
-      inputlist.style.borderStyle = 'none none solid none';
+      inputlist.className = 'input-valid'; // At least one match present
+      return;
     }
   }
-  if (!matchesAnOption) {
-    inputlist.style.borderColor = 'red';
-    inputlist.style.borderStyle = 'solid';
-  }
+  // Didn't find any matches
+  inputlist.className = 'input-invalid';
 }
 
 // Display an error on the front end

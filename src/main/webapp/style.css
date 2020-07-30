@@ -16,6 +16,16 @@ select:focus {
   outline: none;
 }
 
+.input-valid {
+  border-color: #767676;
+  border-style: none none solid none;
+}
+
+.input-invalid {
+  border-color: red;
+  border-style: solid !important;
+}
+
 .wrapper {
   margin: 0 60px 0 60px;
 }
