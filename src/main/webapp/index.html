@@ -4,12 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Census Viz</title>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/usaLow.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/caLow.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/njLow.js"></script>
+  <script src="state-info.js"></script>
   <link rel="stylesheet" href="style.css">
   <script src="script.js"></script>
 </head>
@@ -48,9 +49,8 @@
               onfocus="this.value=''" value="every US state" pattern="every US state|California|New Jersey">
             <datalist id="location">
               <option data-value="state" value="every US state"></option>
-              <option data-value="county" value="California"></option>
-              <option data-value="county" value="New Jersey"></option>
-              <!-- will change latter two to 06 and 31 (state numbers) when counties are ready -->
+              <option data-value="06" value="California"></option>
+              <option data-value="34" value="New Jersey"></option>
             </datalist>
           </input>
           ?
