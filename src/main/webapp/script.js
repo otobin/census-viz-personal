@@ -24,19 +24,24 @@ function passQuery() {
   document.getElementById('result').style.display = 'block';
 
   const query = new FormData(document.getElementById('query-form'));
-  const personType = query.get('person-type');
-  const action = query.get('action');
+
+  const personTypeInput = query.get('person-type');
+  const actionInput = query.get('action');
+  const locationInput = query.get('location');
+
+  const personType = document.querySelector(
+      '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
+  const action = document.querySelector(
+      '#action option[value=\'' + actionInput + '\']').dataset.value;
+  const location = document.querySelector(
+      '#location option[value=\'' + locationInput + '\']').dataset.value;
+
   const actionToText = new Map();
   actionToText['moved'] = 'moved to';
   if (actionToText.has(action)) {
     action = actionToText[action];
-  } 
+  }
   const description = {action: action, age: personType};
-
-  const locationName = query.get('location');
-  const location = document.querySelector(
-    '#location option[value=\''+locationName+'\']').dataset.value;
-
   const region =
       location === 'state' ? 'U.S. state' : 'State Name county';
   const title = 'Population who ' + action +
@@ -60,10 +65,48 @@ function passQuery() {
     });
 }
 
+// Check that the input being written to a datalist can match one of its options
+// Note: assumes that the input list has id equal to the datalist's id + '-list'
+function validateInput(dataListId) {
+  const datalist = document.getElementById(dataListId);
+  const inputlist = document.getElementById(dataListId+'-list');
+  const options = datalist.options;
+  const typedSoFar = inputlist.value.toLowerCase();
+
+  for (const option of options) {
+    if (option.value.toLowerCase().includes(typedSoFar)) {
+      inputlist.className = 'input-valid'; // At least one match present
+      return;
+    }
+  }
+  // Didn't find any matches
+  inputlist.className = 'input-invalid';
+}
+
 // Display an error on the front end
 function displayError(status, statusText) {
   document.getElementById('map').innerHTML = '';
   document.getElementById('more-info').innerText = `Error ${status}: ${statusText}`;
+}
+
+// Note the value of a field and then empty it.
+let storedVal = '';
+function storeValueAndEmpty(dataListId) {
+  const inputlist = document.getElementById(dataListId+'-list');
+  storedVal = inputlist.value;
+  inputlist.value = '';
+}
+
+// If a field is empty, replace it with the value it had directly prior to being emptied.
+// Since this function is called on focus out, it will always be called
+// directly after storeValueAndEmpty, which is called on focus in.
+// Therefore, the most recently stored value will always be the one we want.
+function replaceValueIfEmpty(dataListId) {
+  const inputlist = document.getElementById(dataListId+'-list');
+  const typedSoFar = inputlist.value;
+  if (typedSoFar === '') {
+    inputlist.value = storedVal;
+  }
 }
 
 // displayVisualization takes in a data array representing the 2D array
@@ -133,7 +176,7 @@ function percentToTotal(totalNumber, percentage) {
   return (totalNumber/100) * percentage;
 }
 
-// checkPercentage() Takes in the header of a census query and returns 
+// checkPercentage() Takes in the header of a census query and returns
 // whether or not the total needs to be calculated using the percentToTotal() function
 function checkPercentage(headerColumn) {
   // percentageQueries is a list of queries that return percents and not raw

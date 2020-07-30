@@ -5,6 +5,7 @@
 input[type=list],
 select {
   background-color: transparent;
+  border-radius: 2px;
   border-style: none none solid none;
   font: 16px 'Roboto', sans-serif;
   padding: 10px;
@@ -13,6 +14,16 @@ select {
 input[type=list]:focus,
 select:focus {
   outline: none;
+}
+
+.input-valid {
+  border-color: #767676;
+  border-style: none none solid none;
+}
+
+.input-invalid {
+  border-color: red;
+  border-style: solid !important;
 }
 
 .wrapper {
