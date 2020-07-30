@@ -154,9 +154,9 @@ function displayAmChartsMap(data, description, location, isCountyQuery) {
   });
 }
 
-function validateInput(dataListId, inputListId) {
+function validateInput(dataListId) {
   const datalist = document.getElementById(dataListId);
-  const inputlist = document.getElementById(inputListId);
+  const inputlist = document.getElementById(dataListId+'-list');
   const options = datalist.options;
   const typedSoFar = inputlist.value.toLowerCase();
 
