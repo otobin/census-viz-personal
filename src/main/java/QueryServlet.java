@@ -19,17 +19,21 @@ public class QueryServlet extends HttpServlet {
   Map<String, Map<String, String>> queryToDataRow =
       ImmutableMap.of(
           "live",
-          ImmutableMap.of("under-18", "023E", "over-18", "026E", "all-ages", "001E"),
+          ImmutableMap.of("under-18", "0019E", "over-18", "0021E", "all-ages", "0001E"),
           "work",
           ImmutableMap.of("over-18", "154E,S0201_157E"),
           "moved",
           ImmutableMap.of("all-ages", "119E,S0201_126E"));
+
+  Map<String, String> locationTypeToQuery =
+      ImmutableMap.of("county", "county:*&in=state:", "state", "state:*");
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String personType = request.getParameter("person-type");
     String action = request.getParameter("action");
     String location = request.getParameter("location");
+    String stateNumber = request.getParameter("state-number");
 
     if (!queryToDataRow.containsKey(action)
         || !queryToDataRow.get(action).containsKey(personType)) {
@@ -41,11 +45,13 @@ public class QueryServlet extends HttpServlet {
 
     URL fetchUrl =
         new URL(
-            "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_"
+            "https://api.census.gov/data/2018/acs/acs1/"
+                + (action.equals("live") ? "profile?get=NAME,DP05_" : "spp?get=NAME,S0201_")
                 + queryToDataRow.get(action).get(personType)
                 + "&for="
-                + location
-                + ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
+                + locationTypeToQuery.get(location)
+                + stateNumber
+                + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
