@@ -9,6 +9,5 @@ rules:
   no-unused-vars: off
   require-jsdoc: off
   indent: off
-  camelcase:
-    ignoreGlobals: true
+  camelcase: [2, { "ignoreGlobals": true }]
 
