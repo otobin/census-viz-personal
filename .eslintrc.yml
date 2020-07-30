@@ -11,5 +11,5 @@ rules:
   indent: off
   camelcase:
     - 2
-    - ignoreGlobals: true
+    - allow: ['^am4geodata']
 
