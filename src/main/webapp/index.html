@@ -18,19 +18,30 @@
       <form id="query-form" onsubmit="passQuery(); return false;">
         <p>
           How many
-          <select name="person-type">
-            <option value="under-18">children</option>
-            <option value="over-18">adults</option>
-            <option value="all-ages">people</option>
-          </select>
-          <select name="action">
-            <option value="live">live in</option>
-            <option value="work">work in</option>
-            <option value="moved">moved to</option>
-          </select>
-          <input type="list" list="location" name="location" id="locationlist"
-              autocomplete="off" required onkeyup="validateInput('location', 'locationlist')"
-              onfocus="this.value=''" pattern="every US state|California|New Jersey">
+          <input type="list" list="person-type" name="person-type" id="person-type-list"
+              autocomplete="off" required onkeyup="validateInput('person-type', 'person-type-list')"
+              onfocus="this.value=''" value="people" pattern="children|adults|people">
+            <datalist id="person-type">
+              <option data-value="under-18" value="children">
+              <option data-value="over-18" value="adults">
+              <option data-value="all-ages" value="people">
+            </datalist>
+          </input>
+
+    
+          <input type="list" list="action" name="action" id="action-list"
+              autocomplete="off" required onkeyup="validateInput('action', 'action-list')"
+              onfocus="this.value=''" value="live in" pattern="live in|work in|moved to" >
+            <datalist id="action">
+              <option data-value="live" value="live in">
+              <option data-value="work" value="work in">
+              <option data-value="moved" value="moved to">
+            </datalist>
+          </input>
+
+          <input type="list" list="location" name="location" id="location-list"
+              autocomplete="off" required onkeyup="validateInput('location', 'location-list')"
+              onfocus="this.value=''" value="every US state" pattern="every US state|California|New Jersey">
             <datalist id="location">
               <option data-value="state" value="every US state">
               <option data-value="county" value="California">

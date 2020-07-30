@@ -24,19 +24,24 @@ function passQuery() {
   document.getElementById('result').style.display = 'block';
 
   const query = new FormData(document.getElementById('query-form'));
-  const personType = query.get('person-type');
-  const action = query.get('action');
+
+  const personTypeInput = query.get('person-type');
+  const actionInput = query.get('action');
+  const locationInput = query.get('location');
+
+  const personType = document.querySelector(
+    '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
+  const action = document.querySelector(
+      '#action option[value=\'' + actionInput + '\']').dataset.value;
+  const location = document.querySelector(
+    '#location option[value=\'' + locationInput + '\']').dataset.value;
+
   const actionToText = new Map();
   actionToText['moved'] = 'moved to';
   if (actionToText.has(action)) {
     action = actionToText[action];
   }
   const description = {action: action, age: personType};
-
-  const locationName = query.get('location');
-  const location = document.querySelector(
-    '#location option[value=\''+locationName+'\']').dataset.value;
-
   const region =
       location === 'state' ? 'U.S. state' : 'State Name county';
   const title = 'Population who ' + action +
