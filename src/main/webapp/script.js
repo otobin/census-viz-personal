@@ -170,6 +170,26 @@ function validateInput(dataListId) {
   inputlist.className = 'input-invalid';
 }
 
+// Note the value of a field and then empty it.
+let storedVal = '';
+function storeValueAndEmpty(dataListId) {
+  const inputlist = document.getElementById(dataListId+'-list');
+  storedVal = inputlist.value;
+  inputlist.value = '';
+}
+
+// If a field is empty, replace it with the value it had directly prior to being emptied.
+// Since this function is called on focus out, it will always be called
+// directly after storeValueAndEmpty, which is called on focus in.
+// Therefore, the most recently stored value will always be the one we want.
+function replaceValueIfEmpty(dataListId) {
+  const inputlist = document.getElementById(dataListId+'-list');
+  const typedSoFar = inputlist.value;
+  if (typedSoFar === '') {
+    inputlist.value = storedVal;
+  }
+}
+
 // Display an error on the front end
 function displayError(status, statusText) {
   document.getElementById('map').innerHTML = '';
