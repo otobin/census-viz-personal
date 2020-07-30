@@ -22,10 +22,16 @@ const states = {
   'California': {
     number: '06',
     geoData: am4geodata_region_usa_caLow,
+    lat: 40,
+    lng: -120,
+    zoomLevel: 6,
   },
   'New Jersey': {
     number: '34',
     geoData: am4geodata_region_usa_njLow,
+    lat: 40.25,
+    lng: -75,
+    zoomLevel: 8,
   },
 };
 
@@ -71,10 +77,9 @@ function passQuery() {
         .then((data) => {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
-          information.innerText = '';
-
           if (isCountyQuery) {
             displayAmChartsMap(data, locationName);
+            displayCountyGeoJson(data, locationName);
           } else {
             displayVisualization(data, description, title);
           }
@@ -90,9 +95,10 @@ function displayError(status, statusText) {
   document.getElementById('map').innerHTML = '';
   document.getElementById('more-info').innerText = `Error ${status}: ${statusText}`;
 }
+
 function displayAmChartsMap(data, stateName) {
   am4core.useTheme(am4themes_animated);
-  const chart = am4core.create('map', am4maps.MapChart);
+  const chart = am4core.create('amCharts', am4maps.MapChart);
   chart.height = 550;
 
   // Create map instance
@@ -158,7 +164,7 @@ function displayAmChartsMap(data, stateName) {
   polygonSeries.mapPolygons.template.events.on('out', function(event) {
     heatLegend.valueAxis.hideTooltip();
   });
-
+}
 // displayVisualization takes in a data array representing the 2D array
 // returned  by the census API. The first row in the census Data array
 // is the header, which describes the type of data.
@@ -252,15 +258,16 @@ window.addEventListener('resize', resizeVisualization);
 
 //Todo: write a function that creates a json object that gives the corresponding file path
 //, coordinates to center the map, and other necessary info.
-function displayCountyGeoJson(censusData, state) {
-  let map = new google.maps.Map(document.getElementById("map"), {
-		zoom: state.zoomLevel,
-    center: {lat: state.lat, lng: state.lng}
+function displayCountyGeoJson(data, stateName) {
+  let map = new google.maps.Map(document.getElementById('map'), {
+		zoom: states[stateName].zoomLevel,
+    center: {lat: states[stateName].lat, lng: states[stateName].lng}
   }); 
   let countyToPopMap = new Map();
-  censusData.forEach((county) => {
-    if (county[3] !== "NAME") {
-      let countyAndStateArray = county[3].split(',');
+  let populationsList = [];
+  data.forEach((county) => {
+    if (county[0] !== "NAME") {
+      let countyAndStateArray = county[0].split(',');
       let countyArray = countyAndStateArray[0].split(' ');
       let countyString = "";
       let i;
@@ -272,16 +279,19 @@ function displayCountyGeoJson(censusData, state) {
       }
       // Map the population to the county
       countyToPopMap[countyString] = county[1];
+      populationsList.push(parseInt(county[1]));
       }
     });
-  let f = chroma.scale(['white', 'blue']).domain([0, 3000000]);
-  map.data.loadGeoJson(state.filePath, {}, function(features) {
-  	map.data.forEach(function(feature) {
-      map.data.setStyle(feature => {
-      	return {
-        	fillColor: f(countyToPopMap[feature.j.name]).toString()
-        };
-    	});
+  let maxPopulation = getMaxPopulation(populationsList);
+  console.log(maxPopulation);
+  let f = chroma.scale(['white', 'blue']).domain([0, maxPopulation]);
+  let geoData = states[stateName].geoData;
+  map.data.addGeoJson(geoData);
+  map.data.forEach(function(feature) {
+    map.data.setStyle(feature => {
+      return {
+        fillColor: f(countyToPopMap[feature.j.name]).toString()
+      };
     });
   });
  	let openInfoWindows = [];
@@ -305,5 +315,17 @@ function displayCountyGeoJson(censusData, state) {
     	openInfoWindows[i].close();
     }
   });
-}}
+}
+
+// getMaxPopulation takes in all of the populations from the census query and returns the maximum
+function getMaxPopulation(populationArray) {
+  let max = populationArray[0];
+  let i;
+  for (i = 1; i < populationArray.length; i++) {
+    if (populationArray[i] > max) {
+      max = populationArray[i];
+    }
+  }
+  return max;
+}
 
