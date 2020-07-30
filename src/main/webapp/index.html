@@ -19,8 +19,10 @@
         <p>
           How many
           <input type="list" list="person-type" name="person-type" id="person-type-list"
-              autocomplete="off" required onkeyup="validateInput('person-type', 'person-type-list')"
-              onfocus="this.value=''" value="people" pattern="children|adults|people">
+              autocomplete="off" required onkeyup="validateInput('person-type')"
+              onfocus="storeValueAndEmpty('person-type')" 
+              onfocusout="replaceValueIfEmpty('person-type')"
+              value="people" pattern="children|adults|people">
             <datalist id="person-type">
               <option data-value="under-18" value="children">
               <option data-value="over-18" value="adults">
@@ -29,8 +31,10 @@
           </input>
 
           <input type="list" list="action" name="action" id="action-list"
-              autocomplete="off" required onkeyup="validateInput('action', 'action-list')"
-              onfocus="this.value=''" value="live in" pattern="live in|work in|moved to" >
+              autocomplete="off" required onkeyup="validateInput('action')"
+              onfocus="storeValueAndEmpty('action')" 
+              onfocusout="replaceValueIfEmpty('action')"
+              value="live in" pattern="live in|work in|moved to" >
             <datalist id="action">
               <option data-value="live" value="live in">
               <option data-value="work" value="work in">
@@ -39,8 +43,10 @@
           </input>
 
           <input type="list" list="location" name="location" id="location-list"
-              autocomplete="off" required onkeyup="validateInput('location', 'location-list')"
-              onfocus="this.value=''" value="every US state" pattern="every US state|California|New Jersey">
+              autocomplete="off" required onkeyup="validateInput('location')"
+              onfocus="storeValueAndEmpty('location')" 
+              onfocusout="replaceValueIfEmpty('location')"
+              value="every US state" pattern="every US state|California|New Jersey">
             <datalist id="location">
               <option data-value="state" value="every US state">
               <option data-value="county" value="California">
