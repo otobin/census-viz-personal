@@ -157,3 +157,61 @@ function resizeVisualization() {
 }
 
 window.addEventListener('resize', resizeVisualization);
+
+
+//Todo: write a function that creates a json object that gives the corresponding file path
+//, coordinates to center the map, and other necessary info.
+function displayCountyGeoJson(censusData, state) {
+  let map = new google.maps.Map(document.getElementById("map"), {
+		zoom: state.zoomLevel,
+    center: {lat: state.lat, lng: state.lng}
+  }); 
+  let countyToPopMap = new Map();
+  censusData.forEach((county) => {
+    if (county[3] !== "NAME") {
+      let countyAndStateArray = county[3].split(',');
+      let countyArray = countyAndStateArray[0].split(' ');
+      let countyString = "";
+      let i;
+      for (i = 0; i < countyArray.length - 1; i++) {
+        countyString += countyArray[i];
+        if (i !== countyArray.length - 2) {
+          countyString += " ";
+        }
+      }
+      // Map the population to the county
+      countyToPopMap[countyString] = county[1];
+      }
+    });
+  let f = chroma.scale(['white', 'blue']).domain([0, 3000000]);
+  map.data.loadGeoJson(state.filePath, {}, function(features) {
+  	map.data.forEach(function(feature) {
+      map.data.setStyle(feature => {
+      	return {
+        	fillColor: f(countyToPopMap[feature.j.name]).toString()
+        };
+    	});
+    });
+  });
+ 	let openInfoWindows = [];
+  map.data.addListener('mouseover', function(event) {
+    map.data.overrideStyle(event.feature, {
+      fillColor: "#00ffff"
+    });
+    let contentString = '<p>' + event.feature.j.name + '</p><p>Population: ' + countyToPopMap[event.feature.j.name]
+		let infoWindow = new google.maps.InfoWindow({
+    	content: contentString,
+      maxWidth: 100
+    });
+    infoWindow.setPosition(event.latLng);
+    infoWindow.open(map);
+    openInfoWindows.push(infoWindow);
+  });
+  map.data.addListener('mouseout', function(event) {
+  	map.data.revertStyle();
+    let i;
+    for (i = 0; i < openInfoWindows.length; i++) {
+    	openInfoWindows[i].close();
+    }
+  });
+}
