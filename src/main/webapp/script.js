@@ -170,6 +170,12 @@ function validateInput(dataListId) {
   inputlist.className = 'input-invalid';
 }
 
+// Display an error on the front end
+function displayError(status, statusText) {
+  document.getElementById('map').innerHTML = '';
+  document.getElementById('more-info').innerText = `Error ${status}: ${statusText}`;
+}
+
 // Note the value of a field and then empty it.
 let storedVal = '';
 function storeValueAndEmpty(dataListId) {
@@ -188,12 +194,6 @@ function replaceValueIfEmpty(dataListId) {
   if (typedSoFar === '') {
     inputlist.value = storedVal;
   }
-}
-
-// Display an error on the front end
-function displayError(status, statusText) {
-  document.getElementById('map').innerHTML = '';
-  document.getElementById('more-info').innerText = `Error ${status}: ${statusText}`;
 }
 
 function getLocationId(location, isCountyQuery) {
