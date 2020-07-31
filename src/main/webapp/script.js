@@ -50,8 +50,6 @@ function passQuery() {
       '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
       '#action option[value=\'' + actionInput + '\']').dataset.value;
-  const location = document.querySelector(
-      '#location option[value=\'' + locationInput + '\']').dataset.value;
 
   const actionToText = new Map();
   actionToText['moved'] = 'moved to';

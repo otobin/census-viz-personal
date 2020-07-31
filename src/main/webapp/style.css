@@ -81,6 +81,7 @@ input[type=submit]:focus {
 
 #buttons {
   display: none;
+  text-align: center;
 }
 
 #map-title {
@@ -101,4 +102,5 @@ footer {
   text-align: center;
   width: 100%;
 }
+
 
