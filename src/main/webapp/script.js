@@ -134,8 +134,7 @@ function displayAmChartsMap(data, description, location, isCountyQuery) {
   // Create hover state and set alternative fill color
   const hs = polygonTemplate.states.create('hover');
   hs.properties.fill = am4core.color('#3c5bdc');
-
-
+  
   // heat legend behavior
   polygonSeries.mapPolygons.template.events.on('over', function(event) {
     handleHover(event.target);
@@ -155,6 +154,8 @@ function displayAmChartsMap(data, description, location, isCountyQuery) {
   });
 }
 
+// Check that the input being written to a datalist can match one of its options
+// Note: assumes that the input list has id equal to the datalist's id + '-list'
 function validateInput(dataListId) {
   const datalist = document.getElementById(dataListId);
   const inputlist = document.getElementById(dataListId+'-list');
