@@ -58,8 +58,18 @@ input[type=submit]:focus {
   padding: 30px;
 }
 
+#amCharts {
+  height: 600px;
+  display: none;
+}
+
 #map {
   height: 600px;
+  display: none;
+}
+
+#buttons {
+  display: none;
 }
 
 #map-title {
@@ -80,3 +90,4 @@ footer {
   text-align: center;
   width: 100%;
 }
+

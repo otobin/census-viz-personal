@@ -78,10 +78,14 @@ function passQuery() {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
           if (isCountyQuery) {
+            setStyleForCountyQuery();
             displayAmChartsMap(data, locationName);
             displayCountyGeoJson(data, locationName);
+            showAmCharts();
           } else {
+            setStyleForStateQuery();
             displayVisualization(data, description, title);
+            showMaps();
           }
         });
       } else {
@@ -327,5 +331,35 @@ function getMaxPopulation(populationArray) {
     }
   }
   return max;
+}
+
+// Show Maps hides the amcharts and shows the maps.
+function showMaps() {
+  const mapElement = document.getElementById('map');
+  const amChartsElement = document.getElementById('amCharts');
+  amChartsElement.style.display = 'none';
+  mapElement.style.display = 'block';
+}
+
+// Show amcharts hides the maps and shows the amchart.
+function showAmCharts() {
+  const mapElement = document.getElementById('map');
+  const amChartsElement = document.getElementById('amCharts');
+  mapElement.style.display = 'none';
+  amChartsElement.style.display = 'block';
+}
+
+function setStyleForCountyQuery() {
+  const buttonsDiv = document.getElementById('buttons');
+  buttonsDiv.style.display = 'block';
+  const chartsDiv = document.getElementById('amCharts');
+  chartsDiv.style.display = 'block';
+}
+
+function setStyleForStateQuery() {
+  const buttonsDiv = document.getElementById('buttons');
+  buttonsDiv.style.display = 'none';
+  const mapsDiv = document.getElementById('map');
+  mapsDiv.style.display = 'block';
 }
 
