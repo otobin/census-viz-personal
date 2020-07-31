@@ -81,7 +81,7 @@ function passQuery() {
             setStyleForCountyQuery();
             displayAmChartsMap(data, locationName);
             displayCountyGeoJson(data, locationName);
-            showAmCharts();
+            showAmCharts(); // show amCharts by default
           } else {
             setStyleForStateQuery();
             displayVisualization(data, description, title);
@@ -169,6 +169,7 @@ function displayAmChartsMap(data, stateName) {
     heatLegend.valueAxis.hideTooltip();
   });
 }
+
 // displayVisualization takes in a data array representing the 2D array
 // returned  by the census API. The first row in the census Data array
 // is the header, which describes the type of data.
@@ -260,8 +261,7 @@ function resizeVisualization() {
 
 window.addEventListener('resize', resizeVisualization);
 
-//Todo: write a function that creates a json object that gives the corresponding file path
-//, coordinates to center the map, and other necessary info.
+// Displays the geoJson data in the map. 
 function displayCountyGeoJson(data, stateName) {
   let map = new google.maps.Map(document.getElementById('map'), {
 		zoom: states[stateName].zoomLevel,
