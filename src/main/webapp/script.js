@@ -22,7 +22,7 @@ const states = {
   'California': {
     number: '06',
     geoData: am4geodata_region_usa_caLow,
-    lat: 40,
+    lat: 38,
     lng: -120,
     zoomLevel: 6,
   },
@@ -307,17 +307,21 @@ function resizeVisualization() {
 
 window.addEventListener('resize', resizeVisualization);
 
-// Displays the geoJson data in the map. 
+
 function displayCountyGeoJson(data, stateName) {
   let map = new google.maps.Map(document.getElementById('map'), {
 		zoom: states[stateName].zoomLevel,
     center: {lat: states[stateName].lat, lng: states[stateName].lng}
   }); 
+  // countyToPopMap is a map that associates each county's string with its population
   let countyToPopMap = new Map();
+  // PopulationsList is a list of the state's county populations
   let populationsList = [];
   data.forEach((county) => {
     if (county[0] !== "NAME") {
-      let countyAndStateArray = county[0].split(',');
+      // The current county strings are in a layout like this: "Contra Costa County, California"
+      // and we need to get them like this "Contra Costa"
+      let countyAndStateArray = county[0].split(','); 
       let countyArray = countyAndStateArray[0].split(' ');
       let countyString = "";
       let i;
@@ -333,7 +337,6 @@ function displayCountyGeoJson(data, stateName) {
       }
     });
   let maxPopulation = getMaxPopulation(populationsList);
-  console.log(maxPopulation);
   let f = chroma.scale(['white', 'blue']).domain([0, maxPopulation]);
   let geoData = states[stateName].geoData;
   map.data.addGeoJson(geoData);
@@ -379,7 +382,7 @@ function getMaxPopulation(populationArray) {
   return max;
 }
 
-// Show Maps hides the amcharts and shows the maps.
+// Functions to toggle between amcharts and maps.
 function showMaps() {
   const mapElement = document.getElementById('map');
   const amChartsElement = document.getElementById('amCharts');
@@ -387,7 +390,6 @@ function showMaps() {
   mapElement.style.display = 'block';
 }
 
-// Show amcharts hides the maps and shows the amchart.
 function showAmCharts() {
   const mapElement = document.getElementById('map');
   const amChartsElement = document.getElementById('amCharts');
@@ -395,6 +397,8 @@ function showAmCharts() {
   amChartsElement.style.display = 'block';
 }
 
+// Sets up the webpage for a county query. Displays buttons and 
+// sets amcharts as the default visible map.
 function setStyleForCountyQuery() {
   const buttonsDiv = document.getElementById('buttons');
   buttonsDiv.style.display = 'block';
@@ -402,6 +406,8 @@ function setStyleForCountyQuery() {
   chartsDiv.style.display = 'block';
 }
 
+// Sets up the webpage for a state query. Hides buttons and 
+// sets google maps as the default visible map before calling geoJson.
 function setStyleForStateQuery() {
   const buttonsDiv = document.getElementById('buttons');
   buttonsDiv.style.display = 'none';
