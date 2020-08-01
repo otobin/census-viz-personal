@@ -71,12 +71,10 @@ input[type=submit]:focus {
 
 #amCharts {
   height: 600px;
-  display: none;
 }
 
 #map {
   height: 600px;
-  display: none;
 }
 
 #buttons {

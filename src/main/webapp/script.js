@@ -13,21 +13,14 @@ function registerServiceWorker() {
         });
   }
 }
-google.charts.load('current', {
-  'packages': ['geochart'],
-  'mapsApiKey': 'AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ',
-});
-
 const states = {
-  'California': {
-    number: '06',
+  '06': {
     geoData: am4geodata_region_usa_caLow,
     lat: 38,
     lng: -120,
     zoomLevel: 6,
   },
-  'New Jersey': {
-    number: '34',
+  '34': {
     geoData: am4geodata_region_usa_njLow,
     lat: 40.25,
     lng: -75,
@@ -38,6 +31,7 @@ const states = {
 function passQuery() {
   document.getElementById('map-title').innerText = '';
   am4core.disposeAllCharts();
+  document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('result').style.display = 'block';
 
   const query = new FormData(document.getElementById('query-form'));
@@ -47,9 +41,11 @@ function passQuery() {
   const locationInput = query.get('location');
 
   const personType = document.querySelector(
-      '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
+    '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
       '#action option[value=\'' + actionInput + '\']').dataset.value;
+  const location = document.querySelector(
+    '#location option[value=\'' + locationInput + '\']').dataset.value;
 
   const actionToText = new Map();
   actionToText['moved'] = 'moved to';
@@ -57,49 +53,83 @@ function passQuery() {
     action = actionToText[action];
   }
   const description = {action: action, age: personType};
-
-  const locationName = query.get('location');
-  const location = document.querySelector(
-      '#location option[value=\''+locationName+'\']').dataset.value;
-
   const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? locationName + ' county' : 'U.S. state';
+  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
   const title = 'Population who ' + action +
       ' in each ' + region + ' (' + personType.replace('-', ' ') + ')';
   document.getElementById('map-title').innerText = title;
 
-  let fetchUrl = '/query?person-type=' + personType +
+  const fetchUrl = '/query?person-type=' + personType +
     '&action=' + action +
     '&location=' + location;
-
-  if (isCountyQuery) {
-    fetchUrl += '&state-number=' + states[locationName].number;
-  } else {
-    fetchUrl += '&state-number=';
-  }
 
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
         response.json().then((jsonResponse) => JSON.parse(jsonResponse))
-        .then((data) => {
+        .then((censusDataArray) => {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
-          if (isCountyQuery) {
-            setStyleForCountyQuery();
-            displayAmChartsMap(data, locationName);
-            displayCountyGeoJson(data, locationName);
-            showAmCharts(); // show amCharts by default
-          } else {
-            setStyleForStateQuery();
-            displayVisualization(data, description, title);
-            showMaps();
-          }
+          console.log(censusDataArray);
+          displayVisualization(censusDataArray, description, location, isCountyQuery)
+          document.getElementById('more-info').innerText = '';
         });
       } else {
         displayError(response.status, response.statusText);
       }
     });
+}
+
+// Creates the Map that maps each county's string to the population.
+function getMapsData(censusDataArray) {
+  // countyToPopMap is a map that associates each county's string with its population
+  let countyToPopMap = new Map();
+  let populationsList = [];
+  censusDataArray.forEach((county) => {
+    if (county[0] !== "NAME") {
+      // The current county strings are in a layout like this: "Contra Costa County, California"
+      // and we need to get them like this "Contra Costa"
+      let countyAndStateArray = county[0].split(','); 
+      let countyArray = countyAndStateArray[0].split(' ');
+      let countyString = "";
+      let i;
+      for (i = 0; i < countyArray.length - 1; i++) {
+        countyString += countyArray[i];
+        if (i !== countyArray.length - 2) {
+          countyString += " ";
+        }
+      }
+      // Map the population to the county
+      countyToPopMap[countyString] = county[1];
+      populationsList.push(parseInt(county[1]));
+      }
+    });
+  let minAndMax = getMinAndMaxPopulation(populationsList);
+  return {map: countyToPopMap, minValue: minAndMax.min, maxValue: minAndMax.max};
+}
+
+
+function getGeoData(location, isCountyQuery) {
+  if (isCountyQuery) {
+    return location ===
+        '06' ? am4geodata_region_usa_caLow : am4geodata_region_usa_njLow;
+  } else {
+    return am4geodata_usaLow;
+  }
+}
+
+
+function displayVisualization(censusDataArray, description, location, isCountyQuery) {
+  console.log(censusDataArray);
+  let geoData = getGeoData(location, isCountyQuery);
+  if (isCountyQuery) {
+    //const mapsData = getMapsData(censusDataArray);
+    const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+    displayAmChartsMap(amChartsData, description,geoData);
+    displayCountyGeoJson(mapsData, location);
+  } else {
+    displayAmChartsMap(data, description, geoData);
+  }
 }
 
 // Check that the input being written to a datalist can match one of its options
@@ -126,13 +156,22 @@ function displayError(status, statusText) {
   document.getElementById('more-info').innerText = `Error ${status}: ${statusText}`;
 }
 
-function displayAmChartsMap(data, stateName) {
+function displayAmChartsMap(data, description, geoData) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('amCharts', am4maps.MapChart);
   chart.height = 550;
+  chart.zoomControl = new am4maps.ZoomControl();
+  // only allow zooming with buttons
+  chart.mouseWheelBehavior = 'none';
+  chart.geodata = geoData;
+  // Add button to zoom out
+  const home = chart.chartContainer.createChild(am4core.Button);
+  home.label.text = 'Home';
+  home.align = 'right';
+  home.events.on('hit', function(ev) {
+    chart.goHome();
+  });
 
-  // Create map instance
-  chart.geodata = states[stateName].geoData;
   chart.projection = new am4maps.projections.AlbersUsa();
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
 
@@ -145,11 +184,7 @@ function displayAmChartsMap(data, stateName) {
     logarithmic: true,
   });
   polygonSeries.useGeodata = true;
-
-  const countyData = data.map((value) => {
-      return {id: value[2] + value[3], value: value[1]};
-  });
-  polygonSeries.data = countyData;
+  polygonSeries.data = data;
 
   // Set up heat legend
   const heatLegend = chart.createChild(am4maps.HeatLegend);
@@ -168,21 +203,26 @@ function displayAmChartsMap(data, stateName) {
 
   // Configure series tooltip
   const polygonTemplate = polygonSeries.mapPolygons.template;
-  polygonTemplate.tooltipText = '{name}: {value}';
+  let descriptionString = 'Population of people ' +
+    description.age + ' who ' + description.action;
+  // make it moved to
+  if (description.action === 'moved') {
+    descriptionString += ' to';
+  }
+  polygonTemplate.tooltipText = '{name}\n' + descriptionString + ': {value}';
   polygonTemplate.nonScalingStroke = true;
   polygonTemplate.strokeWidth = 0.5;
 
   // Create hover state and set alternative fill color
   const hs = polygonTemplate.states.create('hover');
   hs.properties.fill = am4core.color('#3c5bdc');
-
-
+  
   // heat legend behavior
   polygonSeries.mapPolygons.template.events.on('over', function(event) {
     handleHover(event.target);
   });
-  polygonSeries.mapPolygons.template.events.on('hit', function(event) {
-    handleHover(event.target);
+  polygonTemplate.events.on('hit', function(event) {
+    chart.zoomToMapObject(event.target);
   });
   function handleHover(column) {
     if (!isNaN(column.dataItem.value)) {
@@ -204,9 +244,9 @@ function storeValueAndEmpty(dataListId) {
   inputlist.value = '';
 }
 
-// If a field is empty, replace it with the value it had directly prior to being emptied.
-// Since this function is called on focus out, it will always be called
-// directly after storeValueAndEmpty, which is called on focus in.
+// If a field is empty, replace it with the value it had directly prior to
+// being emptied. Since this function is called on focus out, it will always
+// be called directly after storeValueAndEmpty, which is called on focus in.
 // Therefore, the most recently stored value will always be the one we want.
 function replaceValueIfEmpty(dataListId) {
   const inputlist = document.getElementById(dataListId+'-list');
@@ -216,62 +256,31 @@ function replaceValueIfEmpty(dataListId) {
   }
 }
 
-// displayVisualization takes in a data array representing the 2D array
-// returned  by the census API. The first row in the census Data array
-// is the header, which describes the type of data.
-// Eg: Header for the query that finds for populations of all counties is
-// ["NAME","S0201_001E","state","county"]
-function displayVisualization(censusDataArray, description, title) {
-  const dataLength = censusDataArray[0].length;
-  // Check to see that it's not a county query
-  if (censusDataArray[0][dataLength - 1] !== 'county') {
-    google.charts.setOnLoadCallback(drawRegionsMap(censusDataArray,
-      description, title));
-  } else {
-    // We currently do not have counties implemented
-    displayError(400, 'We do not support this visualization yet.');
+function getLocationId(location, isCountyQuery) {
+  if (isCountyQuery) {
+    return location[2] + location[3];
   }
-}
-
-// Takes in a 2D array from the census API and displays the visualization
-function drawRegionsMap(censusDataArray, description, title) {
-  const shortDataArray = createDataArray(censusDataArray, description);
-  const data = google.visualization.arrayToDataTable(shortDataArray);
-  const options = {
-    'region': 'US',
-    'height': 550,
-    'resolution': 'provinces',
-    'colorAxis': {colors: ['white', 'blue']},
-  };
-  const mapElement = document.getElementById('map');
-  const chart = new google.visualization.GeoChart(mapElement);
-  chart.draw(data, options);
-  const mapNote = 'Populations are in thousands';
-  document.getElementById('more-info').innerHTML = mapNote;
+  return stateInfo[location[2]].ISO;
 }
 
 // createDataArray takes in the data array returned by the census API
 // and reformats it into a data table for the visualization API.
-function createDataArray(censusDataArray, description) {
+function createDataArray(censusDataArray, isCountyQuery) {
   const vizDataArray = [];
+  censusDataArray = censusDataArray.splice(1); // get rid of header row
   // Check to see if an extra calculation for percentages is needed
   if (checkPercentage(censusDataArray[0])) {
-    censusDataArray.forEach((state) => {
-      vizDataArray.push([state[0], percentToTotal(state[1], state[2])]);
+    censusDataArray.forEach((location) => {
+      vizDataArray.push({
+        id: getLocationId(location, isCountyQuery),
+        value: percentToTotal(location[1], location[2])});
     });
   } else {
-    censusDataArray.forEach((state) => {
-      vizDataArray.push([state[0], state[1]/1000]);
+    censusDataArray.forEach((location) => {
+      vizDataArray.push({
+        id: getLocationId(location, isCountyQuery),
+        value: location[1]});
     });
-  }
-  // Changes the header of the vizDataArray to match Visualization API
-  vizDataArray[0][0] = 'State';
-  // Add a more accurate descriptor for each state
-  vizDataArray[0][1] = 'Population of people ' +
-    description.age + ' who ' + description.action;
-  // make it moved to
-  if (description.action === 'moved') {
-    vizDataArray[0][1] += ' to';
   }
   return vizDataArray;
 }
@@ -283,7 +292,8 @@ function percentToTotal(totalNumber, percentage) {
 }
 
 // checkPercentage() Takes in the header of a census query and returns
-// whether or not the total needs to be calculated using the percentToTotal() function
+// whether or not the total needs to be calculated using the
+// percentToTotal() function
 function checkPercentage(headerColumn) {
   // percentageQueries is a list of queries that return percents and not raw
   // data. It is hard coded for now.
@@ -301,43 +311,17 @@ function checkPercentage(headerColumn) {
   return false;
 }
 
-function resizeVisualization() {
-  passQuery();
-}
-
-window.addEventListener('resize', resizeVisualization);
-
 
 function displayCountyGeoJson(data, stateName) {
   let map = new google.maps.Map(document.getElementById('map'), {
 		zoom: states[stateName].zoomLevel,
     center: {lat: states[stateName].lat, lng: states[stateName].lng}
   }); 
-  // countyToPopMap is a map that associates each county's string with its population
-  let countyToPopMap = new Map();
-  // PopulationsList is a list of the state's county populations
-  let populationsList = [];
-  data.forEach((county) => {
-    if (county[0] !== "NAME") {
-      // The current county strings are in a layout like this: "Contra Costa County, California"
-      // and we need to get them like this "Contra Costa"
-      let countyAndStateArray = county[0].split(','); 
-      let countyArray = countyAndStateArray[0].split(' ');
-      let countyString = "";
-      let i;
-      for (i = 0; i < countyArray.length - 1; i++) {
-        countyString += countyArray[i];
-        if (i !== countyArray.length - 2) {
-          countyString += " ";
-        }
-      }
-      // Map the population to the county
-      countyToPopMap[countyString] = county[1];
-      populationsList.push(parseInt(county[1]));
-      }
-    });
-  let maxPopulation = getMaxPopulation(populationsList);
-  let f = chroma.scale(['white', 'blue']).domain([0, maxPopulation]);
+  let mapsData = getMapsData(data);
+  let countyToPopMap = mapsData.map;
+  let maxPopulation = mapsData.maxValue;
+  let minPopulation = mapsData.minValue;
+  let f = chroma.scale(['white', 'blue']).domain([minPopulation, maxPopulation]);
   let geoData = states[stateName].geoData;
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
@@ -370,48 +354,50 @@ function displayCountyGeoJson(data, stateName) {
   });
 }
 
-// getMaxPopulation takes in all of the populations from the census query and returns the maximum
-function getMaxPopulation(populationArray) {
+function getMinAndMaxPopulation(populationArray) {
   let max = populationArray[0];
+  let min = 0;
   let i;
   for (i = 1; i < populationArray.length; i++) {
     if (populationArray[i] > max) {
       max = populationArray[i];
+    } else if (populationArray[i] < min) {
+      min = populationArray[i];
     }
   }
-  return max;
+  return {max: max, min: min};
 }
 
-// Functions to toggle between amcharts and maps.
-function showMaps() {
-  const mapElement = document.getElementById('map');
-  const amChartsElement = document.getElementById('amCharts');
-  amChartsElement.style.display = 'none';
-  mapElement.style.display = 'block';
-}
+// // Functions to toggle between amcharts and maps.
+// function showMaps() {
+//   const mapElement = document.getElementById('map');
+//   const amChartsElement = document.getElementById('amCharts');
+//   amChartsElement.style.display = 'none';
+//   mapElement.style.display = 'block';
+// }
 
-function showAmCharts() {
-  const mapElement = document.getElementById('map');
-  const amChartsElement = document.getElementById('amCharts');
-  mapElement.style.display = 'none';
-  amChartsElement.style.display = 'block';
-}
+// function showAmCharts() {
+//   const mapElement = document.getElementById('map');
+//   const amChartsElement = document.getElementById('amCharts');
+//   mapElement.style.display = 'none';
+//   amChartsElement.style.display = 'block';
+// }
 
-// Sets up the webpage for a county query. Displays buttons and 
-// sets amcharts as the default visible map.
-function setStyleForCountyQuery() {
-  const buttonsDiv = document.getElementById('buttons');
-  buttonsDiv.style.display = 'block';
-  const chartsDiv = document.getElementById('amCharts');
-  chartsDiv.style.display = 'block';
-}
+// // Sets up the webpage for a county query. Displays buttons and 
+// // sets amcharts as the default visible map.
+// function setStyleForCountyQuery() {
+//   const buttonsDiv = document.getElementById('buttons');
+//   buttonsDiv.style.display = 'block';
+//   const chartsDiv = document.getElementById('amCharts');
+//   chartsDiv.style.display = 'block';
+// }
 
-// Sets up the webpage for a state query. Hides buttons and 
-// sets google maps as the default visible map before calling geoJson.
-function setStyleForStateQuery() {
-  const buttonsDiv = document.getElementById('buttons');
-  buttonsDiv.style.display = 'none';
-  const mapsDiv = document.getElementById('map');
-  mapsDiv.style.display = 'block';
-}
+// // Sets up the webpage for a state query. Hides buttons and 
+// // sets google maps as the default visible map before calling geoJson.
+// function setStyleForStateQuery() {
+//   const buttonsDiv = document.getElementById('buttons');
+//   buttonsDiv.style.display = 'none';
+//   const mapsDiv = document.getElementById('map');
+//   mapsDiv.style.display = 'block';
+// }
 

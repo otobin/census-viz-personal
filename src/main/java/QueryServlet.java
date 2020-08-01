@@ -26,14 +26,16 @@ public class QueryServlet extends HttpServlet {
           ImmutableMap.of("all-ages", "119E,S0201_126E"));
 
   Map<String, String> locationTypeToQuery =
-      ImmutableMap.of("county", "county:*&in=state:", "state", "state:*");
+      ImmutableMap.of(
+          "06", "county:*&in=state:06",
+          "34", "county:*&in=state:34",
+          "state", "state:*");
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String personType = request.getParameter("person-type");
     String action = request.getParameter("action");
     String location = request.getParameter("location");
-    String stateNumber = request.getParameter("state-number");
 
     if (!queryToDataRow.containsKey(action)
         || !queryToDataRow.get(action).containsKey(personType)) {
@@ -50,7 +52,6 @@ public class QueryServlet extends HttpServlet {
                 + queryToDataRow.get(action).get(personType)
                 + "&for="
                 + locationTypeToQuery.get(location)
-                + stateNumber
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
