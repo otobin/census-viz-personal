@@ -377,7 +377,7 @@ function displayCountyGeoJson(mapsData, stateName) {
     });
     const contentString = '<p>' + event.feature.j.name +
     '<p>Population: ' + countyToPopMap[event.feature.j.name];
-		const infoWindow = new google.maps.InfoWindow({
+    const infoWindow = new google.maps.InfoWindow({
       content: contentString,
       maxWidth: 100,
     });
