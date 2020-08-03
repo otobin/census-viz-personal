@@ -14,21 +14,6 @@ function registerServiceWorker() {
   }
 }
 
-// Maps the numerical value of the state to data used to create
-// needed to create geoJson map of the state.
-const states = {
-  '06': {
-    lat: 38,
-    lng: -120,
-    zoomLevel: 6,
-  },
-  '34': {
-    lat: 40.25,
-    lng: -75,
-    zoomLevel: 8,
-  },
-};
-
 function passQuery() {
   document.getElementById('map-title').innerText = '';
   am4core.disposeAllCharts();
@@ -350,8 +335,8 @@ function getMinAndMaxPopulation(populationArray) {
 // Initializes the geoJson and adds multiple event listeners.
 function displayCountyGeoJson(mapsData, stateName) {
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: states[stateName].zoomLevel,
-    center: {lat: states[stateName].lat, lng: states[stateName].lng},
+    zoom: stateInfo[stateName].zoomLevel,
+    center: {lat: stateInfo[stateName].lat, lng: stateInfo[stateName].lng},
   });
 
   const countyToPopMap = mapsData.map;
