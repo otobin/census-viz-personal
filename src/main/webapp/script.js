@@ -141,7 +141,7 @@ function displayError(status, statusText) {
 
 function displayAmChartsMap(data, description, geoData) {
   am4core.useTheme(am4themes_animated);
-  const chart = am4core.create('amCharts', am4maps.MapChart);
+  const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons
@@ -316,7 +316,7 @@ function getMapsData(censusDataArray) {
       for (i = 0; i < countyArray.length - 1; i++) {
         countyString += countyArray[i];
         if (i !== countyArray.length - 2) {
-          countyString += '' ';
+          countyString += ' ';
         }
       }
       // Map the population to the county
@@ -396,14 +396,14 @@ function displayCountyGeoJson(mapsData, stateName) {
 // Functions to toggle between amcharts and maps.
 function showGeoJson() {
   const mapElement = document.getElementById('map');
-  const amChartsElement = document.getElementById('amCharts');
+  const amChartsElement = document.getElementById('am-charts');
   amChartsElement.style.display = 'none';
   mapElement.style.display = 'block';
 }
 
 function showAmCharts() {
   const mapElement = document.getElementById('map');
-  const amChartsElement = document.getElementById('amCharts');
+  const amChartsElement = document.getElementById('am-charts');
   mapElement.style.display = 'none';
   amChartsElement.style.display = 'block';
 }
@@ -413,7 +413,7 @@ function showAmCharts() {
 function setStyleForCountyQuery() {
   const buttonsDiv = document.getElementById('buttons');
   buttonsDiv.style.display = 'block';
-  const chartsDiv = document.getElementById('amCharts');
+  const chartsDiv = document.getElementById('am-charts');
   chartsDiv.style.display = 'block';
 }
 
@@ -424,7 +424,7 @@ function setStyleForStateQuery() {
   buttonsDiv.style.display = 'none';
   const mapsDiv = document.getElementById('map');
   mapsDiv.style.display = 'none';
-  const amChartsDiv = document.getElementById('amCharts');
+  const amChartsDiv = document.getElementById('am-charts');
   amCharts.style.display = 'block';
 }
 
