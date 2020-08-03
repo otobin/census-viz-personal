@@ -74,9 +74,11 @@ function passQuery() {
       if (response.ok) {
         response.json().then((jsonResponse) => JSON.parse(jsonResponse))
         .then((censusDataArray) => {
-          // censusDatadata is a 2D array, where the first row is a header row and all
-          // subsequent rows are one piece of data (e.g. for a state or county)
-          displayVisualization(censusDataArray, description, location, isCountyQuery);
+          // censusDatadata is a 2D array, where the first row is a 
+          // header row and all subsequent rows are one piece of 
+          // data (e.g. for a state or county)
+          displayVisualization(censusDataArray, description, 
+            location, isCountyQuery);
           document.getElementById('more-info').innerText = '';
         });
       } else {
@@ -95,13 +97,14 @@ function getGeoData(location, isCountyQuery) {
 }
 
 
-function displayVisualization(censusDataArray, description, location, isCountyQuery) {
-  let geoData = getGeoData(location, isCountyQuery);
+function displayVisualization(censusDataArray, description, 
+  location, isCountyQuery) {
+  const geoData = getGeoData(location, isCountyQuery);
   if (isCountyQuery) {
     setStyleForCountyQuery();
     const mapsData = getMapsData(censusDataArray);
     const amChartsData = createDataArray(censusDataArray, isCountyQuery);
-    displayAmChartsMap(amChartsData, description,geoData);
+    displayAmChartsMap(amChartsData, description, geoData);
     displayCountyGeoJson(mapsData, location);
   } else {
     setStyleForStateQuery();
@@ -132,7 +135,8 @@ function validateInput(dataListId) {
 // Display an error on the front end
 function displayError(status, statusText) {
   document.getElementById('map').innerHTML = '';
-  document.getElementById('more-info').innerText = `Error ${status}: ${statusText}`;
+  document.getElementById('more-info').innerText = 
+    `Error ${status}: ${statusText}`;
 }
 
 function displayAmChartsMap(data, description, geoData) {
@@ -295,24 +299,24 @@ function checkPercentage(headerColumn) {
 // Returns an object containing all of the relevant data in order
 // to render the geoJson map of the counties.
 function getMapsData(censusDataArray) {
-  let countyToPopMap = new Map();
-  let populationsList = [];
+  const countyToPopMap = new Map();
+  const populationsList = [];
   Array.prototype.forEach.call(censusDataArray, (county) => {
-    if (county[0] !== "NAME") {
-      // The current county strings are in a layout like this: 
+    if (county[0] !== 'NAME') {
+      // The current county strings are in a layout like this:
       // "Contra Costa County, California"
       // and we need to get them like this "Contra Costa"
-      let countyAndStateArray = county[0].split(','); 
+      const countyAndStateArray = county[0].split(',');
       // ^^ ["Contra Costa County", "California"]
-      let countyArray = countyAndStateArray[0].split(' '); 
+      const countyArray = countyAndStateArray[0].split(' ');
       // ^^ ["Contra", "Costa", "County"]
-      let countyString = "";
+      let countyString = '';
       let i;
       // Get all strings except for the last one
       for (i = 0; i < countyArray.length - 1; i++) {
         countyString += countyArray[i];
         if (i !== countyArray.length - 2) {
-          countyString += " ";
+          countyString += '' ';
         }
       }
       // Map the population to the county
@@ -320,12 +324,13 @@ function getMapsData(censusDataArray) {
       populationsList.push(parseInt(county[1]));
       }
     });
-  let minAndMax = getMinAndMaxPopulation(populationsList);
-  return {map: countyToPopMap, minValue: minAndMax.min, maxValue: minAndMax.max};
+  const minAndMax = getMinAndMaxPopulation(populationsList);
+  return {map: countyToPopMap, 
+    minValue: minAndMax.min, maxValue: minAndMax.max};
 }
 
-// Returns an object with the min and max population of the 
-// populations returned by the census API. 
+// Returns an object with the min and max population of the
+// populations returned by the census API.
 function getMinAndMaxPopulation(populationArray) {
   let max = populationArray[0];
   let min = 0;
@@ -341,13 +346,13 @@ function getMinAndMaxPopulation(populationArray) {
 }
 
 // Takes in mapsData object which has a data structure that maps
-// counties to populations, a max population, and a min population. 
+// counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
 function displayCountyGeoJson(mapsData, stateName) {
-  let map = new google.maps.Map(document.getElementById('map'), {
+  const map = new google.maps.Map(document.getElementById('map'), {
 		zoom: states[stateName].zoomLevel,
-    center: {lat: states[stateName].lat, lng: states[stateName].lng}
-  }); 
+    center: {lat: states[stateName].lat, lng: states[stateName].lng},
+  });
 
   let countyToPopMap = mapsData.map;
   let maxPopulation = mapsData.maxValue;
