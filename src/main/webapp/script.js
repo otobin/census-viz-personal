@@ -139,7 +139,7 @@ function displayAmChartsMap(data, description, location, isCountyQuery) {
   // Create hover state and set alternative fill color
   const hs = polygonTemplate.states.create('hover');
   hs.properties.fill = am4core.color('#3c5bdc');
-  
+
   // heat legend behavior
   polygonSeries.mapPolygons.template.events.on('over', function(event) {
     handleHover(event.target);
