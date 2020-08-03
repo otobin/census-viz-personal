@@ -357,7 +357,7 @@ function displayCountyGeoJson(mapsData, stateName) {
   const countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
-  const f = chroma.scale(['white', 'blue']).domain([minPopulation, 
+  const f = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
   const geoData = getGeoData(stateName, true);
 
@@ -375,8 +375,8 @@ function displayCountyGeoJson(mapsData, stateName) {
     map.data.overrideStyle(event.feature, {
       fillColor: '#00ffff',
     });
-    const contentString = '<p>' + event.feature.j.name + '</p><p>Population: ' +
-    countyToPopMap[event.feature.j.name];
+    const contentString = '<p>' + event.feature.j.name +
+    '<p>Population: ' + countyToPopMap[event.feature.j.name];
 		const infoWindow = new google.maps.InfoWindow({
       content: contentString,
       maxWidth: 100,
