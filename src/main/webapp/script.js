@@ -13,6 +13,9 @@ function registerServiceWorker() {
         });
   }
 }
+
+// Maps the numerical value of the state to data used to create
+// needed to create geoJson map of the state.
 const states = {
   '06': {
     geoData: am4geodata_region_usa_caLow,
@@ -75,8 +78,7 @@ function passQuery() {
         .then((censusDataArray) => {
           // data is a 2D array, where the first row is a header row and all
           // subsequent rows are one piece of data (e.g. for a state or county)
-          console.log(censusDataArray);
-          displayVisualization(censusDataArray, description, location, isCountyQuery)
+          displayVisualization(censusDataArray, description, location, isCountyQuery);
           document.getElementById('more-info').innerText = '';
         });
       } else {
@@ -85,17 +87,17 @@ function passQuery() {
     });
 }
 
-// Creates the Map that maps each county's string to the population.
+// Creates the data structure that maps each county's string to the population.
 function getMapsData(censusDataArray) {
-  // countyToPopMap is a map that associates each county's string with its population
   let countyToPopMap = new Map();
   let populationsList = [];
-  censusDataArray.forEach((county) => {
+  Array.prototype.forEach.call(censusDataArray, (county) => {
     if (county[0] !== "NAME") {
-      // The current county strings are in a layout like this: "Contra Costa County, California"
+      // The current county strings are in a layout like this: 
+      // "Contra Costa County, California"
       // and we need to get them like this "Contra Costa"
-      let countyAndStateArray = county[0].split(','); 
-      let countyArray = countyAndStateArray[0].split(' ');
+      let countyAndStateArray = county[0].split(','); // ["Contra Costa County", "California"]
+      let countyArray = countyAndStateArray[0].split(' '); // ["Contra", "Costa", "County"]
       let countyString = "";
       let i;
       for (i = 0; i < countyArray.length - 1; i++) {
@@ -125,16 +127,21 @@ function getGeoData(location, isCountyQuery) {
 
 
 function displayVisualization(censusDataArray, description, location, isCountyQuery) {
-  console.log(censusDataArray);
   let geoData = getGeoData(location, isCountyQuery);
   if (isCountyQuery) {
-    //const mapsData = getMapsData(censusDataArray);
+    setStyleForCountyQuery();
+    const mapsData = getMapsData(censusDataArray);
     const amChartsData = createDataArray(censusDataArray, isCountyQuery);
     displayAmChartsMap(amChartsData, description,geoData);
     displayCountyGeoJson(mapsData, location);
+    showAmCharts();
   } else {
-    displayAmChartsMap(data, description, geoData);
+    setStyleForStateQuery();
+    const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+    displayAmChartsMap(amChartsData, description, geoData);
+    showAmCharts();
   }
+  document.getElementById('more-info').innerText = '';
 }
 
 // Check that the input being written to a datalist can match one of its options
@@ -319,12 +326,11 @@ function checkPercentage(headerColumn) {
 }
 
 
-function displayCountyGeoJson(data, stateName) {
+function displayCountyGeoJson(mapsData, stateName) {
   let map = new google.maps.Map(document.getElementById('map'), {
 		zoom: states[stateName].zoomLevel,
     center: {lat: states[stateName].lat, lng: states[stateName].lng}
   }); 
-  let mapsData = getMapsData(data);
   let countyToPopMap = mapsData.map;
   let maxPopulation = mapsData.maxValue;
   let minPopulation = mapsData.minValue;
@@ -375,36 +381,36 @@ function getMinAndMaxPopulation(populationArray) {
   return {max: max, min: min};
 }
 
-// // Functions to toggle between amcharts and maps.
-// function showMaps() {
-//   const mapElement = document.getElementById('map');
-//   const amChartsElement = document.getElementById('amCharts');
-//   amChartsElement.style.display = 'none';
-//   mapElement.style.display = 'block';
-// }
+// Functions to toggle between amcharts and maps.
+function showGeoJson() {
+  const mapElement = document.getElementById('map');
+  const amChartsElement = document.getElementById('amCharts');
+  amChartsElement.style.display = 'none';
+  mapElement.style.display = 'block';
+}
 
-// function showAmCharts() {
-//   const mapElement = document.getElementById('map');
-//   const amChartsElement = document.getElementById('amCharts');
-//   mapElement.style.display = 'none';
-//   amChartsElement.style.display = 'block';
-// }
+function showAmCharts() {
+  const mapElement = document.getElementById('map');
+  const amChartsElement = document.getElementById('amCharts');
+  mapElement.style.display = 'none';
+  amChartsElement.style.display = 'block';
+}
 
-// // Sets up the webpage for a county query. Displays buttons and 
-// // sets amcharts as the default visible map.
-// function setStyleForCountyQuery() {
-//   const buttonsDiv = document.getElementById('buttons');
-//   buttonsDiv.style.display = 'block';
-//   const chartsDiv = document.getElementById('amCharts');
-//   chartsDiv.style.display = 'block';
-// }
+// Sets up the webpage for a county query. Displays buttons and 
+// sets amcharts as the default visible map.
+function setStyleForCountyQuery() {
+  const buttonsDiv = document.getElementById('buttons');
+  buttonsDiv.style.display = 'block';
+  const chartsDiv = document.getElementById('amCharts');
+  chartsDiv.style.display = 'block';
+}
 
-// // Sets up the webpage for a state query. Hides buttons and 
-// // sets google maps as the default visible map before calling geoJson.
-// function setStyleForStateQuery() {
-//   const buttonsDiv = document.getElementById('buttons');
-//   buttonsDiv.style.display = 'none';
-//   const mapsDiv = document.getElementById('map');
-//   mapsDiv.style.display = 'block';
-// }
+// Sets up the webpage for a state query. Hides buttons and 
+// sets google maps as the default visible map before calling geoJson.
+function setStyleForStateQuery() {
+  const buttonsDiv = document.getElementById('buttons');
+  buttonsDiv.style.display = 'none';
+  const mapsDiv = document.getElementById('map');
+  mapsDiv.style.display = 'block';
+}
 
