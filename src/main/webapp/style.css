@@ -69,6 +69,10 @@ input[type=submit]:focus {
   padding: 30px;
 }
 
+#map {
+  height: 600px;
+}
+
 #map-title {
   text-align: center;
   font-weight: bolder;
