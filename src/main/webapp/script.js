@@ -426,6 +426,6 @@ function setStyleForStateQuery() {
   const mapsDiv = document.getElementById('map');
   mapsDiv.style.display = 'none';
   const amChartsDiv = document.getElementById('am-charts');
-  amCharts.style.display = 'block';
+  amChartsDiv.style.display = 'block';
 }
 
