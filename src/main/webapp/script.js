@@ -74,10 +74,10 @@ function passQuery() {
       if (response.ok) {
         response.json().then((jsonResponse) => JSON.parse(jsonResponse))
         .then((censusDataArray) => {
-          // censusDatadata is a 2D array, where the first row is a 
-          // header row and all subsequent rows are one piece of 
+          // censusDatadata is a 2D array, where the first row is a
+          // header row and all subsequent rows are one piece of
           // data (e.g. for a state or county)
-          displayVisualization(censusDataArray, description, 
+          displayVisualization(censusDataArray, description,
             location, isCountyQuery);
           document.getElementById('more-info').innerText = '';
         });
@@ -97,7 +97,7 @@ function getGeoData(location, isCountyQuery) {
 }
 
 
-function displayVisualization(censusDataArray, description, 
+function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   const geoData = getGeoData(location, isCountyQuery);
   if (isCountyQuery) {
@@ -135,7 +135,7 @@ function validateInput(dataListId) {
 // Display an error on the front end
 function displayError(status, statusText) {
   document.getElementById('map').innerHTML = '';
-  document.getElementById('more-info').innerText = 
+  document.getElementById('more-info').innerText =
     `Error ${status}: ${statusText}`;
 }
 
@@ -325,7 +325,7 @@ function getMapsData(censusDataArray) {
       }
     });
   const minAndMax = getMinAndMaxPopulation(populationsList);
-  return {map: countyToPopMap, 
+  return {map: countyToPopMap,
     minValue: minAndMax.min, maxValue: minAndMax.max};
 }
 
@@ -350,15 +350,15 @@ function getMinAndMaxPopulation(populationArray) {
 // Initializes the geoJson and adds multiple event listeners.
 function displayCountyGeoJson(mapsData, stateName) {
   const map = new google.maps.Map(document.getElementById('map'), {
-		zoom: states[stateName].zoomLevel,
+    zoom: states[stateName].zoomLevel,
     center: {lat: states[stateName].lat, lng: states[stateName].lng},
   });
 
-  let countyToPopMap = mapsData.map;
-  let maxPopulation = mapsData.maxValue;
-  let minPopulation = mapsData.minValue;
-  let f = chroma.scale(['white', 'blue']).domain([minPopulation, maxPopulation]);
-  let geoData = getGeoData(stateName, true);
+  const countyToPopMap = mapsData.map;
+  const maxPopulation = mapsData.maxValue;
+  const minPopulation = mapsData.minValue;
+  const f = chroma.scale(['white', 'blue']).domain([minPopulation, maxPopulation]);
+  const geoData = getGeoData(stateName, true);
 
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
@@ -368,27 +368,27 @@ function displayCountyGeoJson(mapsData, stateName) {
       };
     });
   });
-
- 	let openInfoWindows = [];
+  
+  const openInfoWindows = [];
   map.data.addListener('mouseover', function(event) {
     map.data.overrideStyle(event.feature, {
       fillColor: "#00ffff"
     });
-    let contentString = '<p>' + event.feature.j.name + '</p><p>Population: ' 
-      + countyToPopMap[event.feature.j.name];
-		let infoWindow = new google.maps.InfoWindow({
-    	content: contentString,
-      maxWidth: 100
+    let contentString = '<p>' + event.feature.j.name + '</p><p>Population: ' + 
+      countyToPopMap[event.feature.j.name];
+		const infoWindow = new google.maps.InfoWindow({
+      content: contentString,
+      maxWidth: 100,
     });
     infoWindow.setPosition(event.latLng);
     infoWindow.open(map);
     openInfoWindows.push(infoWindow);
   });
   map.data.addListener('mouseout', function(event) {
-  	map.data.revertStyle();
+    map.data.revertStyle();
     let i;
     for (i = 0; i < openInfoWindows.length; i++) {
-    	openInfoWindows[i].close();
+      openInfoWindows[i].close();
     }
   });
 }
@@ -408,7 +408,7 @@ function showAmCharts() {
   amChartsElement.style.display = 'block';
 }
 
-// Sets up the webpage for a county query. Displays buttons and 
+// Sets up the webpage for a county query. Displays buttons and
 // sets amcharts as the default visible map.
 function setStyleForCountyQuery() {
   const buttonsDiv = document.getElementById('buttons');
@@ -417,7 +417,7 @@ function setStyleForCountyQuery() {
   chartsDiv.style.display = 'block';
 }
 
-// Sets up the webpage for a state query. Hides buttons and 
+// Sets up the webpage for a state query. Hides buttons and
 // sets amCharts as the only visible map.
 function setStyleForStateQuery() {
   const buttonsDiv = document.getElementById('buttons');
