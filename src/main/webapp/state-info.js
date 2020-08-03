@@ -18,6 +18,7 @@ const stateInfo = {
     '06': {
         'name': 'California',
         'ISO': 'US-CA',
+        'geodata': am4geodata_region_usa_caLow,
     },
     '08': {
         'name': 'Colorado',
@@ -122,6 +123,7 @@ const stateInfo = {
     '34': {
         'name': 'New Jersey',
         'ISO': 'US-NJ',
+        'geodata': am4geodata_region_usa_njLow,
     },
     '35': {
         'name': 'New Mexico',

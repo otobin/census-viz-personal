@@ -81,8 +81,7 @@ function displayAmChartsMap(data, description, location, isCountyQuery) {
 
   // Create map instance
   if (isCountyQuery) {
-    chart.geodata = location ===
-        '06' ? am4geodata_region_usa_caLow : am4geodata_region_usa_njLow;
+    chart.geodata = stateInfo[location].geodata;
   } else {
     chart.geodata = am4geodata_usaLow;
   }
