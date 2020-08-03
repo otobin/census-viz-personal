@@ -55,8 +55,13 @@ function passQuery() {
   const description = {action: action, age: personType};
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
-  const title = 'Population who ' + action +
-      ' in each ' + region + ' (' + personType.replace('-', ' ') + ')';
+  let title = 'Population who ' + action;
+  if (action === 'moved') {
+    title += ' to ';
+  } else {
+    title += ' in ';
+  }
+  title += 'each ' + region + ' (' + personType.replace('-', ' ') + ')';
   document.getElementById('map-title').innerText = title;
 
   const fetchUrl = '/query?person-type=' + personType +
@@ -216,7 +221,7 @@ function displayAmChartsMap(data, description, geoData) {
   // Create hover state and set alternative fill color
   const hs = polygonTemplate.states.create('hover');
   hs.properties.fill = am4core.color('#3c5bdc');
-  
+
   // heat legend behavior
   polygonSeries.mapPolygons.template.events.on('over', function(event) {
     handleHover(event.target);
@@ -256,29 +261,31 @@ function replaceValueIfEmpty(dataListId) {
   }
 }
 
-function getLocationId(location, isCountyQuery) {
+function getLocationId(location, isCountyQuery, regionIndex) {
   if (isCountyQuery) {
-    return location[2] + location[3];
+    return location[regionIndex] + location[regionIndex + 1];
   }
-  return stateInfo[location[2]].ISO;
+  return stateInfo[location[regionIndex]].ISO;
 }
 
 // createDataArray takes in the data array returned by the census API
 // and reformats it into a data table for the visualization API.
 function createDataArray(censusDataArray, isCountyQuery) {
   const vizDataArray = [];
+  // first row is headers
+  const regionIndex = censusDataArray[0].indexOf('state');
   censusDataArray = censusDataArray.splice(1); // get rid of header row
   // Check to see if an extra calculation for percentages is needed
   if (checkPercentage(censusDataArray[0])) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
-        id: getLocationId(location, isCountyQuery),
+        id: getLocationId(location, isCountyQuery, regionIndex),
         value: percentToTotal(location[1], location[2])});
     });
   } else {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
-        id: getLocationId(location, isCountyQuery),
+        id: getLocationId(location, isCountyQuery, regionIndex),
         value: location[1]});
     });
   }
