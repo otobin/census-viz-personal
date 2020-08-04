@@ -405,7 +405,7 @@ function setStyle(isCountyQuery) {
 }
 
 function changeColor(colorParam) {
-  const f = chroma.scale(['white', colorParam.value]).domain([mapData.minValue,
+  const colorScale = chroma.scale(['white', colorParam.value]).domain([mapData.minValue,
     mapData.maxValue]);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
