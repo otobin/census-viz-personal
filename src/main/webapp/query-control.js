@@ -20,6 +20,7 @@ function registerServiceWorker() {
 // to be reformatted and visualized.
 function passQuery() {
   document.getElementById('map-title').innerText = '';
+  document.getElementById('data-table').innerHTML = '';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('result').style.display = 'block';

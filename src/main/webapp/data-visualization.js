@@ -24,7 +24,6 @@ async function displayVisualization(censusDataArray, description,
   const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
-  document.getElementById('data-table').innerHTML = '';
   document.getElementById('data-table')
       .appendChild(createDataTable(amChartsData));
   if (isCountyQuery) {
