@@ -9,3 +9,7 @@ rules:
   no-unused-vars: off
   require-jsdoc: off
   indent: off
+  camelcase:
+    - 2
+    - allow: ['^am4geodata']
+

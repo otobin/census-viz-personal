@@ -19,7 +19,7 @@ public class QueryServlet extends HttpServlet {
   Map<String, Map<String, String>> queryToDataRow =
       ImmutableMap.of(
           "live",
-          ImmutableMap.of("under-18", "023E", "over-18", "026E", "all-ages", "001E"),
+          ImmutableMap.of("under-18", "0019E", "over-18", "0021E", "all-ages", "0001E"),
           "work",
           ImmutableMap.of("over-18", "154E,S0201_157E"),
           "moved",
@@ -34,24 +34,28 @@ public class QueryServlet extends HttpServlet {
     if (!queryToDataRow.containsKey(action)
         || !queryToDataRow.get(action).containsKey(personType)) {
       // We don't have a data table for this query
-      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      response.sendError(
+          HttpServletResponse.SC_BAD_REQUEST, "We do not support this visualization yet.");
       return;
     }
 
     URL fetchUrl =
         new URL(
-            "https://api.census.gov/data/2018/acs/acs1/spp?get=NAME,S0201_"
+            "https://api.census.gov/data/2018/acs/acs1/"
+                + (action.equals("live") ? "profile?get=NAME,DP05_" : "spp?get=NAME,S0201_")
                 + queryToDataRow.get(action).get(personType)
                 + "&for="
-                + location
-                + ":*&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
+                + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
+                + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
 
     if (connection.getResponseCode() > 299) {
       // An error occurred
-      response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+      response.sendError(
+          HttpServletResponse.SC_BAD_GATEWAY,
+          "An error occurred while trying to retrieve census data.");
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";

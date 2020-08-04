@@ -5,6 +5,7 @@
 input[type=list],
 select {
   background-color: transparent;
+  border-radius: 2px;
   border-style: none none solid none;
   font: 16px 'Roboto', sans-serif;
   padding: 10px;
@@ -13,6 +14,16 @@ select {
 input[type=list]:focus,
 select:focus {
   outline: none;
+}
+
+.input-valid {
+  border-color: #767676;
+  border-style: none none solid none;
+}
+
+.input-invalid {
+  border-color: red;
+  border-style: solid !important;
 }
 
 .wrapper {
@@ -68,8 +79,22 @@ button {
   border-radius: 10px;
   box-shadow: 5px 5px 15px #e7e7e9;
   display: none;
-  margin: 60px 0 60px 0;
+  margin: 30px 0 60px 0;
   padding: 30px;
+  text-align: center;
+}
+
+#am-charts {
+  height: 600px;
+}
+
+#map {
+  height: 600px;
+  display: none;
+}
+
+#buttons {
+  display: none;
   text-align: center;
 }
 
