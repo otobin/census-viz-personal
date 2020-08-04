@@ -14,7 +14,7 @@ function registerServiceWorker() {
   }
 }
 
-function passQuery() {
+async function passQuery() {
   document.getElementById('map-title').innerText = '';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
@@ -53,6 +53,19 @@ function passQuery() {
   const fetchUrl = '/query?person-type=' + personType +
     '&action=' + action +
     '&location=' + location;
+  
+  if (isCountyQuery) {
+    const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      document.body.appendChild(script);
+      script.onload = resolve;
+      script.onerror = reject;
+      script.async = true;
+      script.src = 
+      `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
+    });
+  }
 
   fetch(fetchUrl)
     .then((response) => {
@@ -73,8 +86,9 @@ function passQuery() {
 }
 
 function getGeoData(location, isCountyQuery) {
+  const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
   if (isCountyQuery) {
-    return stateInfo[location].geoData;
+    return window['am4geodata_region_usa_' + abbrev + 'Low'];
   } else {
     return am4geodata_usaLow;
   }
