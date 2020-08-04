@@ -59,7 +59,7 @@ function passQuery() {
       if (response.ok) {
         response.json().then((jsonResponse) => JSON.parse(jsonResponse))
         .then((censusDataArray) => {
-          // censusDatadata is a 2D array, where the first row is a
+          // censusDataArray is a 2D array, where the first row is a
           // header row and all subsequent rows are one piece of
           // data (e.g. for a state or county)
           displayVisualization(censusDataArray, description,
@@ -85,14 +85,13 @@ function getGeoData(location, isCountyQuery) {
 function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   const geoData = getGeoData(location, isCountyQuery);
+  setStyle(isCountyQuery);
   if (isCountyQuery) {
-    setStyleForCountyQuery();
     const mapsData = getMapsData(censusDataArray);
     const amChartsData = createDataArray(censusDataArray, isCountyQuery);
     displayAmChartsMap(amChartsData, description, geoData);
     displayCountyGeoJson(mapsData, location);
   } else {
-    setStyleForStateQuery();
     const amChartsData = createDataArray(censusDataArray, isCountyQuery);
     displayAmChartsMap(amChartsData, description, geoData);
   }
@@ -289,7 +288,7 @@ function getMapsData(censusDataArray) {
   const populationsList = [];
   // Get rid of the header
   const censusArray = censusDataArray.slice(1);
-  Array.prototype.forEach.call(censusArray, (county) => {
+  censusArray.forEach( (county) => {
     // The current county strings are in a layout like this:
     // "Contra Costa County, California"
     // and we need to get them like this "Contra Costa"
@@ -345,7 +344,7 @@ function displayCountyGeoJson(mapsData, stateName) {
   countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
-  const f = chroma.scale(['white', '#0000ff']).domain([minPopulation,
+  const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
   const geoData = getGeoData(stateName, true);
 
@@ -353,7 +352,7 @@ function displayCountyGeoJson(mapsData, stateName) {
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
       return {
-        fillColor: f(countyToPopMap[feature.j.name]).toString(),
+        fillColor: colorScale(countyToPopMap[feature.j.name]).toString(),
       };
     });
   });
@@ -383,38 +382,26 @@ function displayCountyGeoJson(mapsData, stateName) {
 }
 
 // Functions to toggle between amcharts and maps.
-function showGeoJson() {
-  const mapElement = document.getElementById('map');
-  const amChartsElement = document.getElementById('am-charts');
-  amChartsElement.style.display = 'none';
-  mapElement.style.display = 'block';
+function toggle(divToShow, divToHide) {
+  const visibleElement = document.getElementById(divToShow);
+  const hiddenElement = document.getElementById(divToHide);
+  hiddenElement.style.display = 'none';
+  visibleElement.style.display = 'block';
 }
 
-function showAmCharts() {
-  const mapElement = document.getElementById('map');
-  const amChartsElement = document.getElementById('am-charts');
-  mapElement.style.display = 'none';
-  amChartsElement.style.display = 'block';
-}
-
-// Sets up the webpage for a county query. Displays buttons and
-// sets amcharts as the default visible map.
-function setStyleForCountyQuery() {
-  const buttonsDiv = document.getElementById('buttons');
-  buttonsDiv.style.display = 'block';
+// Sets up the webpage for the appropriate query.
+function setStyle(isCountyQuery) {
+  if (isCountyQuery) {
+    const buttonsDiv = document.getElementById('buttons');
+    buttonsDiv.style.display = 'block';
+  } else {
+    const buttonsDiv = document.getElementById('buttons');
+    buttonsDiv.style.display = 'none';
+  }
   const chartsDiv = document.getElementById('am-charts');
   chartsDiv.style.display = 'block';
-}
-
-// Sets up the webpage for a state query. Hides buttons and
-// sets amCharts as the only visible map.
-function setStyleForStateQuery() {
-  const buttonsDiv = document.getElementById('buttons');
-  buttonsDiv.style.display = 'none';
   const mapsDiv = document.getElementById('map');
   mapsDiv.style.display = 'none';
-  const amChartsDiv = document.getElementById('am-charts');
-  amChartsDiv.style.display = 'block';
 }
 
 function changeColor(colorParam) {
