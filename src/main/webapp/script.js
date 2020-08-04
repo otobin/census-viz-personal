@@ -14,7 +14,6 @@ function registerServiceWorker() {
   }
 }
 
-
 function passQuery() {
   document.getElementById('map-title').innerText = '';
   am4core.disposeAllCharts();
@@ -287,28 +286,28 @@ function checkPercentage(headerColumn) {
 function getMapsData(censusDataArray) {
   const countyToPopMap = new Map();
   const populationsList = [];
-  Array.prototype.forEach.call(censusDataArray, (county) => {
-    if (county[0] !== 'NAME') {
-      // The current county strings are in a layout like this:
-      // "Contra Costa County, California"
-      // and we need to get them like this "Contra Costa"
-      const countyAndStateArray = county[0].split(',');
-      // ^^ ["Contra Costa County", "California"]
-      const countyArray = countyAndStateArray[0].split(' ');
-      // ^^ ["Contra", "Costa", "County"]
-      let countyString = '';
-      let i;
-      // Get all strings except for the last one
-      for (i = 0; i < countyArray.length - 1; i++) {
-        countyString += countyArray[i];
-        if (i !== countyArray.length - 2) {
-          countyString += ' ';
-        }
+  // Get rid of the header
+  const censusArray = censusDataArray.slice(1);
+  Array.prototype.forEach.call(censusArray, (county) => {
+    // The current county strings are in a layout like this:
+    // "Contra Costa County, California"
+    // and we need to get them like this "Contra Costa"
+    const countyAndStateArray = county[0].split(',');
+    // ^^ ["Contra Costa County", "California"]
+    const countyArray = countyAndStateArray[0].split(' ');
+    // ^^ ["Contra", "Costa", "County"]
+    let countyString = '';
+    let i;
+    // Get all strings except for the last one
+    for (i = 0; i < countyArray.length - 1; i++) {
+      countyString += countyArray[i];
+      if (i !== countyArray.length - 2) {
+        countyString += ' ';
       }
-      // Map the population to the county
-      countyToPopMap[countyString] = county[1];
-      populationsList.push(parseInt(county[1]));
-      }
+    }
+    // Map the population to the county
+    countyToPopMap[countyString] = county[1];
+    populationsList.push(parseInt(county[1]));
     });
   const minAndMax = getMinAndMaxPopulation(populationsList);
   return {map: countyToPopMap,
@@ -336,8 +335,8 @@ function getMinAndMaxPopulation(populationArray) {
 // Initializes the geoJson and adds multiple event listeners.
 function displayCountyGeoJson(mapsData, stateName) {
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: states[stateName].zoomLevel,
-    center: {lat: states[stateName].lat, lng: states[stateName].lng},
+    zoom: stateInfo[stateName].zoomLevel,
+    center: {lat: stateInfo[stateName].lat, lng: stateInfo[stateName].lng},
   });
 
   const countyToPopMap = mapsData.map;
