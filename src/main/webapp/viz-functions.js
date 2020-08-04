@@ -1,6 +1,6 @@
 async function getGeoData(location, isCountyQuery) {
-  const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
   if (isCountyQuery) {
+    const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
     await new Promise((resolve, reject) => {
       const script = document.createElement('script');
       document.body.appendChild(script);
