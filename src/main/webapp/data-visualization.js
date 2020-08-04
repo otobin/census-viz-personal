@@ -130,7 +130,7 @@ function createDataArray(censusDataArray, isCountyQuery) {
   const vizDataArray = [];
   // first row is headers
   const regionIndex = censusDataArray[0].indexOf('state');
-  censusDataArray = censusDataArray.splice(1); // get rid of header row
+  censusDataArray = censusDataArray.slice(1); // get rid of header row
   // Check to see if an extra calculation for percentages is needed
   if (checkPercentage(censusDataArray[0])) {
     censusDataArray.forEach((location) => {
@@ -229,10 +229,10 @@ function getMinAndMaxPopulation(populationArray) {
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, stateName) {
+async function displayCountyGeoJson(mapsData, stateNumber) {
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: stateInfo[stateName].zoomLevel,
-    center: {lat: stateInfo[stateName].lat, lng: stateInfo[stateName].lng},
+    zoom: stateInfo[stateNumber].zoomLevel,
+    center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
   });
 
   const countyToPopMap = mapsData.map;
@@ -240,7 +240,7 @@ async function displayCountyGeoJson(mapsData, stateName) {
   const minPopulation = mapsData.minValue;
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
-  const geoData = await getGeoData(stateName, true);
+  const geoData = await getGeoData(stateNumber, true);
   
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
