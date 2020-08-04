@@ -413,3 +413,17 @@ function setStyleForStateQuery() {
   amChartsDiv.style.display = 'block';
 }
 
+function createStateDropdownList() {
+  const datalist = document.getElementById('location');
+  let optionElem = document.createElement('option');
+  optionElem.value = 'each U.S. state';
+  optionElem.setAttribute('data-value', 'state');
+  datalist.appendChild(optionElem)
+
+  for (const state in stateInfo) {
+    optionElem = document.createElement('option');
+    optionElem.value = stateInfo[state].name;
+    optionElem.setAttribute('data-value', state);
+    datalist.appendChild(optionElem)
+  }
+}
