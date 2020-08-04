@@ -14,20 +14,6 @@ function registerServiceWorker() {
   }
 }
 
-// Maps the numerical value of the state to data used to create
-// needed to create geoJson map of the state.
-const states = {
-  '06': {
-    lat: 38,
-    lng: -120,
-    zoomLevel: 6,
-  },
-  '34': {
-    lat: 40.25,
-    lng: -75,
-    zoomLevel: 8,
-  },
-};
 
 function passQuery() {
   document.getElementById('map-title').innerText = '';
