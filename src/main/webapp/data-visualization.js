@@ -24,8 +24,6 @@ async function displayVisualization(censusDataArray, description,
   const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
-  document.getElementById('data-table')
-      .appendChild(createDataTable(amChartsData));
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
       displayAmChartsMap(amChartsData, description, geoData);
@@ -132,12 +130,15 @@ function createDataArray(censusDataArray, isCountyQuery) {
   const regionIndex = censusDataArray[0].indexOf('state');
   censusDataArray = censusDataArray.slice(1); // get rid of header row
   // Check to see if an extra calculation for percentages is needed
+  const table = initDataTable(isCountyQuery);
   if (checkPercentage(censusDataArray[0])) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
         name: location[0],
         value: percentToTotal(location[1], location[2])});
+        appendRowToDataTable(table, location[0], 
+          percentToTotal(location[1], location[2]));
     });
   } else {
     censusDataArray.forEach((location) => {
@@ -145,8 +146,10 @@ function createDataArray(censusDataArray, isCountyQuery) {
         id: getLocationId(location, isCountyQuery, regionIndex),
         name: location[0],
         value: location[1]});
+        appendRowToDataTable(table, location[0], location[1]);
     });
   }
+  document.getElementById('data-table').appendChild(table);
   return vizDataArray;
 }
 
@@ -300,33 +303,33 @@ function setStyle(isCountyQuery) {
   }
 }
 
-/**
- * Create and return an HTML table using the data in dataArray.
- * Uses first row in dataArray as table headers.
- */
-function createDataTable(dataArray) {
+function initDataTable(isCountyQuery) {
   const table = document.createElement('table');
   table.innerHTML = '';
-  let tableRow = document.createElement('tr');
-  let region = document.createElement('th');
-  let value = document.createElement('th');
-  region.innerText = 'Location';
+  const tableRow = document.createElement('tr');
+  const region = document.createElement('th');
+  const value = document.createElement('th');
+  region.innerText = isCountyQuery ? 'County' : 'State';
   value.innerText = 'Population';
   tableRow.appendChild(region);
   tableRow.appendChild(value);
   table.appendChild(tableRow);
-
-  for (let i = 0; i < dataArray.length; i++) {
-    tableRow = document.createElement('tr');
-    region = document.createElement('td');
-    value = document.createElement('td');
-    region.innerText = dataArray[i].name;
-    value.innerText = dataArray[i].value;
-    tableRow.appendChild(region);
-    tableRow.appendChild(value);
-    table.appendChild(tableRow);
-  }
   return table;
+}
+
+/**
+ * Create and return an HTML table using the data in dataArray.
+ * Uses first row in dataArray as table headers.
+ */
+function appendRowToDataTable(table, locationName, population) {
+  const tableRow = document.createElement('tr');
+  const region = document.createElement('td');
+  const value = document.createElement('td');
+  region.innerText = locationName;
+  value.innerText = population;
+  tableRow.appendChild(region);
+  tableRow.appendChild(value);
+  table.appendChild(tableRow);
 }
 
 /**

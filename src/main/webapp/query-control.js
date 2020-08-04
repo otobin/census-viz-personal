@@ -14,14 +14,18 @@ function registerServiceWorker() {
   }
 }
 
+function clearPreviousResult() {
+  document.getElementById('map-title').innerText = '';
+  document.getElementById('data-table').innerHTML = '';
+  am4core.disposeAllCharts();
+}
+
 // Get the query the user entered and display the result.
 // Breaks down the query and passes it to the backend to be analyzed;
 // the backend returns the appropriate data, which is then passed off
 // to be reformatted and visualized.
 function passQuery() {
-  document.getElementById('map-title').innerText = '';
-  document.getElementById('data-table').innerHTML = '';
-  am4core.disposeAllCharts();
+  clearPreviousResult();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('result').style.display = 'block';
 
