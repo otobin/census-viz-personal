@@ -7,7 +7,7 @@ async function getGeoData(location, isCountyQuery) {
       script.onload = resolve;
       script.onerror = reject;
       script.async = true;
-      script.src = 
+      script.src =
       `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
     });
     return window['am4geodata_region_usa_' + abbrev + 'Low'];
@@ -16,9 +16,9 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
-function displayVisualization(censusDataArray, description,
+async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
-  const geoData = getGeoData(location, isCountyQuery);
+  const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
@@ -223,7 +223,7 @@ function getMinAndMaxPopulation(populationArray) {
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-function displayCountyGeoJson(mapsData, stateName) {
+async function displayCountyGeoJson(mapsData, stateName) {
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateName].zoomLevel,
     center: {lat: stateInfo[stateName].lat, lng: stateInfo[stateName].lng},
@@ -234,7 +234,7 @@ function displayCountyGeoJson(mapsData, stateName) {
   const minPopulation = mapsData.minValue;
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
-  const geoData = getGeoData(stateName, true);
+  const geoData = await getGeoData(stateName, true);
 
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
@@ -277,19 +277,46 @@ function toggle(divToShow, divToHide) {
   visibleElement.style.display = 'block';
 }
 
+// Sort location dropdown alphabetically
+function sortStateDropdownList() {
+  // Adapted from w3schools
+  const list = document.getElementById('location');
+  let switching = true;
+  let i;
+  while (switching) {
+    switching = false;
+    options = list.getElementsByTagName('option');
+    // all states option always first
+    for (i = 1; i < (options.length - 1); i++) {
+      shouldSwitch = false;
+      if (options[i].value.toLowerCase() > options[i + 1].value.toLowerCase()) {
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+      options[i].parentNode.insertBefore(options[i + 1], options[i]);
+      switching = true;
+    }
+  }
+}
+
 function createStateDropdownList() {
   const datalist = document.getElementById('location');
   let optionElem = document.createElement('option');
   optionElem.value = 'each U.S. state';
   optionElem.setAttribute('data-value', 'state');
-  datalist.appendChild(optionElem)
+  datalist.appendChild(optionElem);
 
   for (const state in stateInfo) {
-    optionElem = document.createElement('option');
-    optionElem.value = stateInfo[state].name;
-    optionElem.setAttribute('data-value', state);
-    datalist.appendChild(optionElem)
+    if (stateInfo.hasOwnProperty(state)) {
+      optionElem = document.createElement('option');
+      optionElem.value = stateInfo[state].name;
+      optionElem.setAttribute('data-value', state);
+      datalist.appendChild(optionElem);
+    }
   }
+  sortStateDropdownList();
 }
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
