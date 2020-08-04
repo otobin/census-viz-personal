@@ -281,6 +281,7 @@ function checkPercentage(headerColumn) {
   return false;
 }
 
+let mapData;
 // Returns an object containing all of the relevant data in order
 // to render the geoJson map of the counties.
 function getMapsData(censusDataArray) {
@@ -310,8 +311,9 @@ function getMapsData(censusDataArray) {
     populationsList.push(parseInt(county[1]));
     });
   const minAndMax = getMinAndMaxPopulation(populationsList);
-  return {map: countyToPopMap,
+  mapData = {map: countyToPopMap,
     minValue: minAndMax.min, maxValue: minAndMax.max};
+  return mapData;
 }
 
 // Returns an object with the min and max population of the
@@ -330,19 +332,20 @@ function getMinAndMaxPopulation(populationArray) {
   return {max: max, min: min};
 }
 
+let map;
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
 function displayCountyGeoJson(mapsData, stateName) {
-  const map = new google.maps.Map(document.getElementById('map'), {
+  map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateName].zoomLevel,
     center: {lat: stateInfo[stateName].lat, lng: stateInfo[stateName].lng},
   });
 
-  const countyToPopMap = mapsData.map;
+  countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
-  const f = chroma.scale(['white', 'blue']).domain([minPopulation,
+  const f = chroma.scale(['white', '#0000ff']).domain([minPopulation,
     maxPopulation]);
   const geoData = getGeoData(stateName, true);
 
@@ -412,5 +415,17 @@ function setStyleForStateQuery() {
   mapsDiv.style.display = 'none';
   const amChartsDiv = document.getElementById('am-charts');
   amChartsDiv.style.display = 'block';
+}
+
+function changeColor(colorParam) {
+  const f = chroma.scale(['white', colorParam.value]).domain([mapData.minValue,
+    mapData.maxValue]);
+  map.data.forEach(function(feature) {
+    map.data.setStyle((feature) => {
+      return {
+        fillColor: f(mapData.map[feature.j.name]).toString(),
+      };
+    });
+  });
 }
 
