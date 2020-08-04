@@ -64,15 +64,15 @@ button {
   background: #0071bd;
 }
 
+button,
+input[type=submit]:focus {
+  outline: 0;
+}
+
 button:hover,
 input[type=submit]:hover {
   filter: brightness(90%);
   transition: all .4s ease-in-out;
-}
-
-button,
-input[type=submit]:focus {
-  outline: 0;
 }
 
 #result {
