@@ -69,8 +69,18 @@ input[type=submit]:focus {
   padding: 30px;
 }
 
+#am-charts {
+  height: 600px;
+}
+
 #map {
   height: 600px;
+  display: none;
+}
+
+#buttons {
+  display: none;
+  text-align: center;
 }
 
 #map-title {
