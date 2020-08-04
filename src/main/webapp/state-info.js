@@ -209,4 +209,8 @@ const stateInfo = {
         'name': 'Wyoming',
         'ISO': 'US-WY',
     },
+    '72': {
+        'name': 'Puerto Rico',
+        'ISO': 'US-PR',
+    },
 };

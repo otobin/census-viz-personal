@@ -277,47 +277,6 @@ function toggle(divToShow, divToHide) {
   visibleElement.style.display = 'block';
 }
 
-// Sort location dropdown alphabetically
-function sortStateDropdownList() {
-  // Adapted from w3schools
-  const list = document.getElementById('location');
-  let switching = true;
-  let i;
-  while (switching) {
-    switching = false;
-    options = list.getElementsByTagName('option');
-    // all states option always first
-    for (i = 1; i < (options.length - 1); i++) {
-      shouldSwitch = false;
-      if (options[i].value.toLowerCase() > options[i + 1].value.toLowerCase()) {
-        shouldSwitch = true;
-        break;
-      }
-    }
-    if (shouldSwitch) {
-      options[i].parentNode.insertBefore(options[i + 1], options[i]);
-      switching = true;
-    }
-  }
-}
-
-function createStateDropdownList() {
-  const datalist = document.getElementById('location');
-  let optionElem = document.createElement('option');
-  optionElem.value = 'each U.S. state';
-  optionElem.setAttribute('data-value', 'state');
-  datalist.appendChild(optionElem);
-
-  for (const state in stateInfo) {
-    if (stateInfo.hasOwnProperty(state)) {
-      optionElem = document.createElement('option');
-      optionElem.value = stateInfo[state].name;
-      optionElem.setAttribute('data-value', state);
-      datalist.appendChild(optionElem);
-    }
-  }
-  sortStateDropdownList();
-}
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
   if (isCountyQuery) {
