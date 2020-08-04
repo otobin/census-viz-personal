@@ -1,15 +1,18 @@
 async function getGeoData(location, isCountyQuery) {
   if (isCountyQuery) {
     const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
-    await new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      document.body.appendChild(script);
-      script.onload = resolve;
-      script.onerror = reject;
-      script.async = true;
-      script.src =
-      `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
-    });
+    if (!stateInfo[location].geoJsonLoaded) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        document.body.appendChild(script);
+        script.onload = resolve;
+        script.onerror = reject;
+        script.async = true;
+        script.src =
+        `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
+      });
+      stateInfo[location].geoJsonLoaded = true;
+    }
     return window['am4geodata_region_usa_' + abbrev + 'Low'];
   } else {
     return am4geodata_usaLow;
