@@ -260,9 +260,4 @@ const stateInfo = {
         'ISO': 'US-WY',
         geoData: am4geodata_region_usa_wyLow,
     },
-    '72': {
-        'name': 'Puerto Rico',
-        'ISO': 'US-PR',
-        geoData: am4geodata_region_usa_prLow,
-    },
 };
