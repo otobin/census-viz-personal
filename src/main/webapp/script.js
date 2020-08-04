@@ -74,8 +74,7 @@ function passQuery() {
 
 function getGeoData(location, isCountyQuery) {
   if (isCountyQuery) {
-    return location ===
-        '06' ? am4geodata_region_usa_caLow : am4geodata_region_usa_njLow;
+    return stateInfo[location].geoData;
   } else {
     return am4geodata_usaLow;
   }
