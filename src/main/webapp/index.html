@@ -6,17 +6,66 @@
   <title>Census Viz</title>
   <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
+  <script src="state-info.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/geodata/usaLow.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/caLow.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/njLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/azLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/alLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/akLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/arLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/coLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/ctLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/deLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/dcLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/flLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/gaLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/hiLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/idLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/ilLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/inLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/iaLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/ksLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/kyLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/laLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/meLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/mdLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/maLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/miLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/mnLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/msLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/moLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/mtLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/neLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/nvLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/nhLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/nmLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/nyLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/ncLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/ndLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/ohLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/okLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/orLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/paLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/riLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/scLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/sdLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/tnLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/txLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/utLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/vtLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/vaLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/waLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/wvLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/wiLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/region/usa/wyLow.js"></script>
   <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
-  <script src="state-info.js"></script>
   <link rel="stylesheet" href="style.css">
   <script src="script.js"></script>
 </head>
-
+ 
 <body onload="registerServiceWorker()">
   <main>
     <div id="header">
@@ -57,8 +106,58 @@
               value="every US state" pattern="every US state|California|New Jersey">
             <datalist id="location">
               <option data-value="state" value="every US state"></option>
+              <option data-value="01" value="Alabama"></option>
+              <option data-value="02" value="Alaska"></option>
+              <option data-value="04" value="Arizona"></option>
+              <option data-value="05" value="Arkansas"></option>
               <option data-value="06" value="California"></option>
+              <option data-value="08" value="Colorado"></option>
+              <option data-value="09" value="Connecticut"></option>
+              <option data-value="10" value="Delaware"></option>
+              <option data-value="11" value="District of Columbia"></option>
+              <option data-value="12" value="Florida"></option>
+              <option data-value="13" value="Georgia"></option>
+              <option data-value="15" value="Hawaii"></option>
+              <option data-value="16" value="Idaho"></option>
+              <option data-value="17" value="Illinois"></option>
+              <option data-value="18" value="Indiana"></option>
+              <option data-value="19" value="Iowa"></option>
+              <option data-value="20" value="Kansas"></option>
+              <option data-value="21" value="Kentucky"></option>
+              <option data-value="22" value="Louisiana"></option>
+              <option data-value="23" value="Maine"></option>
+              <option data-value="24" value="Maryland"></option>
+              <option data-value="25" value="Massachusetts"></option>
+              <option data-value="26" value="Michigan"></option>
+              <option data-value="27" value="Minnesota"></option>
+              <option data-value="28" value="Mississippi"></option>
+              <option data-value="29" value="Missouri"></option>
+              <option data-value="30" value="Montana"></option>
+              <option data-value="31" value="Nebraska"></option>
+              <option data-value="32" value="Nevada"></option>
+              <option data-value="33" value="New Hampshire"></option>
               <option data-value="34" value="New Jersey"></option>
+              <option data-value="35" value="New Mexico"></option>
+              <option data-value="36" value="New York"></option>
+              <option data-value="37" value="North Carolina"></option>
+              <option data-value="38" value="North Dakota"></option>
+              <option data-value="39" value="Ohio"></option>
+              <option data-value="40" value="Oklahoma"></option>
+              <option data-value="41" value="Oregon"></option>
+              <option data-value="42" value="Pennsylvania"></option>
+              <option data-value="44" value="Rhode Island"></option>
+              <option data-value="45" value="South Carolina"></option>
+              <option data-value="46" value="South Dakota"></option>
+              <option data-value="47" value="Tennessee"></option>
+              <option data-value="48" value="Texas"></option>
+              <option data-value="49" value="Utah"></option>
+              <option data-value="50" value="Vermont"></option>
+              <option data-value="51" value="Virgina"></option>
+              <option data-value="53" value="Washington"></option>
+              <option data-value="54" value="West Virginia"></option>
+              <option data-value="55" value="Wisconsin"></option>
+              <option data-value="56" value="Wyoming"></option>
+              <option data-value="72" value="Puerto Rico"></option>
             </datalist>
           </input>
           ?

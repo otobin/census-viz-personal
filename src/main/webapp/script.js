@@ -74,7 +74,7 @@ function passQuery() {
 
 function getGeoData(location, isCountyQuery) {
   if (isCountyQuery) {
-    chart.geodata = stateInfo[location].geodata;
+    return stateInfo[location].geoData;
   } else {
     return am4geodata_usaLow;
   }
