@@ -23,13 +23,15 @@ async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
+  const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+  document.getElementById('data-table').innerHTML = '';
+  document.getElementById('data-table')
+      .appendChild(createDataTable(amChartsData));
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
-      const amChartsData = createDataArray(censusDataArray, isCountyQuery);
       displayAmChartsMap(amChartsData, description, geoData);
       displayCountyGeoJson(mapsData, location);
   } else {
-      const amChartsData = createDataArray(censusDataArray, isCountyQuery);
       displayAmChartsMap(amChartsData, description, geoData);
   }
   document.getElementById('more-info').innerText = '';
@@ -135,12 +137,14 @@ function createDataArray(censusDataArray, isCountyQuery) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
+        name: location[0],
         value: percentToTotal(location[1], location[2])});
     });
   } else {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
+        name: location[0],
         value: location[1]});
     });
   }
@@ -294,5 +298,49 @@ function setStyle(isCountyQuery) {
     mapsDiv.style.display = 'none';
     const amChartsDiv = document.getElementById('am-charts');
     amChartsDiv.style.display = 'block';
+  }
+}
+
+/**
+ * Create and return an HTML table using the data in dataArray.
+ * Uses first row in dataArray as table headers.
+ */
+function createDataTable(dataArray) {
+  const table = document.createElement('table');
+  table.innerHTML = '';
+  let tableRow = document.createElement('tr');
+  let region = document.createElement('th');
+  let value = document.createElement('th');
+  region.innerText = 'Location';
+  value.innerText = 'Population';
+  tableRow.appendChild(region);
+  tableRow.appendChild(value);
+  table.appendChild(tableRow);
+
+  for (let i = 0; i < dataArray.length; i++) {
+    tableRow = document.createElement('tr');
+    region = document.createElement('td');
+    value = document.createElement('td');
+    region.innerText = dataArray[i].name;
+    value.innerText = dataArray[i].value;
+    tableRow.appendChild(region);
+    tableRow.appendChild(value);
+    table.appendChild(tableRow);
+  }
+  return table;
+}
+
+/**
+ * Show/hide the raw data table.
+ */
+function toggleDataTable() {
+  const dataTable = document.getElementById('data-table');
+  if (window.getComputedStyle(dataTable)
+      .getPropertyValue('display') === 'none') {
+    dataTable.style.display = 'inline';
+    document.getElementById('toggle-data-btn').innerText = 'Hide raw data';
+  } else {
+    dataTable.style.display = 'none';
+    document.getElementById('toggle-data-btn').innerText = 'Display raw data';
   }
 }
