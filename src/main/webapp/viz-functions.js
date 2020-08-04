@@ -1,61 +1,6 @@
-// Tell browser where to find service worker file,
-// so the service worker script can run in background.
-// We're using this service worker to intercept fetch requests.
-function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-        .then(function(response) {
-          // Service worker registration done
-          console.log('Registration Successful', response);
-        }, function(error) {
-          // Service worker registration failed
-          console.log('Registration Failed', error);
-        });
-  }
-}
-
-async function passQuery() {
-  document.getElementById('map-title').innerText = '';
-  am4core.disposeAllCharts();
-  document.getElementById('more-info').innerText = 'Please wait. Loading...';
-  document.getElementById('result').style.display = 'block';
-
-  const query = new FormData(document.getElementById('query-form'));
-
-  const personTypeInput = query.get('person-type');
-  const actionInput = query.get('action');
-  const locationInput = query.get('location');
-
-  const personType = document.querySelector(
-    '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
-  const action = document.querySelector(
-      '#action option[value=\'' + actionInput + '\']').dataset.value;
-  const location = document.querySelector(
-    '#location option[value=\'' + locationInput + '\']').dataset.value;
-
-  const actionToText = new Map();
-  actionToText['moved'] = 'moved to';
-  if (actionToText.has(action)) {
-    action = actionToText[action];
-  }
-  const description = {action: action, age: personType};
-  const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
-  let title = 'Population who ' + action;
-  if (action === 'moved') {
-    title += ' to ';
-  } else {
-    title += ' in ';
-  }
-  title += 'each ' + region + ' (' + personType.replace('-', ' ') + ')';
-  document.getElementById('map-title').innerText = title;
-
-  const fetchUrl = '/query?person-type=' + personType +
-    '&action=' + action +
-    '&location=' + location;
-  
+async function getGeoData(location, isCountyQuery) {
+  const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
   if (isCountyQuery) {
-    const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
     await new Promise((resolve, reject) => {
       const script = document.createElement('script');
       document.body.appendChild(script);
@@ -65,76 +10,26 @@ async function passQuery() {
       script.src = 
       `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
     });
-  }
-
-  fetch(fetchUrl)
-    .then((response) => {
-      if (response.ok) {
-        response.json().then((jsonResponse) => JSON.parse(jsonResponse))
-        .then((censusDataArray) => {
-          // censusDatadata is a 2D array, where the first row is a
-          // header row and all subsequent rows are one piece of
-          // data (e.g. for a state or county)
-          displayVisualization(censusDataArray, description,
-            location, isCountyQuery);
-          document.getElementById('more-info').innerText = '';
-        });
-      } else {
-        displayError(response.status, response.statusText);
-      }
-    });
-}
-
-function getGeoData(location, isCountyQuery) {
-  const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
-  if (isCountyQuery) {
     return window['am4geodata_region_usa_' + abbrev + 'Low'];
   } else {
     return am4geodata_usaLow;
   }
 }
 
-
 function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   const geoData = getGeoData(location, isCountyQuery);
+  setStyle(isCountyQuery);
   if (isCountyQuery) {
-    setStyleForCountyQuery();
-    const mapsData = getMapsData(censusDataArray);
-    const amChartsData = createDataArray(censusDataArray, isCountyQuery);
-    displayAmChartsMap(amChartsData, description, geoData);
-    displayCountyGeoJson(mapsData, location);
+      const mapsData = getMapsData(censusDataArray);
+      const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+      displayAmChartsMap(amChartsData, description, geoData);
+      displayCountyGeoJson(mapsData, location);
   } else {
-    setStyleForStateQuery();
-    const amChartsData = createDataArray(censusDataArray, isCountyQuery);
-    displayAmChartsMap(amChartsData, description, geoData);
+      const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+      displayAmChartsMap(amChartsData, description, geoData);
   }
   document.getElementById('more-info').innerText = '';
-}
-
-// Check that the input being written to a datalist can match one of its options
-// Note: assumes that the input list has id equal to the datalist's id + '-list'
-function validateInput(dataListId) {
-  const datalist = document.getElementById(dataListId);
-  const inputlist = document.getElementById(dataListId+'-list');
-  const options = datalist.options;
-  const typedSoFar = inputlist.value.toLowerCase();
-
-  for (const option of options) {
-    if (option.value.toLowerCase().includes(typedSoFar)) {
-      inputlist.className = 'input-valid'; // At least one match present
-      return;
-    }
-  }
-  // Didn't find any matches
-  inputlist.className = 'input-invalid';
-}
-
-// Display an error on the front end
-function displayError(status, statusText) {
-  document.getElementById('map').innerHTML = '';
-  document.getElementById('more-info').innerText =
-    `Error ${status}: ${statusText}`;
 }
 
 function displayAmChartsMap(data, description, geoData) {
@@ -217,26 +112,7 @@ function displayAmChartsMap(data, description, geoData) {
   });
 }
 
-// Note the value of a field and then empty it.
-let storedVal = '';
-function storeValueAndEmpty(dataListId) {
-  const inputlist = document.getElementById(dataListId+'-list');
-  storedVal = inputlist.value;
-  inputlist.value = '';
-}
-
-// If a field is empty, replace it with the value it had directly prior to
-// being emptied. Since this function is called on focus out, it will always
-// be called directly after storeValueAndEmpty, which is called on focus in.
-// Therefore, the most recently stored value will always be the one we want.
-function replaceValueIfEmpty(dataListId) {
-  const inputlist = document.getElementById(dataListId+'-list');
-  const typedSoFar = inputlist.value;
-  if (typedSoFar === '') {
-    inputlist.value = storedVal;
-  }
-}
-
+// TODO: could this function's writer please add a docstring?
 function getLocationId(location, isCountyQuery, regionIndex) {
   if (isCountyQuery) {
     return location[regionIndex] + location[regionIndex + 1];
@@ -274,6 +150,7 @@ function percentToTotal(totalNumber, percentage) {
   return (totalNumber/100) * percentage;
 }
 
+
 // checkPercentage() Takes in the header of a census query and returns
 // whether or not the total needs to be calculated using the
 // percentToTotal() function
@@ -301,7 +178,7 @@ function getMapsData(censusDataArray) {
   const populationsList = [];
   // Get rid of the header
   const censusArray = censusDataArray.slice(1);
-  Array.prototype.forEach.call(censusArray, (county) => {
+  censusArray.forEach( (county) => {
     // The current county strings are in a layout like this:
     // "Contra Costa County, California"
     // and we need to get them like this "Contra Costa"
@@ -355,7 +232,7 @@ function displayCountyGeoJson(mapsData, stateName) {
   const countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
-  const f = chroma.scale(['white', 'blue']).domain([minPopulation,
+  const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
   const geoData = getGeoData(stateName, true);
 
@@ -363,7 +240,7 @@ function displayCountyGeoJson(mapsData, stateName) {
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
       return {
-        fillColor: f(countyToPopMap[feature.j.name]).toString(),
+        fillColor: colorScale(countyToPopMap[feature.j.name]).toString(),
       };
     });
   });
@@ -393,38 +270,11 @@ function displayCountyGeoJson(mapsData, stateName) {
 }
 
 // Functions to toggle between amcharts and maps.
-function showGeoJson() {
-  const mapElement = document.getElementById('map');
-  const amChartsElement = document.getElementById('am-charts');
-  amChartsElement.style.display = 'none';
-  mapElement.style.display = 'block';
-}
-
-function showAmCharts() {
-  const mapElement = document.getElementById('map');
-  const amChartsElement = document.getElementById('am-charts');
-  mapElement.style.display = 'none';
-  amChartsElement.style.display = 'block';
-}
-
-// Sets up the webpage for a county query. Displays buttons and
-// sets amcharts as the default visible map.
-function setStyleForCountyQuery() {
-  const buttonsDiv = document.getElementById('buttons');
-  buttonsDiv.style.display = 'block';
-  const chartsDiv = document.getElementById('am-charts');
-  chartsDiv.style.display = 'block';
-}
-
-// Sets up the webpage for a state query. Hides buttons and
-// sets amCharts as the only visible map.
-function setStyleForStateQuery() {
-  const buttonsDiv = document.getElementById('buttons');
-  buttonsDiv.style.display = 'none';
-  const mapsDiv = document.getElementById('map');
-  mapsDiv.style.display = 'none';
-  const amChartsDiv = document.getElementById('am-charts');
-  amChartsDiv.style.display = 'block';
+function toggle(divToShow, divToHide) {
+  const visibleElement = document.getElementById(divToShow);
+  const hiddenElement = document.getElementById(divToHide);
+  hiddenElement.style.display = 'none';
+  visibleElement.style.display = 'block';
 }
 
 function createStateDropdownList() {
@@ -439,5 +289,21 @@ function createStateDropdownList() {
     optionElem.value = stateInfo[state].name;
     optionElem.setAttribute('data-value', state);
     datalist.appendChild(optionElem)
+  }
+}
+// Sets up the webpage for the appropriate query.
+function setStyle(isCountyQuery) {
+  if (isCountyQuery) {
+    const buttonsDiv = document.getElementById('buttons');
+    buttonsDiv.style.display = 'block';
+    const chartsDiv = document.getElementById('am-charts');
+    chartsDiv.style.display = 'block';
+  } else {
+    const buttonsDiv = document.getElementById('buttons');
+    buttonsDiv.style.display = 'none';
+    const mapsDiv = document.getElementById('map');
+    mapsDiv.style.display = 'none';
+    const amChartsDiv = document.getElementById('am-charts');
+    amChartsDiv.style.display = 'block';
   }
 }
