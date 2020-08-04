@@ -56,6 +56,10 @@ input[type=submit] {
   text-transform: uppercase;
 }
 
+input[type=submit] {
+  background: #0dbd00;
+}
+
 button,
 input[type=submit]:hover {
   filter: brightness(90%);
@@ -65,10 +69,6 @@ input[type=submit]:hover {
 button,
 input[type=submit]:focus {
   outline: 0;
-}
-
-input[type=submit] {
-  background: #0dbd00;
 }
 
 button {
