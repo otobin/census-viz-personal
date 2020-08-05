@@ -282,3 +282,4 @@ function setStyle(isCountyQuery) {
   const mapsDiv = document.getElementById('map');
   mapsDiv.style.display = 'none';
 }
+
