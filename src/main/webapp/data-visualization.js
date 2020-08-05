@@ -156,9 +156,8 @@ function createDataArray(censusDataArray, isCountyQuery) {
 // percentToTotal takes in the total number of people in a category
 // and the percentage and returns the total
 function percentToTotal(totalNumber, percentage) {
-  return (totalNumber/100) * percentage;
+  return round((totalNumber/100) * percentage);
 }
-
 
 // checkPercentage() Takes in the header of a census query and returns
 // whether or not the total needs to be calculated using the
@@ -170,8 +169,8 @@ function checkPercentage(headerColumn) {
   if (headerColumn.length !== 4) {
     return false;
   }
-  firstNum = Number(headerColumn[1]);
-  secondNum = Number(headerColumn[2]);
+  const firstNum = Number(headerColumn[1]);
+  const secondNum = Number(headerColumn[2]);
   return !(isNaN(firstNum) || isNaN(secondNum)) &&
       ((firstNum > 100 && secondNum >= 0 && secondNum <= 100) ||
           (secondNum > 100 && firstNum >= 0 && firstNum <= 100));
