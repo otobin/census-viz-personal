@@ -21,12 +21,14 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
-// Display amCharts and geoJson visulizations for given data.
+// Display amCharts and geoJson visulizations and create data table
+// for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+  drawTable(amChartsData, isCountyQuery);
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
       displayAmChartsMap(amChartsData, description, geoData);
@@ -134,15 +136,12 @@ function createDataArray(censusDataArray, isCountyQuery) {
   const regionIndex = censusDataArray[0].indexOf('state');
   censusDataArray = censusDataArray.slice(1); // get rid of header row
   // Check to see if an extra calculation for percentages is needed
-  const table = initDataTable(isCountyQuery);
   if (checkPercentage(censusDataArray[0])) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
         name: location[0],
         value: percentToTotal(location[1], location[2])});
-        appendRowToDataTable(table, location[0], 
-          percentToTotal(location[1], location[2]));
     });
   } else {
     censusDataArray.forEach((location) => {
@@ -150,10 +149,8 @@ function createDataArray(censusDataArray, isCountyQuery) {
         id: getLocationId(location, isCountyQuery, regionIndex),
         name: location[0],
         value: location[1]});
-        appendRowToDataTable(table, location[0], location[1]);
     });
   }
-  document.getElementById('data-table').appendChild(table);
   return vizDataArray;
 }
 
@@ -306,38 +303,24 @@ function setStyle(isCountyQuery) {
   mapsDiv.style.display = 'none';
 }
 
-function initDataTable(isCountyQuery) {
-  const table = document.createElement('table');
-  table.innerHTML = '';
-  const tableRow = document.createElement('tr');
-  const region = document.createElement('th');
-  const value = document.createElement('th');
-  region.innerText = isCountyQuery ? 'County' : 'State';
-  value.innerText = 'Population';
-  tableRow.appendChild(region);
-  tableRow.appendChild(value);
-  table.appendChild(tableRow);
-  return table;
+// Draw data table using Visualization API
+function drawTable(dataArray, isCountyQuery) {
+  google.charts.load('current', {'packages':['table']});
+  google.charts.setOnLoadCallback(() => {
+    const data = new google.visualization.DataTable();
+    const nameHeader = isCountyQuery ? 'County' : 'State';
+    data.addColumn('string', nameHeader);
+    data.addColumn('number', 'Population');
+    dataArray.forEach((elem) => {
+      data.addRow([elem.name, parseInt(elem.value)]);
+    });
+    const table = new google.visualization.Table(
+        document.getElementById('data-table'));
+    table.draw(data, {width: '100%', height: '100%'});
+  });
 }
 
-/**
- * Create and return an HTML table using the data in dataArray.
- * Uses first row in dataArray as table headers.
- */
-function appendRowToDataTable(table, locationName, population) {
-  const tableRow = document.createElement('tr');
-  const region = document.createElement('td');
-  const value = document.createElement('td');
-  region.innerText = locationName;
-  value.innerText = population;
-  tableRow.appendChild(region);
-  tableRow.appendChild(value);
-  table.appendChild(tableRow);
-}
-
-/**
- * Show/hide the raw data table.
- */
+// Show/hide the raw data table.
 function toggleDataTable() {
   const dataTable = document.getElementById('data-table');
   if (window.getComputedStyle(dataTable)

@@ -18,6 +18,8 @@ function clearPreviousResult() {
   document.getElementById('map-title').innerText = '';
   document.getElementById('data-table').innerHTML = '';
   am4core.disposeAllCharts();
+  document.getElementById('more-info').innerText = 'Please wait. Loading...';
+  document.getElementById('result').style.display = 'block';
 }
 
 // Get the query the user entered and display the result.
@@ -26,9 +28,6 @@ function clearPreviousResult() {
 // to be reformatted and visualized.
 function passQuery() {
   clearPreviousResult();
-  document.getElementById('more-info').innerText = 'Please wait. Loading...';
-  document.getElementById('result').style.display = 'block';
-
   const query = new FormData(document.getElementById('query-form'));
 
   const personTypeInput = query.get('person-type');
