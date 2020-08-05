@@ -1,3 +1,5 @@
+// Return geoJson for a given location. Load the geodata file if not already
+// loaded for the location.
 async function getGeoData(location, isCountyQuery) {
   if (isCountyQuery) {
     const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
@@ -19,6 +21,7 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
+// Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   const geoData = await getGeoData(location, isCountyQuery);
@@ -35,6 +38,7 @@ async function displayVisualization(censusDataArray, description,
   document.getElementById('more-info').innerText = '';
 }
 
+// Create and display amcharts map using data and geoData.
 function displayAmChartsMap(data, description, geoData) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
@@ -115,7 +119,7 @@ function displayAmChartsMap(data, description, geoData) {
   });
 }
 
-// TODO: could this function's writer please add a docstring?
+// Get the location id used by amCharts geoJson file for a given location.
 function getLocationId(location, isCountyQuery, regionIndex) {
   if (isCountyQuery) {
     return location[regionIndex] + location[regionIndex + 1];
@@ -238,7 +242,7 @@ async function displayCountyGeoJson(mapsData, stateName) {
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateName, true);
-  
+
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
