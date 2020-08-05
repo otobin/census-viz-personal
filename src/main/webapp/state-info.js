@@ -18,9 +18,9 @@ const stateInfo = {
     '06': {
         'name': 'California',
         'ISO': 'US-CA',
-        lat: 38,
-        lng: -120,
-        zoomLevel: 6,
+        'lat': 38,
+        'lng': -120,
+        'zoomLevel': 6,
     },
     '08': {
         'name': 'Colorado',
@@ -125,9 +125,9 @@ const stateInfo = {
     '34': {
         'name': 'New Jersey',
         'ISO': 'US-NJ',
-        lat: 40.25,
-        lng: -75,
-        zoomLevel: 8,
+        'lat': 40.25,
+        'lng': -75,
+        'zoomLevel': 8,
     },
     '35': {
         'name': 'New Mexico',

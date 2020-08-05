@@ -4,13 +4,13 @@
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
-        .then(function(response) {
-          // Service worker registration done
-          console.log('Registration Successful', response);
-        }, function(error) {
-          // Service worker registration failed
-          console.log('Registration Failed', error);
-        });
+      .then(function(response) {
+        // Service worker registration done
+        console.log('Registration Successful', response);
+      }, function(error) {
+        // Service worker registration failed
+        console.log('Registration Failed', error);
+      });
   }
 }
 
@@ -33,7 +33,7 @@ function passQuery() {
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
-      '#action option[value=\'' + actionInput + '\']').dataset.value;
+    '#action option[value=\'' + actionInput + '\']').dataset.value;
   const location = document.querySelector(
     '#location option[value=\'' + locationInput + '\']').dataset.value;
 
@@ -62,14 +62,14 @@ function passQuery() {
     .then((response) => {
       if (response.ok) {
         response.json().then((jsonResponse) => JSON.parse(jsonResponse))
-        .then((censusDataArray) => {
-          // censusDataArray is a 2D array, where the first row is a
-          // header row and all subsequent rows are one piece of
-          // data (e.g. for a state or county)
-          displayVisualization(censusDataArray, description,
-            location, isCountyQuery);
-          document.getElementById('more-info').innerText = '';
-        });
+          .then((censusDataArray) => {
+            // censusDataArray is a 2D array, where the first row is a
+            // header row and all subsequent rows are one piece of
+            // data (e.g. for a state or county)
+            displayVisualization(censusDataArray, description,
+              location, isCountyQuery);
+            document.getElementById('more-info').innerText = '';
+          });
       } else {
         displayError(response.status, response.statusText);
       }
@@ -80,7 +80,7 @@ function passQuery() {
 // Note: assumes that the input list has id equal to the datalist's id + '-list'
 function validateInput(dataListId) {
   const datalist = document.getElementById(dataListId);
-  const inputlist = document.getElementById(dataListId+'-list');
+  const inputlist = document.getElementById(dataListId + '-list');
   const options = datalist.options;
   const typedSoFar = inputlist.value.toLowerCase();
 
@@ -104,7 +104,7 @@ function displayError(status, statusText) {
 // Note the value of a field and then empty it.
 let storedVal = '';
 function storeValueAndEmpty(dataListId) {
-  const inputlist = document.getElementById(dataListId+'-list');
+  const inputlist = document.getElementById(dataListId + '-list');
   storedVal = inputlist.value;
   inputlist.value = '';
 }
@@ -114,9 +114,45 @@ function storeValueAndEmpty(dataListId) {
 // be called directly after storeValueAndEmpty, which is called on focus in.
 // Therefore, the most recently stored value will always be the one we want.
 function replaceValueIfEmpty(dataListId) {
-  const inputlist = document.getElementById(dataListId+'-list');
+  const inputlist = document.getElementById(dataListId + '-list');
   const typedSoFar = inputlist.value;
   if (typedSoFar === '') {
     inputlist.value = storedVal;
   }
+}
+
+// Return an array of state number and name sorted alphabetically.
+// Excludes Puerto Rico.
+function getSortedStateInfoArray() {
+  const stateInfoArray = [];
+  // Put stateInfo into sorted array
+  for (const state in stateInfo) {
+    if (stateInfo.hasOwnProperty(state)) { // Skip Puerto Rico
+      if (state !== '72') {
+        stateInfoArray.push({number: state, name: stateInfo[state].name});
+      }
+    }
+  }
+  stateInfoArray.sort((a, b) => {
+    if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+    if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+    return 0;
+  });
+  return stateInfoArray;
+}
+
+// Append all locations to the location dropdown element.
+function createStateDropdownList() {
+  const datalist = document.getElementById('location');
+  let optionElem = document.createElement('option');
+  optionElem.value = 'each U.S. state';
+  optionElem.setAttribute('data-value', 'state');
+  datalist.appendChild(optionElem);
+  const stateInfoArray = getSortedStateInfoArray();
+  stateInfoArray.forEach((value) => {
+    optionElem = document.createElement('option');
+    optionElem.value = value.name;
+    optionElem.setAttribute('data-value', value.number);
+    datalist.appendChild(optionElem);
+  });
 }

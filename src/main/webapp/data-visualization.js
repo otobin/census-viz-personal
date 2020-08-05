@@ -1,15 +1,30 @@
-function getGeoData(location, isCountyQuery) {
+// Return geoJson for a given location. Load the geodata file if not already
+// loaded for the location.
+async function getGeoData(location, isCountyQuery) {
   if (isCountyQuery) {
-    return location ===
-        '06' ? am4geodata_region_usa_caLow : am4geodata_region_usa_njLow;
+    const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
+    if (!stateInfo[location].geoJsonLoaded) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        document.body.appendChild(script);
+        script.onload = resolve;
+        script.onerror = reject;
+        script.async = true;
+        script.src =
+        `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
+      });
+      stateInfo[location].geoJsonLoaded = true;
+    }
+    return window['am4geodata_region_usa_' + abbrev + 'Low'];
   } else {
     return am4geodata_usaLow;
   }
 }
 
-function displayVisualization(censusDataArray, description,
+// Display amCharts and geoJson visulizations for given data.
+async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
-  const geoData = getGeoData(location, isCountyQuery);
+  const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
@@ -23,6 +38,7 @@ function displayVisualization(censusDataArray, description,
   document.getElementById('more-info').innerText = '';
 }
 
+// Create and display amcharts map using data and geoData.
 function displayAmChartsMap(data, description, geoData) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
@@ -103,7 +119,7 @@ function displayAmChartsMap(data, description, geoData) {
   });
 }
 
-// TODO: could this function's writer please add a docstring?
+// Get the location id used by amCharts geoJson file for a given location.
 function getLocationId(location, isCountyQuery, regionIndex) {
   if (isCountyQuery) {
     return location[regionIndex] + location[regionIndex + 1];
@@ -214,7 +230,7 @@ function getMinAndMaxPopulation(populationArray) {
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-function displayCountyGeoJson(mapsData, stateName) {
+async function displayCountyGeoJson(mapsData, stateName) {
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateName].zoomLevel,
     center: {lat: stateInfo[stateName].lat, lng: stateInfo[stateName].lng},
@@ -225,7 +241,7 @@ function displayCountyGeoJson(mapsData, stateName) {
   const minPopulation = mapsData.minValue;
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
-  const geoData = getGeoData(stateName, true);
+  const geoData = await getGeoData(stateName, true);
 
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
@@ -277,9 +293,9 @@ function setStyle(isCountyQuery) {
     const buttonsDiv = document.getElementById('buttons');
     buttonsDiv.style.display = 'none';
   }
+
   const chartsDiv = document.getElementById('am-charts');
   chartsDiv.style.display = 'block';
   const mapsDiv = document.getElementById('map');
   mapsDiv.style.display = 'none';
 }
-
