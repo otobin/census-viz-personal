@@ -46,15 +46,21 @@ public class QueryServlet extends HttpServlet {
     String action = request.getParameter("action");
     String location = request.getParameter("location");
 
-    if (!queryToDataRow.containsKey(action)
-        || !queryToDataRow.get(action).containsKey(personType)) {
-      // We don't have a data table for this query
+    if (!queryToDataRow.containsKey(action)) {
+      // We don't have information on this action
       response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST, "We do not support this visualization yet.");
+          HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
+      return;
+    } else if (!queryToDataRow.get(action).containsKey(personType)) {
+      // This action doesn't make sense with this type of person,
+      // or the census doesn't keep data on it that we could find
+      response.sendError(
+          HttpServletResponse.SC_BAD_REQUEST, 
+          "This query is not supported by census data. Try asking a more general one.");
       return;
     }
-    String dataRow = queryToDataRow.get(action).get(personType);
 
+    String dataRow = queryToDataRow.get(action).get(personType);
     URL fetchUrl =
         new URL(
             "https://api.census.gov/data/2018/acs/acs1/"
