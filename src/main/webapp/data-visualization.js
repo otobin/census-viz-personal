@@ -26,13 +26,12 @@ async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
+  const amChartsData = createDataArray(censusDataArray, isCountyQuery);
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
-      const amChartsData = createDataArray(censusDataArray, isCountyQuery);
       displayAmChartsMap(amChartsData, description, geoData);
       displayCountyGeoJson(mapsData, location);
   } else {
-      const amChartsData = createDataArray(censusDataArray, isCountyQuery);
       displayAmChartsMap(amChartsData, description, geoData);
   }
   document.getElementById('more-info').innerText = '';
@@ -133,21 +132,28 @@ function createDataArray(censusDataArray, isCountyQuery) {
   const vizDataArray = [];
   // first row is headers
   const regionIndex = censusDataArray[0].indexOf('state');
-  censusDataArray = censusDataArray.splice(1); // get rid of header row
+  censusDataArray = censusDataArray.slice(1); // get rid of header row
   // Check to see if an extra calculation for percentages is needed
+  const table = initDataTable(isCountyQuery);
   if (checkPercentage(censusDataArray[0])) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
+        name: location[0],
         value: percentToTotal(location[1], location[2])});
+        appendRowToDataTable(table, location[0], 
+          percentToTotal(location[1], location[2]));
     });
   } else {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
+        name: location[0],
         value: location[1]});
+        appendRowToDataTable(table, location[0], location[1]);
     });
   }
+  document.getElementById('data-table').appendChild(table);
   return vizDataArray;
 }
 
@@ -230,10 +236,10 @@ function getMinAndMaxPopulation(populationArray) {
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, stateName) {
+async function displayCountyGeoJson(mapsData, stateNumber) {
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: stateInfo[stateName].zoomLevel,
-    center: {lat: stateInfo[stateName].lat, lng: stateInfo[stateName].lng},
+    zoom: stateInfo[stateNumber].zoomLevel,
+    center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
   });
 
   const countyToPopMap = mapsData.map;
@@ -241,8 +247,8 @@ async function displayCountyGeoJson(mapsData, stateName) {
   const minPopulation = mapsData.minValue;
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
-  const geoData = await getGeoData(stateName, true);
 
+  const geoData = await getGeoData(stateNumber, true);
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
@@ -298,4 +304,48 @@ function setStyle(isCountyQuery) {
   chartsDiv.style.display = 'block';
   const mapsDiv = document.getElementById('map');
   mapsDiv.style.display = 'none';
+}
+
+function initDataTable(isCountyQuery) {
+  const table = document.createElement('table');
+  table.innerHTML = '';
+  const tableRow = document.createElement('tr');
+  const region = document.createElement('th');
+  const value = document.createElement('th');
+  region.innerText = isCountyQuery ? 'County' : 'State';
+  value.innerText = 'Population';
+  tableRow.appendChild(region);
+  tableRow.appendChild(value);
+  table.appendChild(tableRow);
+  return table;
+}
+
+/**
+ * Create and return an HTML table using the data in dataArray.
+ * Uses first row in dataArray as table headers.
+ */
+function appendRowToDataTable(table, locationName, population) {
+  const tableRow = document.createElement('tr');
+  const region = document.createElement('td');
+  const value = document.createElement('td');
+  region.innerText = locationName;
+  value.innerText = population;
+  tableRow.appendChild(region);
+  tableRow.appendChild(value);
+  table.appendChild(tableRow);
+}
+
+/**
+ * Show/hide the raw data table.
+ */
+function toggleDataTable() {
+  const dataTable = document.getElementById('data-table');
+  if (window.getComputedStyle(dataTable)
+      .getPropertyValue('display') === 'none') {
+    dataTable.style.display = 'inline';
+    document.getElementById('toggle-data-btn').innerText = 'Hide raw data';
+  } else {
+    dataTable.style.display = 'none';
+    document.getElementById('toggle-data-btn').innerText = 'Display raw data';
+  }
 }
