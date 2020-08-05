@@ -242,8 +242,8 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
   const minPopulation = mapsData.minValue;
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
-  const geoData = await getGeoData(stateNumber, true);
 
+  const geoData = await getGeoData(stateNumber, true);
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
