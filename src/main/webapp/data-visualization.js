@@ -236,7 +236,7 @@ let map;
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
 async function displayCountyGeoJson(mapsData, stateNumber) {
-  const map = new google.maps.Map(document.getElementById('map'), {
+  map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
   });
