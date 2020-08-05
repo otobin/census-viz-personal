@@ -86,7 +86,7 @@ const stateInfo = {
     '16': {
         'name': 'Idaho',
         'ISO': 'US-ID',
-        'lat': 44.354,
+        'lat': 45,
         'lng': -114.609,
         'zoomLevel': 6,
     },
