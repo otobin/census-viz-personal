@@ -164,20 +164,17 @@ function percentToTotal(totalNumber, percentage) {
 // whether or not the total needs to be calculated using the
 // percentToTotal() function
 function checkPercentage(headerColumn) {
-  // percentageQueries is a list of queries that return percents and not raw
-  // data. It is hard coded for now.
-  const percentageQueries = ['S0201_157E', 'S0201_126E'];
-  let i;
-  // Iterate through all the data variables in the header.
-  // Eg: ["NAME","S0201_119E","S0201_126E","state"]
-  // We need to return true
-  for (i = 1; i < headerColumn.length - 1; i++) {
-    // if the current data is in the percentage array
-    if (percentageQueries.indexOf(headerColumn[i]) > -1) {
-      return true;
-    }
+  // percentageQueries is a list of queries that return percents and not raw data.
+  // These queries have two columns of numbers. One is a total number and one
+  // is a number between 0 and 100 (representing the percentage of the total)
+  if (headerColumn.length !== 4) {
+    return false;
   }
-  return false;
+  firstNum = Number(headerColumn[1]);
+  secondNum = Number(headerColumn[2]);
+  return !(isNaN(firstNum) || isNaN(secondNum)) 
+      && ((firstNum > 100 && secondNum >= 0 && secondNum <= 100)
+          || (secondNum > 100 && firstNum >= 0 && firstNum <= 100))
 }
 
 // Returns an object containing all of the relevant data in order
