@@ -1,3 +1,5 @@
+// Return geoJson for a given location. Load the geodata file if not already
+// loaded for the location.
 async function getGeoData(location, isCountyQuery) {
   if (isCountyQuery) {
     const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
@@ -19,6 +21,7 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
+// Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   const geoData = await getGeoData(location, isCountyQuery);
@@ -34,6 +37,7 @@ async function displayVisualization(censusDataArray, description,
   document.getElementById('more-info').innerText = '';
 }
 
+// Create and display amcharts map using data and geoData.
 function displayAmChartsMap(data, description, geoData) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
@@ -114,7 +118,7 @@ function displayAmChartsMap(data, description, geoData) {
   });
 }
 
-// TODO: could this function's writer please add a docstring?
+// Get the location id used by amCharts geoJson file for a given location.
 function getLocationId(location, isCountyQuery, regionIndex) {
   if (isCountyQuery) {
     return location[regionIndex] + location[regionIndex + 1];
@@ -244,7 +248,7 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateNumber, true);
-  
+
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
@@ -291,16 +295,15 @@ function setStyle(isCountyQuery) {
   if (isCountyQuery) {
     const buttonsDiv = document.getElementById('buttons');
     buttonsDiv.style.display = 'block';
-    const chartsDiv = document.getElementById('am-charts');
-    chartsDiv.style.display = 'block';
   } else {
     const buttonsDiv = document.getElementById('buttons');
     buttonsDiv.style.display = 'none';
-    const mapsDiv = document.getElementById('map');
-    mapsDiv.style.display = 'none';
-    const amChartsDiv = document.getElementById('am-charts');
-    amChartsDiv.style.display = 'block';
   }
+
+  const chartsDiv = document.getElementById('am-charts');
+  chartsDiv.style.display = 'block';
+  const mapsDiv = document.getElementById('map');
+  mapsDiv.style.display = 'none';
 }
 
 function initDataTable(isCountyQuery) {
