@@ -293,7 +293,7 @@ function setStyle(isCountyQuery) {
     const buttonsDiv = document.getElementById('buttons');
     buttonsDiv.style.display = 'none';
   }
-  
+
   const chartsDiv = document.getElementById('am-charts');
   chartsDiv.style.display = 'block';
   const mapsDiv = document.getElementById('map');
