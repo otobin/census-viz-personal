@@ -137,7 +137,7 @@ function createDataArray(censusDataArray, isCountyQuery) {
         id: getLocationId(location, isCountyQuery, regionIndex),
         name: location[0],
         value: percentToTotal(location[1], location[2])});
-        appendRowToDataTable(table, location[0], 
+        appendRowToDataTable(table, location[0],
           percentToTotal(location[1], location[2]));
     });
   } else {
@@ -172,9 +172,9 @@ function checkPercentage(headerColumn) {
   }
   firstNum = Number(headerColumn[1]);
   secondNum = Number(headerColumn[2]);
-  return !(isNaN(firstNum) || isNaN(secondNum)) 
-      && ((firstNum > 100 && secondNum >= 0 && secondNum <= 100)
-          || (secondNum > 100 && firstNum >= 0 && firstNum <= 100))
+  return !(isNaN(firstNum) || isNaN(secondNum)) &&
+      ((firstNum > 100 && secondNum >= 0 && secondNum <= 100) ||
+          (secondNum > 100 && firstNum >= 0 && firstNum <= 100));
 }
 
 // Returns an object containing all of the relevant data in order
@@ -241,7 +241,7 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateNumber, true);
-  
+
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {

@@ -30,11 +30,11 @@ public class QueryServlet extends HttpServlet {
 
   // Depending on the beginning of the data table string, the query URL changes slightly
   private String getDataTableString(String tablePrefix) {
-    if (tablePrefix.substring(0,1).equals("D")) {
+    if (tablePrefix.substring(0, 1).equals("D")) {
       return "profile?get=NAME,";
-    } else if (tablePrefix.substring(0,5).equals("S0201")) {
+    } else if (tablePrefix.substring(0, 5).equals("S0201")) {
       return "spp?get=NAME,"; // Special case - different from the other S tables
-    } else if (tablePrefix.substring(0,1).equals("S")) {
+    } else if (tablePrefix.substring(0, 1).equals("S")) {
       return "subject?get=NAME,";
     }
     return ""; // Will throw error when query is made; should never reach this point
@@ -55,7 +55,7 @@ public class QueryServlet extends HttpServlet {
       // This action doesn't make sense with this type of person,
       // or the census doesn't keep data on it that we could find
       response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST, 
+          HttpServletResponse.SC_BAD_REQUEST,
           "This query is not supported by census data. Try asking a more general one.");
       return;
     }
