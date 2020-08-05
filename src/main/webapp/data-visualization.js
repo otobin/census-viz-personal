@@ -334,8 +334,7 @@ function toggleDataTable() {
 // Display link to data.census.gov table for the table the displayed
 // data is from.
 function displayLinkToCensusTable(tableLink) {
-  const link = tableLink;
   const linkElem = document.getElementById('census-link');
   linkElem.style.display = 'block';
-  linkElem.setAttribute('href', link);
+  linkElem.setAttribute('href', tableLink);
 }
