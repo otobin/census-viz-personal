@@ -50,7 +50,7 @@ public class QueryServlet extends HttpServlet {
               "female",
               "S0701_C01_013E,S0701_C04_013E"));
 
-// Depending on the beginning of the data table string, the query URL changes slightly
+  // Depending on the beginning of the data table string, the query URL changes slightly
   private String getDataTableString(String tablePrefix) {
     if (tablePrefix.substring(0, 1).equals("D")) {
       return "profile?get=NAME,";
