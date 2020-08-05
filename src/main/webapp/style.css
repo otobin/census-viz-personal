@@ -36,12 +36,16 @@ select:focus {
   padding-left: 30px;
 }
 
+#query-form {
+  display: inline-flex;
+}
+
 #query {
   text-align: center;
 }
 
+button,
 input[type=submit] {
-  background: #0dbd00;
   border: 0;
   border-radius: 2px;
   color: #fff;
@@ -52,13 +56,23 @@ input[type=submit] {
   text-transform: uppercase;
 }
 
-input[type=submit]:hover {
-  background: #0ba600;
-  transition: all .4s ease-in-out;
+input[type=submit] {
+  background: #0dbd00;
 }
 
+button {
+  background: #0071bd;
+}
+
+button,
 input[type=submit]:focus {
   outline: 0;
+}
+
+button:hover,
+input[type=submit]:hover {
+  filter: brightness(90%);
+  transition: all .4s ease-in-out;
 }
 
 #result {
@@ -67,6 +81,7 @@ input[type=submit]:focus {
   display: none;
   margin: 30px 0 60px 0;
   padding: 30px;
+  text-align: center;
 }
 
 #am-charts {
@@ -74,7 +89,7 @@ input[type=submit]:focus {
 }
 
 #map {
-  height: 600px;
+  height: 700px;
   display: none;
 }
 
@@ -91,6 +106,15 @@ input[type=submit]:focus {
 
 #more-info {
   text-align: center;
+}
+
+#data-table {
+  display: none;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 footer {
