@@ -332,3 +332,10 @@ function toggleDataTable() {
     document.getElementById('toggle-data-btn').innerText = 'Display raw data';
   }
 }
+
+function displayLinkToCensusTable(tableString) {
+  const link = `https://data.census.gov/cedsci/table?q=${tableString}`;
+  const linkElem = document.getElementById('census-link');
+  linkElem.style.display = 'block';
+  linkElem.setAttribute('href', link);
+}

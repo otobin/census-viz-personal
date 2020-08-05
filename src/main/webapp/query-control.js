@@ -17,6 +17,7 @@ function registerServiceWorker() {
 function clearPreviousResult() {
   document.getElementById('map-title').innerText = '';
   document.getElementById('data-table').innerHTML = '';
+  document.getElementById('census-link').style.display = 'none';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('result').style.display = 'block';
@@ -65,13 +66,18 @@ function passQuery() {
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
-        response.json().then((jsonResponse) => JSON.parse(jsonResponse))
-          .then((censusDataArray) => {
+        response.json().then((censusDataArray) => {
+          return {
+            data: JSON.parse(censusDataArray.data),
+            table: censusDataArray.table,
+          }
+        }).then((response) => {
             // censusDataArray is a 2D array, where the first row is a
             // header row and all subsequent rows are one piece of
             // data (e.g. for a state or county)
-            displayVisualization(censusDataArray, description,
+            displayVisualization(response.data, description,
               location, isCountyQuery);
+            displayLinkToCensusTable(response.table);
             document.getElementById('more-info').innerText = '';
           });
       } else {

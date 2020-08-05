@@ -1,5 +1,6 @@
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,6 +49,9 @@ public class QueryServlet extends HttpServlet {
                 + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
+    String fetchUrlQuery = fetchUrl.getQuery();
+    String censusTable = fetchUrlQuery.substring(
+        fetchUrlQuery.indexOf(",") + 1, fetchUrlQuery.indexOf("_"));
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
 
@@ -68,10 +72,12 @@ public class QueryServlet extends HttpServlet {
         responseLine = reader.readLine();
       }
       reader.close();
-
-      response.setContentType("application/json;");
+      JsonObject jsonResponse = new JsonObject();
       Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(data));
+      jsonResponse.addProperty("data", data);
+      jsonResponse.addProperty("table", censusTable);
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonResponse.toString());
     }
   }
 }
