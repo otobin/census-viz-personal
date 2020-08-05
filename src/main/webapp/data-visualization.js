@@ -163,10 +163,10 @@ function percentToTotal(totalNumber, percentage) {
 // whether or not the total needs to be calculated using the
 // percentToTotal() function
 function checkPercentage(headerColumn, isCountyQuery) {
-  // percentageQueries is a list of queries that return percents and not raw data.
-  // These queries have two columns of numbers instead of one. 
-  // One is a total number and one is a number between 0 and 100
-  // (representing the percentage of the total).
+  // Queries that are percentages will have two columns of numbers instead
+  // of one, where one is a total number and one is a number between 0 and 100
+  // (which represents the percentage of the total).
+  // County queries always have one more column (to list both county and state)
   if ((!isCountyQuery && headerColumn.length !== 4) ||
       (isCountyQuery && headerColumn.length !== 5)) {
     return false;
