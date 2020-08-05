@@ -30,11 +30,13 @@
               autocomplete="off" required onkeyup="validateInput('person-type')"
               onfocus="storeValueAndEmpty('person-type')"
               onfocusout="replaceValueIfEmpty('person-type')"
-              value="people" pattern="children|adults|people">
+              value="people" pattern="children|adults|people|men|women">
             <datalist id="person-type">
               <option data-value="under-18" value="children"></option>
               <option data-value="over-18" value="adults"></option>
               <option data-value="all-ages" value="people"></option>
+              <option data-value="male" value="men"></option>
+              <option data-value="female" value="women"></option>
             </datalist>
           </input>
 
@@ -56,6 +58,24 @@
               onfocusout="replaceValueIfEmpty('location')"
               value="each U.S. state">
             <datalist id="location"></datalist>
+          </input>
+          in
+          <input type="list" list="year" name="year" id="year-list"
+              autocomplete="off" required onkeyup="validateInput('year')"
+              onfocus="storeValueAndEmpty('year')"
+              onfocusout="replaceValueIfEmpty('year')" 
+              value="2018" pattern="201[0-8]">
+            <datalist id="year">
+              <option value="2010"></option>
+              <option value="2011"></option>
+              <option value="2012"></option>
+              <option value="2013"></option>
+              <option value="2014"></option>
+              <option value="2015"></option>
+              <option value="2016"></option>
+              <option value="2017"></option>
+              <option value="2018"></option>
+            </datalist>
           </input>
           ?
         </p>

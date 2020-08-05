@@ -34,6 +34,7 @@ function passQuery() {
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
   const locationInput = query.get('location');
+  const year = query.get('year');
 
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
@@ -56,12 +57,15 @@ function passQuery() {
   } else {
     title += ' in ';
   }
-  title += 'each ' + region + ' (' + personType.replace('-', ' ') + ')';
+  title += 'each ' + region + ' (' + 
+      personType.replace('-', ' ') + ')'
+      + ' in ' + year;
   document.getElementById('map-title').innerText = title;
 
   const fetchUrl = '/query?person-type=' + personType +
     '&action=' + action +
-    '&location=' + location;
+    '&location=' + location +
+    '&year=' + year;
 
   fetch(fetchUrl)
     .then((response) => {
