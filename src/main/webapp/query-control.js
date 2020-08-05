@@ -70,16 +70,12 @@ function passQuery() {
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
-        response.json().then((censusDataArray) => {
-          return {
-            data: JSON.parse(censusDataArray.data),
-            table: censusDataArray.table,
-          }
-        }).then((response) => {
+        response.json()
+        .then((response) => {
             // censusDataArray is a 2D array, where the first row is a
             // header row and all subsequent rows are one piece of
             // data (e.g. for a state or county)
-            displayVisualization(response.data, description,
+            displayVisualization(JSON.parse(response.data), description,
               location, isCountyQuery);
             displayLinkToCensusTable(response.table);
             document.getElementById('more-info').innerText = '';
