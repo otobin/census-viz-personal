@@ -131,7 +131,7 @@ function createDataArray(censusDataArray, isCountyQuery) {
   censusDataArray = censusDataArray.slice(1); // get rid of header row
   // Check to see if an extra calculation for percentages is needed
   const table = initDataTable(isCountyQuery);
-  if (checkPercentage(censusDataArray[0])) {
+  if (checkPercentage(censusDataArray[0], isCountyQuery)) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
@@ -156,24 +156,26 @@ function createDataArray(censusDataArray, isCountyQuery) {
 // percentToTotal takes in the total number of people in a category
 // and the percentage and returns the total
 function percentToTotal(totalNumber, percentage) {
-  return round((totalNumber/100) * percentage);
+  return Math.round((totalNumber/100) * percentage);
 }
 
 // checkPercentage() Takes in the header of a census query and returns
 // whether or not the total needs to be calculated using the
 // percentToTotal() function
-function checkPercentage(headerColumn) {
+function checkPercentage(headerColumn, isCountyQuery) {
   // percentageQueries is a list of queries that return percents and not raw data.
-  // These queries have two columns of numbers. One is a total number and one
-  // is a number between 0 and 100 (representing the percentage of the total)
-  if (headerColumn.length !== 4) {
+  // These queries have two columns of numbers instead of one. 
+  // One is a total number and one is a number between 0 and 100 
+  // (representing the percentage of the total).
+  if ((!isCountyQuery && headerColumn.length !== 4) || 
+      (isCountyQuery && headerColumn.length !== 5)) {
     return false;
   }
   const firstNum = Number(headerColumn[1]);
   const secondNum = Number(headerColumn[2]);
   return !(isNaN(firstNum) || isNaN(secondNum)) &&
       ((firstNum > 100 && secondNum >= 0 && secondNum <= 100) ||
-          (secondNum > 100 && firstNum >= 0 && firstNum <= 100));
+      (secondNum > 100 && firstNum >= 0 && firstNum <= 100));
 }
 
 // Returns an object containing all of the relevant data in order
