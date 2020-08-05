@@ -37,7 +37,7 @@ public class QueryServlet extends HttpServlet {
     } else if (tablePrefix.substring(0, 1).equals("S")) {
       return "subject?get=NAME,";
     }
-    return ""; // Will throw error when query is made; should never reach this point
+    return ""; // should never reach this point
   }
 
   @Override
@@ -61,10 +61,16 @@ public class QueryServlet extends HttpServlet {
     }
 
     String dataRow = queryToDataRow.get(action).get(personType);
+    String dataTablePrefix = getDataTableString(dataRow);
+    if (dataTablePrefix.equals("")) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
+    }
+
     URL fetchUrl =
         new URL(
             "https://api.census.gov/data/2018/acs/acs1/"
-                + getDataTableString(dataRow)
+                + dataTablePrefix
                 + dataRow
                 + "&for="
                 + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
