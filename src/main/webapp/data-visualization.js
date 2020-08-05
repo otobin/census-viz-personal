@@ -331,8 +331,11 @@ function toggleDataTable() {
   }
 }
 
-function displayLinkToCensusTable(tableString) {
-  const link = `https://data.census.gov/cedsci/table?q=${tableString}`;
+// Display link to data.census.gov table for the table the displayed
+// data is from.
+function displayLinkToCensusTable(tableString, year) {
+  const tablePrefix = tableString[0] === 'S' ? 'SPP' : 'DP';
+  const link = `https://data.census.gov/cedsci/table?tid=ACS${tablePrefix}1Y${year}.${tableString}`;
   const linkElem = document.getElementById('census-link');
   linkElem.style.display = 'block';
   linkElem.setAttribute('href', link);
