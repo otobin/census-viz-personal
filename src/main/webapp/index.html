@@ -63,7 +63,7 @@
           <input type="list" list="year" name="year" id="year-list"
               autocomplete="off" required onkeyup="validateInput('year')"
               onfocus="storeValueAndEmpty('year')"
-              onfocusout="replaceValueIfEmpty('year')" 
+              onfocusout="replaceValueIfEmpty('year')"
               value="2018" pattern="201[0-8]">
             <datalist id="year">
               <option value="2010"></option>
@@ -92,7 +92,7 @@
       <div id="am-charts"></div>
       <div id="map"></div>
       <button id="toggle-data-btn" onclick="toggleDataTable()">Display raw data</button>
-      <a id="census-link" target="_blank">Explore more data from the Census API</a>
+      <a id="census-link" target="_blank" rel="noopener">Explore more data from the Census API</a>
       <div id="data-table"></div>
     </div>
     <footer>

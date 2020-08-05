@@ -20,16 +20,37 @@ public class QueryServlet extends HttpServlet {
   Map<String, Map<String, String>> queryToDataRow =
       ImmutableMap.of(
           "live",
-          ImmutableMap.of("under-18", "DP05_0019E", "over-18", "DP05_0021E", 
-              "all-ages", "DP05_0001E", "male", "DP05_0002E", "female", "DP05_0003E"),
+          ImmutableMap.of(
+              "under-18",
+              "DP05_0019E",
+              "over-18",
+              "DP05_0021E",
+              "all-ages",
+              "DP05_0001E",
+              "male",
+              "DP05_0002E",
+              "female",
+              "DP05_0003E"),
           "work",
-          ImmutableMap.of("all-ages", "DP03_0004E", "over-18", "DP03_0004E",
-              "male", "S0201_182E", "female", "DP03_0013E"),
+          ImmutableMap.of(
+              "all-ages",
+              "DP03_0004E",
+              "over-18",
+              "DP03_0004E",
+              "male",
+              "S0201_182E",
+              "female",
+              "DP03_0013E"),
           "moved",
-          ImmutableMap.of("all-ages", "S0201_119E,S0201_126E", 
-              "male", "S0701_C01_012E,S0701_C04_012E", "female", "S0701_C01_013E,S0701_C04_013E"));
+          ImmutableMap.of(
+              "all-ages",
+              "S0201_119E,S0201_126E",
+              "male",
+              "S0701_C01_012E,S0701_C04_012E",
+              "female",
+              "S0701_C01_013E,S0701_C04_013E"));
 
-  // Depending on the beginning of the data table string, the query URL changes slightly
+// Depending on the beginning of the data table string, the query URL changes slightly
   private String getDataTableString(String tablePrefix) {
     if (tablePrefix.substring(0, 1).equals("D")) {
       return "profile?get=NAME,";
@@ -71,7 +92,9 @@ public class QueryServlet extends HttpServlet {
 
     URL fetchUrl =
         new URL(
-            "https://api.census.gov/data/" + year + "/acs/acs1/"
+            "https://api.census.gov/data/"
+                + year
+                + "/acs/acs1/"
                 + dataTablePrefix
                 + dataRow
                 + "&for="
@@ -79,8 +102,8 @@ public class QueryServlet extends HttpServlet {
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     String fetchUrlQuery = fetchUrl.getQuery();
-    String censusTable = fetchUrlQuery.substring(
-        fetchUrlQuery.indexOf(",") + 1, fetchUrlQuery.indexOf("_"));
+    String censusTable =
+        fetchUrlQuery.substring(fetchUrlQuery.indexOf(",") + 1, fetchUrlQuery.indexOf("_"));
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
 

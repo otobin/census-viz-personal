@@ -57,9 +57,9 @@ function passQuery() {
   } else {
     title += ' in ';
   }
-  title += 'each ' + region + ' (' + 
-      personType.replace('-', ' ') + ')'
-      + ' in ' + year;
+  title += 'each ' + region + ' (' +
+      personType.replace('-', ' ') + ')' +
+      ' in ' + year;
   document.getElementById('map-title').innerText = title;
 
   const fetchUrl = '/query?person-type=' + personType +

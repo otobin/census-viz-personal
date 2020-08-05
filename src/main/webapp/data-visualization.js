@@ -303,7 +303,7 @@ function setStyle(isCountyQuery) {
 
 // Draw data table using Visualization API
 function drawTable(dataArray, isCountyQuery) {
-  google.charts.load('current', {'packages':['table']});
+  google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
