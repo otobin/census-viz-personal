@@ -45,6 +45,7 @@ public class QueryServlet extends HttpServlet {
     String personType = request.getParameter("person-type");
     String action = request.getParameter("action");
     String location = request.getParameter("location");
+    String year = request.getParameter("year");
 
     if (!queryToDataRow.containsKey(action)) {
       // We don't have information on this action
@@ -63,7 +64,7 @@ public class QueryServlet extends HttpServlet {
     String dataRow = queryToDataRow.get(action).get(personType);
     URL fetchUrl =
         new URL(
-            "https://api.census.gov/data/2018/acs/acs1/"
+            "https://api.census.gov/data/" + year + "/acs/acs1/"
                 + getDataTableString(dataRow)
                 + dataRow
                 + "&for="
