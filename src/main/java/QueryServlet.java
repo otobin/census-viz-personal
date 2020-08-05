@@ -124,6 +124,11 @@ public class QueryServlet extends HttpServlet {
         responseLine = reader.readLine();
       }
       reader.close();
+      if (data.isEmpty()) {
+        response.sendError(
+            HttpServletResponse.SC_BAD_GATEWAY,
+            "This query is not supported by census data. Try asking a more general one.");
+      }
       JsonObject jsonResponse = new JsonObject();
       Gson gson = new Gson();
       jsonResponse.addProperty("data", data);
