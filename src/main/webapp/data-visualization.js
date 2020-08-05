@@ -273,14 +273,12 @@ function setStyle(isCountyQuery) {
   if (isCountyQuery) {
     const buttonsDiv = document.getElementById('buttons');
     buttonsDiv.style.display = 'block';
-    const chartsDiv = document.getElementById('am-charts');
-    chartsDiv.style.display = 'block';
   } else {
     const buttonsDiv = document.getElementById('buttons');
     buttonsDiv.style.display = 'none';
-    const mapsDiv = document.getElementById('map');
-    mapsDiv.style.display = 'none';
-    const amChartsDiv = document.getElementById('am-charts');
-    amChartsDiv.style.display = 'block';
   }
+  const chartsDiv = document.getElementById('am-charts');
+  chartsDiv.style.display = 'block';
+  const mapsDiv = document.getElementById('map');
+  mapsDiv.style.display = 'none';
 }
