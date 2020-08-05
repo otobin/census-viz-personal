@@ -77,7 +77,7 @@ function passQuery() {
             // data (e.g. for a state or county)
             displayVisualization(JSON.parse(response.data), description,
               location, isCountyQuery);
-            displayLinkToCensusTable(response.table, year);
+            displayLinkToCensusTable(response.tableLink);
             document.getElementById('more-info').innerText = '';
           });
       } else {

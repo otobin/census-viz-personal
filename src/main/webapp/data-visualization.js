@@ -333,9 +333,8 @@ function toggleDataTable() {
 
 // Display link to data.census.gov table for the table the displayed
 // data is from.
-function displayLinkToCensusTable(tableString, year) {
-  const tablePrefix = tableString[0] === 'S' ? 'SPP' : 'DP';
-  const link = `https://data.census.gov/cedsci/table?tid=ACS${tablePrefix}1Y${year}.${tableString}`;
+function displayLinkToCensusTable(tableLink) {
+  const link = tableLink;
   const linkElem = document.getElementById('census-link');
   linkElem.style.display = 'block';
   linkElem.setAttribute('href', link);

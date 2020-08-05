@@ -50,6 +50,9 @@ public class QueryServlet extends HttpServlet {
               "female",
               "S0701_C01_013E,S0701_C04_013E"));
 
+  Map<String, String> tableNameToAbbrev =
+      ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
+
   // Depending on the beginning of the data table string, the query URL changes slightly
   private String getDataTableString(String tablePrefix) {
     if (tablePrefix.substring(0, 1).equals("D")) {
@@ -101,9 +104,14 @@ public class QueryServlet extends HttpServlet {
                 + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
-    String fetchUrlQuery = fetchUrl.getQuery();
-    String censusTable =
-        fetchUrlQuery.substring(fetchUrlQuery.indexOf(",") + 1, fetchUrlQuery.indexOf("_"));
+    String fetchUrlString = fetchUrl.toString();
+    String censusTableLink = 
+        "https://data.census.gov/cedsci/table?tid=ACS"
+            + tableNameToAbbrev.get(fetchUrlString.substring(
+              fetchUrlString.indexOf("acs1/") + 5, fetchUrlString.indexOf("?")))
+            + "1Y" + year + "."
+            + fetchUrlString.substring(fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
+
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
 
@@ -132,7 +140,7 @@ public class QueryServlet extends HttpServlet {
       JsonObject jsonResponse = new JsonObject();
       Gson gson = new Gson();
       jsonResponse.addProperty("data", data);
-      jsonResponse.addProperty("table", censusTable);
+      jsonResponse.addProperty("tableLink", censusTableLink);
       response.setContentType("application/json;");
       response.getWriter().println(jsonResponse.toString());
     }
