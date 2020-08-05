@@ -131,13 +131,13 @@ function createDataArray(censusDataArray, isCountyQuery) {
   censusDataArray = censusDataArray.slice(1); // get rid of header row
   // Check to see if an extra calculation for percentages is needed
   const table = initDataTable(isCountyQuery);
-  if (checkPercentage(censusDataArray[0])) {
+  if (checkPercentage(censusDataArray[0], isCountyQuery)) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
         name: location[0],
         value: percentToTotal(location[1], location[2])});
-        appendRowToDataTable(table, location[0], 
+        appendRowToDataTable(table, location[0],
           percentToTotal(location[1], location[2]));
     });
   } else {
@@ -156,28 +156,26 @@ function createDataArray(censusDataArray, isCountyQuery) {
 // percentToTotal takes in the total number of people in a category
 // and the percentage and returns the total
 function percentToTotal(totalNumber, percentage) {
-  return (totalNumber/100) * percentage;
+  return Math.round((totalNumber/100) * percentage);
 }
-
 
 // checkPercentage() Takes in the header of a census query and returns
 // whether or not the total needs to be calculated using the
 // percentToTotal() function
-function checkPercentage(headerColumn) {
-  // percentageQueries is a list of queries that return percents and not raw
-  // data. It is hard coded for now.
-  const percentageQueries = ['S0201_157E', 'S0201_126E'];
-  let i;
-  // Iterate through all the data variables in the header.
-  // Eg: ["NAME","S0201_119E","S0201_126E","state"]
-  // We need to return true
-  for (i = 1; i < headerColumn.length - 1; i++) {
-    // if the current data is in the percentage array
-    if (percentageQueries.indexOf(headerColumn[i]) > -1) {
-      return true;
-    }
+function checkPercentage(headerColumn, isCountyQuery) {
+  // Queries that are percentages will have two columns of numbers instead
+  // of one, where one is a total number and one is a number between 0 and 100
+  // (which represents the percentage of the total).
+  // County queries always have one more column (to list both county and state)
+  if ((!isCountyQuery && headerColumn.length !== 4) ||
+      (isCountyQuery && headerColumn.length !== 5)) {
+    return false;
   }
-  return false;
+  const firstNum = Number(headerColumn[1]);
+  const secondNum = Number(headerColumn[2]);
+  return !(isNaN(firstNum) || isNaN(secondNum)) &&
+      ((firstNum > 100 && secondNum >= 0 && secondNum <= 100) ||
+      (secondNum > 100 && firstNum >= 0 && firstNum <= 100));
 }
 
 // Returns an object containing all of the relevant data in order
@@ -244,7 +242,7 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateNumber, true);
-  
+
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {

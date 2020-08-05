@@ -15,15 +15,30 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/query")
 public class QueryServlet extends HttpServlet {
 
-  // Hardcoded initial choices for which lines of the data table are accessed
+  // Hardcoded initial choices for which lines of which data table are accessed
   Map<String, Map<String, String>> queryToDataRow =
       ImmutableMap.of(
           "live",
-          ImmutableMap.of("under-18", "0019E", "over-18", "0021E", "all-ages", "0001E"),
+          ImmutableMap.of("under-18", "DP05_0019E", "over-18", "DP05_0021E", 
+              "all-ages", "DP05_0001E", "male", "DP05_0002E", "female", "DP05_0003E"),
           "work",
-          ImmutableMap.of("over-18", "154E,S0201_157E"),
+          ImmutableMap.of("all-ages", "DP03_0004E", "over-18", "DP03_0004E",
+              "male", "S0201_182E", "female", "DP03_0013E"),
           "moved",
-          ImmutableMap.of("all-ages", "119E,S0201_126E"));
+          ImmutableMap.of("all-ages", "S0201_119E,S0201_126E", 
+              "male", "S0701_C01_012E,S0701_C04_012E", "female", "S0701_C01_013E,S0701_C04_013E"));
+
+  // Depending on the beginning of the data table string, the query URL changes slightly
+  private String getDataTableString(String tablePrefix) {
+    if (tablePrefix.substring(0, 1).equals("D")) {
+      return "profile?get=NAME,";
+    } else if (tablePrefix.substring(0, 5).equals("S0201")) {
+      return "spp?get=NAME,"; // Special case - different from the other S tables
+    } else if (tablePrefix.substring(0, 1).equals("S")) {
+      return "subject?get=NAME,";
+    }
+    return ""; // should never reach this point
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -31,19 +46,32 @@ public class QueryServlet extends HttpServlet {
     String action = request.getParameter("action");
     String location = request.getParameter("location");
 
-    if (!queryToDataRow.containsKey(action)
-        || !queryToDataRow.get(action).containsKey(personType)) {
-      // We don't have a data table for this query
+    if (!queryToDataRow.containsKey(action)) {
+      // We don't have information on this action
       response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST, "We do not support this visualization yet.");
+          HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
       return;
+    } else if (!queryToDataRow.get(action).containsKey(personType)) {
+      // This action doesn't make sense with this type of person,
+      // or the census doesn't keep data on it that we could find
+      response.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          "This query is not supported by census data. Try asking a more general one.");
+      return;
+    }
+
+    String dataRow = queryToDataRow.get(action).get(personType);
+    String dataTablePrefix = getDataTableString(dataRow);
+    if (dataTablePrefix.equals("")) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
     }
 
     URL fetchUrl =
         new URL(
             "https://api.census.gov/data/2018/acs/acs1/"
-                + (action.equals("live") ? "profile?get=NAME,DP05_" : "spp?get=NAME,S0201_")
-                + queryToDataRow.get(action).get(personType)
+                + dataTablePrefix
+                + dataRow
                 + "&for="
                 + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");

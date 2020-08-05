@@ -29,11 +29,13 @@
               autocomplete="off" required onkeyup="validateInput('person-type')"
               onfocus="storeValueAndEmpty('person-type')"
               onfocusout="replaceValueIfEmpty('person-type')"
-              value="people" pattern="children|adults|people">
+              value="people" pattern="children|adults|people|men|women">
             <datalist id="person-type">
               <option data-value="under-18" value="children"></option>
               <option data-value="over-18" value="adults"></option>
               <option data-value="all-ages" value="people"></option>
+              <option data-value="male" value="men"></option>
+              <option data-value="female" value="women"></option>
             </datalist>
           </input>
 
