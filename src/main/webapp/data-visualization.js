@@ -139,14 +139,14 @@ function createDataArray(censusDataArray, isCountyQuery) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        name: location[0],
+        locationName: location[0],
         value: percentToTotal(location[1], location[2])});
     });
   } else {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        name: location[0],
+        locationName: location[0],
         value: location[1]});
     });
   }
@@ -279,22 +279,25 @@ async function displayCountyGeoJson(mapsData, description, stateNumber) {
   });
 }
 
-// Functions to toggle between amcharts and maps.
-function toggle(divToShow, divToHide) {
-  const visibleElement = document.getElementById(divToShow);
-  const hiddenElement = document.getElementById(divToHide);
-  hiddenElement.style.display = 'none';
-  visibleElement.style.display = 'block';
+// Toggle between amcharts and maps.
+function toggleMap() {
+  const checkbox = document.getElementById('map-toggle');
+  if (checkbox.checked) {
+    document.getElementById('am-charts').style.display = 'none';
+    document.getElementById('map').style.display = 'block';
+  } else {
+    document.getElementById('map').style.display = 'none';
+    document.getElementById('am-charts').style.display = 'block';
+  }
 }
 
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
+  const mapOptions = document.getElementById('map-options');
   if (isCountyQuery) {
-    const buttonsDiv = document.getElementById('buttons');
-    buttonsDiv.style.display = 'block';
+    mapOptions.style.display = 'block';
   } else {
-    const buttonsDiv = document.getElementById('buttons');
-    buttonsDiv.style.display = 'none';
+    mapOptions.style.display = 'none';
   }
   const chartsDiv = document.getElementById('am-charts');
   chartsDiv.style.display = 'block';
@@ -327,7 +330,7 @@ function drawTable(dataArray, description, isCountyQuery) {
     data.addColumn('string', nameHeader);
     data.addColumn('number', description);
     dataArray.forEach((elem) => {
-      data.addRow([elem.name, parseInt(elem.value)]);
+      data.addRow([elem.locationName, parseInt(elem.value)]);
     });
     const table = new google.visualization.Table(
         document.getElementById('data-table'));
