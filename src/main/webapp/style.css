@@ -93,11 +93,6 @@ input[type=submit]:hover {
   display: none;
 }
 
-#buttons {
-  display: none;
-  text-align: center;
-}
-
 /* The switch - the box around the slider */
 .switch {
   position: relative;
@@ -160,11 +155,13 @@ input:checked + .slider::before {
 
 #map-options {
   white-space: nowrap;
+  display: none;
+  margin-bottom: 30px;
 }
 
 .map-option {
   display: inline-block;
-  line-height: 40px;
+  line-height: 34px;
   padding: 5px;
   text-transform: uppercase;
   font-weight: bolder;
