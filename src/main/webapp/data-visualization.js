@@ -28,11 +28,11 @@ async function displayVisualization(censusDataArray, description,
   const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
-  drawTable(amChartsData, isCountyQuery);
+  drawTable(amChartsData, description, isCountyQuery);
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
       displayAmChartsMap(amChartsData, description, geoData);
-      displayCountyGeoJson(mapsData, location);
+      displayCountyGeoJson(mapsData, description, location);
   } else {
       displayAmChartsMap(amChartsData, description, geoData);
   }
@@ -87,13 +87,7 @@ function displayAmChartsMap(data, description, geoData) {
 
   // Configure series tooltip
   const polygonTemplate = polygonSeries.mapPolygons.template;
-  let descriptionString = 'Population of people ' +
-    description.age + ' who ' + description.action;
-  // make it moved to
-  if (description.action === 'moved') {
-    descriptionString += ' to';
-  }
-  polygonTemplate.tooltipText = '{name}\n' + descriptionString + ': {value}';
+  polygonTemplate.tooltipText = '{name}\n' + description + ': {value}';
   polygonTemplate.nonScalingStroke = true;
   polygonTemplate.strokeWidth = 0.5;
 
@@ -231,7 +225,7 @@ function getMinAndMaxPopulation(populationArray) {
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, stateNumber) {
+async function displayCountyGeoJson(mapsData, description, stateNumber) {
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
@@ -258,8 +252,8 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
     map.data.overrideStyle(event.feature, {
       fillColor: '#00ffff',
     });
-    const contentString = '<p>' + event.feature.j.name +
-    '<p>Population: ' + countyToPopMap[event.feature.j.name];
+    const contentString = 
+        `<p>${event.feature.j.name}<p>${description}: ${countyToPopMap[event.feature.j.name]}`;
     const infoWindow = new google.maps.InfoWindow({
       content: contentString,
       maxWidth: 100,
@@ -302,13 +296,13 @@ function setStyle(isCountyQuery) {
 }
 
 // Draw data table using Visualization API
-function drawTable(dataArray, isCountyQuery) {
+function drawTable(dataArray, description, isCountyQuery) {
   google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
     data.addColumn('string', nameHeader);
-    data.addColumn('number', 'Population');
+    data.addColumn('number', description);
     dataArray.forEach((elem) => {
       data.addRow([elem.name, parseInt(elem.value)]);
     });
