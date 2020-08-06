@@ -105,12 +105,16 @@ public class QueryServlet extends HttpServlet {
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
     String fetchUrlString = fetchUrl.toString();
-    String censusTableLink = 
+    String censusTableLink =
         "https://data.census.gov/cedsci/table?tid=ACS"
-            + tableNameToAbbrev.get(fetchUrlString.substring(
-              fetchUrlString.indexOf("acs1/") + 5, fetchUrlString.indexOf("?")))
-            + "1Y" + year + "."
-            + fetchUrlString.substring(fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
+            + tableNameToAbbrev.get(
+                fetchUrlString.substring(
+                    fetchUrlString.indexOf("acs1/") + 5, fetchUrlString.indexOf("?")))
+            + "1Y"
+            + year
+            + "."
+            + fetchUrlString.substring(
+                fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");

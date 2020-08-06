@@ -44,10 +44,10 @@
               autocomplete="off" required onkeyup="validateInput('action')"
               onfocus="storeValueAndEmpty('action')"
               onfocusout="replaceValueIfEmpty('action')"
-              value="live in" pattern="live in|work in|moved to" >
+              value="lived in" pattern="lived in|worked in|moved to" >
             <datalist id="action">
-              <option data-value="live" value="live in"></option>
-              <option data-value="work" value="work in"></option>
+              <option data-value="live" value="lived in"></option>
+              <option data-value="work" value="worked in"></option>
               <option data-value="moved" value="moved to"></option>
             </datalist>
           </input>
@@ -97,6 +97,7 @@
       <div id="map"></div>
       <button id="toggle-data-btn" onclick="toggleDataTable()">Display raw data</button>
       <a id="census-link" target="_blank" rel="noopener">Explore more data from the Census API</a>
+      <br>
       <div id="data-table"></div>
     </div>
     <footer>

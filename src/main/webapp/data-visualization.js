@@ -36,13 +36,13 @@ async function displayVisualization(censusDataArray, description,
   setStyle(isCountyQuery);
   amChartsData = createDataArray(censusDataArray, isCountyQuery);
   globalDescription = description;
-  drawTable(amChartsData, isCountyQuery);
+  drawTable(amChartsData, globalDescription, isCountyQuery);
   if (isCountyQuery) {
       globalMapsData = getMapsData(censusDataArray);
       displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
-      displayCountyGeoJson(globalMapsData, globalLocation,'#3c5bdc');
+      displayCountyGeoJson(globalMapsData, globalDescription, globalLocation,'#3c5bdc');
   } else {
-      displayAmChartsMap(amChartsData, description, globalGeoData, '#3c5bdc');
+      displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
   }
   document.getElementById('more-info').innerText = '';
 }
@@ -95,13 +95,7 @@ function displayAmChartsMap(data, description, geoData, color) {
 
   // Configure series tooltip
   const polygonTemplate = polygonSeries.mapPolygons.template;
-  let descriptionString = 'Population of people ' +
-    description.age + ' who ' + description.action;
-  // make it moved to
-  if (description.action === 'moved') {
-    descriptionString += ' to';
-  }
-  polygonTemplate.tooltipText = '{name}\n' + descriptionString + ': {value}';
+  polygonTemplate.tooltipText = '{name}\n' + description + ': {value}';
   polygonTemplate.nonScalingStroke = true;
   polygonTemplate.strokeWidth = 0.5;
 
@@ -241,7 +235,7 @@ let map;
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, stateNumber, color) {
+async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
@@ -255,7 +249,7 @@ async function displayCountyGeoJson(mapsData, stateNumber, color) {
   const colorScale = chroma.scale([minColor, maxColor]).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateNumber, true);
-  
+
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
@@ -271,8 +265,8 @@ async function displayCountyGeoJson(mapsData, stateNumber, color) {
     map.data.overrideStyle(event.feature, {
       fillColor: maxColor,
     });
-    const contentString = '<p>' + event.feature.j.name +
-    '<p>Population: ' + countyToPopMap[event.feature.j.name];
+    const contentString =
+        `<p>${event.feature.j.name}<p>${description}: ${countyToPopMap[event.feature.j.name]}`;
     const infoWindow = new google.maps.InfoWindow({
       content: contentString,
       maxWidth: 100,
@@ -313,7 +307,7 @@ function setStyle(isCountyQuery) {
   mapsDiv.style.display = 'none';
 }
 
-// Changes the color of the current visualizations on the page. 
+// Changes the color of the current visualizations on the page.
 function changeColor(colorParam) {
   if (typeof map !== 'undefined') {
     displayCountyGeoJson(globalMapsData, globalLocation, colorParam.value);
@@ -322,22 +316,22 @@ function changeColor(colorParam) {
 }
 
 // Draw data table using Visualization API
-function drawTable(dataArray, isCountyQuery) {
+function drawTable(dataArray, description, isCountyQuery) {
   google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
     data.addColumn('string', nameHeader);
-    data.addColumn('number', 'Population');
+    data.addColumn('number', description);
     dataArray.forEach((elem) => {
       data.addRow([elem.name, parseInt(elem.value)]);
     });
     const table = new google.visualization.Table(
         document.getElementById('data-table'));
     table.draw(data, {
-      width: '30%', 
+      width: '30%',
       height: '100%',
-      cssClassNames: {headerRow: 'data-table-header'},});
+      cssClassNames: {headerRow: 'data-table-header'}});
   });
 }
 
