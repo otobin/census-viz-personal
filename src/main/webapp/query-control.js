@@ -17,7 +17,10 @@ function registerServiceWorker() {
 function clearPreviousResult() {
   document.getElementById('map-title').innerText = '';
   document.getElementById('data-table').innerHTML = '';
+  document.getElementById('census-link').style.display = 'none';
   am4core.disposeAllCharts();
+  document.getElementById('more-info').innerText = 'Please wait. Loading...';
+  document.getElementById('result').style.display = 'block';
 }
 
 // Get the query the user entered and display the result.
@@ -26,14 +29,12 @@ function clearPreviousResult() {
 // to be reformatted and visualized.
 function passQuery() {
   clearPreviousResult();
-  document.getElementById('more-info').innerText = 'Please wait. Loading...';
-  document.getElementById('result').style.display = 'block';
-
   const query = new FormData(document.getElementById('query-form'));
 
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
   const locationInput = query.get('location');
+  const year = query.get('year');
 
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
@@ -56,23 +57,27 @@ function passQuery() {
   } else {
     title += ' in ';
   }
-  title += 'each ' + region + ' (' + personType.replace('-', ' ') + ')';
+  title += 'each ' + region + ' (' +
+      personType.replace('-', ' ') + ')' +
+      ' in ' + year;
   document.getElementById('map-title').innerText = title;
 
   const fetchUrl = '/query?person-type=' + personType +
     '&action=' + action +
-    '&location=' + location;
+    '&location=' + location +
+    '&year=' + year;
 
   fetch(fetchUrl)
     .then((response) => {
       if (response.ok) {
-        response.json().then((jsonResponse) => JSON.parse(jsonResponse))
-          .then((censusDataArray) => {
+        response.json()
+        .then((response) => {
             // censusDataArray is a 2D array, where the first row is a
             // header row and all subsequent rows are one piece of
             // data (e.g. for a state or county)
-            displayVisualization(censusDataArray, description,
+            displayVisualization(JSON.parse(response.data), description,
               location, isCountyQuery);
+            displayLinkToCensusTable(response.tableLink);
             document.getElementById('more-info').innerText = '';
           });
       } else {
