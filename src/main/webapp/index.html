@@ -85,6 +85,10 @@
     <div id="result">
       <div id="map-title"></div>
       <div id="more-info"></div>
+      <div id="colors">
+        <input type="color" id="setColor" name="setColor" value="#0000ff" onchange="changeColor(this)">
+        <label for="head">Change the color of the visualization</label>
+      </div>
       <div id="buttons">
         <button onclick="toggle('am-charts', 'map')">AmCharts</button>
         <button onclick="toggle('map', 'am-charts')">GeoJson</button>
