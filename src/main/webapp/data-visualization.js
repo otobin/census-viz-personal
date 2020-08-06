@@ -21,28 +21,20 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
-let amChartsData;
-let globalDescription;
-let globalGeoData;
-let globalMapsData;
-let globalLocation;
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
-  // set global variables
-  globalLocation = location;
   document.getElementById('colors').style.display = 'block';
-  globalGeoData = await getGeoData(location, isCountyQuery);
+  const geoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
-  amChartsData = createDataArray(censusDataArray, isCountyQuery);
-  globalDescription = description;
-  drawTable(amChartsData, globalDescription, isCountyQuery);
+  const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+  drawTable(amChartsData, description, isCountyQuery);
   if (isCountyQuery) {
-      globalMapsData = getMapsData(censusDataArray);
-      displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
-      displayCountyGeoJson(globalMapsData, globalDescription, globalLocation,'#3c5bdc');
+      const mapsData = getMapsData(censusDataArray);
+      displayAmChartsMap(amChartsData, description, geoData, '#3c5bdc');
+      displayCountyGeoJson(mapsData, description, location,'#3c5bdc');
   } else {
-      displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
+      displayAmChartsMap(amChartsData, description, geoData, '#3c5bdc');
   }
   document.getElementById('more-info').innerText = '';
 }
@@ -120,6 +112,9 @@ function displayAmChartsMap(data, description, geoData, color) {
   polygonSeries.mapPolygons.template.events.on('out', function(event) {
     heatLegend.valueAxis.hideTooltip();
   });
+
+  // store chart in global cache
+  localStorage.setItem('amCharts', chart);
 }
 
 // Get the location id used by amCharts geoJson file for a given location.
@@ -231,12 +226,11 @@ function getMinAndMaxPopulation(populationArray) {
   return {max: max, min: min};
 }
 
-let map;
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
 async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
-  map = new google.maps.Map(document.getElementById('map'), {
+  const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
   });
@@ -282,6 +276,8 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
       openInfoWindows[i].close();
     }
   });
+
+  localStorage.setItem('map', map);
 }
 
 // Functions to toggle between amcharts and maps.
@@ -312,9 +308,11 @@ function changeColor(colorParam) {
   // map is undefined on a state query, so check to be sure that 
   // it is undefined before calling displayCountyGeoJson.
   if (typeof map !== 'undefined') {
-    displayCountyGeoJson(globalMapsData, globalLocation, colorParam.value);
+    const map = localStorage.get('map');
+    console.log(map);
   }
-  displayAmChartsMap(amChartsData, globalDescription, globalGeoData, colorParam.value);
+  const amCharts = localStorage.get('amCharts');
+  console.log(amCharts);
 }
 
 // Draw data table using Visualization API
