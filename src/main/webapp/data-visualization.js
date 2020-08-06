@@ -69,7 +69,7 @@ function displayAmChartsMap(data, description, geoData, color) {
     property: 'fill',
     target: polygonSeries.mapPolygons.template,
     min: am4core.color(color).brighten(1),
-    max: am4core.color(color).brighten(-0.3),
+    max: am4core.color(color).brighten(-1),
     logarithmic: true,
   });
   polygonSeries.useGeodata = true;
