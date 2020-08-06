@@ -39,7 +39,7 @@ async function displayVisualization(censusDataArray, description,
       displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
       displayCountyGeoJson(mapsData, globalDescription, location);
   } else {
-      displayAmChartsMap(amChartsData, description, globalGeoData, '#3c5bdc');
+      displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
   }
   document.getElementById('more-info').innerText = '';
 }
