@@ -307,6 +307,7 @@ function setStyle(isCountyQuery) {
   mapsDiv.style.display = 'none';
 }
 
+// Changes the color of the current visualizations on the page. 
 function changeColor(colorParam) {
   if (typeof map !== 'undefined') {
     const colorScale = chroma.scale(['white', colorParam.value]).domain([mapData.minValue,
