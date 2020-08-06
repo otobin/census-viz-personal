@@ -21,27 +21,31 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
+let amChartsData;
+let globalDescription;
+let globalGeoData;
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
-  const geoData = await getGeoData(location, isCountyQuery);
+  // set global variables
+  globalGeoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
-  const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+  amChartsData = createDataArray(censusDataArray, isCountyQuery);
+  globalDescription = description;
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
-      displayAmChartsMap(amChartsData, description, geoData);
+      displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
       displayCountyGeoJson(mapsData, location);
   } else {
-      displayAmChartsMap(amChartsData, description, geoData);
+      displayAmChartsMap(amChartsData, description, globalGeoData, '#3c5bdc');
   }
   document.getElementById('more-info').innerText = '';
 }
 
-let chart;
 // Create and display amcharts map using data and geoData.
-function displayAmChartsMap(data, description, geoData) {
+function displayAmChartsMap(data, description, geoData, color) {
   am4core.useTheme(am4themes_animated);
-  chart = am4core.create('am-charts', am4maps.MapChart);
+  const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons
@@ -62,8 +66,8 @@ function displayAmChartsMap(data, description, geoData) {
   polygonSeries.heatRules.push({
     property: 'fill',
     target: polygonSeries.mapPolygons.template,
-    min: am4core.color('#FFFFFF'),
-    max: am4core.color('#3c5bdc'),
+    min: am4core.color(color).brighten(1),
+    max: am4core.color(color).brighten(-0.3),
     logarithmic: true,
   });
   polygonSeries.useGeodata = true;
@@ -98,7 +102,7 @@ function displayAmChartsMap(data, description, geoData) {
 
   // Create hover state and set alternative fill color
   const hs = polygonTemplate.states.create('hover');
-  hs.properties.fill = am4core.color('#3c5bdc');
+  hs.properties.fill = am4core.color(color);
 
   // heat legend behavior
   polygonSeries.mapPolygons.template.events.on('over', function(event) {
@@ -185,7 +189,6 @@ function checkPercentage(headerColumn) {
   return false;
 }
 
-let mapData;
 // Returns an object containing all of the relevant data in order
 // to render the geoJson map of the counties.
 function getMapsData(censusDataArray) {
@@ -321,15 +324,7 @@ function changeColor(colorParam) {
       });
     });
   }
-  const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
-  // Set min/max fill color for each area
-  polygonSeries.heatRules.push({
-    property: 'fill',
-    target: polygonSeries.mapPolygons.template,
-    min: am4core.color('#FFFFFF'),
-    max: am4core.color(colorParam.value),
-    logarithmic: true,
-  });
+  displayAmChartsMap(amChartsData, globalDescription, globalGeoData, colorParam.value);
 }
 
 function initDataTable(isCountyQuery) {

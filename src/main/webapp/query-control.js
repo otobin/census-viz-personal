@@ -17,6 +17,7 @@ function registerServiceWorker() {
 function clearPreviousResult() {
   document.getElementById('map-title').innerText = '';
   document.getElementById('data-table').innerHTML = '';
+  document.getElementById('setColor').value = "#0000ff";
   am4core.disposeAllCharts();
 }
 
