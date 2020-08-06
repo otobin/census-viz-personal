@@ -24,10 +24,13 @@ async function getGeoData(location, isCountyQuery) {
 let amChartsData;
 let globalDescription;
 let globalGeoData;
+let globalMapsData;
+let globalLocation;
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   // set global variables
+  globalLocation = location;
   document.getElementById('colors').style.display = 'block';
   globalGeoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
@@ -35,9 +38,9 @@ async function displayVisualization(censusDataArray, description,
   globalDescription = description;
   drawTable(amChartsData, isCountyQuery);
   if (isCountyQuery) {
-      const mapsData = getMapsData(censusDataArray);
+      globalMapsData = getMapsData(censusDataArray);
       displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
-      displayCountyGeoJson(mapsData, location);
+      displayCountyGeoJson(globalMapsData, globalLocation,'#3c5bdc');
   } else {
       displayAmChartsMap(amChartsData, description, globalGeoData, '#3c5bdc');
   }
@@ -238,7 +241,7 @@ let map;
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, stateNumber) {
+async function displayCountyGeoJson(mapsData, stateNumber, color) {
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
@@ -247,7 +250,9 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
   countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
-  const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
+  const minColor = chroma(color).brighten(2);
+  const maxColor = chroma(color).darken(2);
+  const colorScale = chroma.scale([minColor, maxColor]).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateNumber, true);
   
@@ -256,6 +261,7 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
     map.data.setStyle((feature) => {
       return {
         fillColor: colorScale(countyToPopMap[feature.j.name]).toString(),
+        fillOpacity: 0.4,
       };
     });
   });
@@ -263,7 +269,7 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
   const openInfoWindows = [];
   map.data.addListener('mouseover', function(event) {
     map.data.overrideStyle(event.feature, {
-      fillColor: '#00ffff',
+      fillColor: maxColor,
     });
     const contentString = '<p>' + event.feature.j.name +
     '<p>Population: ' + countyToPopMap[event.feature.j.name];
@@ -310,15 +316,7 @@ function setStyle(isCountyQuery) {
 // Changes the color of the current visualizations on the page. 
 function changeColor(colorParam) {
   if (typeof map !== 'undefined') {
-    const colorScale = chroma.scale(['white', colorParam.value]).domain([mapData.minValue,
-      mapData.maxValue]);
-    map.data.forEach(function(feature) {
-      map.data.setStyle((feature) => {
-        return {
-          fillColor: colorScale(mapData.map[feature.j.name]).toString(),
-        };
-      });
-    });
+    displayCountyGeoJson(globalMapsData, globalLocation, colorParam.value);
   }
   displayAmChartsMap(amChartsData, globalDescription, globalGeoData, colorParam.value);
 }
