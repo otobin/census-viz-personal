@@ -26,56 +26,48 @@
       <form id="query-form" onsubmit="passQuery(); return false;">
         <p>
           How many
-          <input type="list" list="person-type" name="person-type" id="person-type-list"
-              autocomplete="off" required onkeyup="validateInput('person-type')"
-              onfocus="storeValueAndEmpty('person-type')"
-              onfocusout="replaceValueIfEmpty('person-type')"
-              value="people" pattern="children|adults|people|men|women">
-            <datalist id="person-type">
-              <option data-value="under-18" value="children"></option>
-              <option data-value="over-18" value="adults"></option>
-              <option data-value="all-ages" value="people"></option>
-              <option data-value="male" value="men"></option>
-              <option data-value="female" value="women"></option>
-            </datalist>
+          <input type="list" list="person-type" name="person-type" id="person-type-list" autocomplete="off" required
+            onkeyup="validateInput('person-type')" onfocus="storeValueAndEmpty('person-type')"
+            onfocusout="replaceValueIfEmpty('person-type')" value="people" pattern="children|adults|people|men|women">
+          <datalist id="person-type">
+            <option data-value="under-18" value="children"></option>
+            <option data-value="over-18" value="adults"></option>
+            <option data-value="all-ages" value="people"></option>
+            <option data-value="male" value="men"></option>
+            <option data-value="female" value="women"></option>
+          </datalist>
           </input>
 
-          <input type="list" list="action" name="action" id="action-list"
-              autocomplete="off" required onkeyup="validateInput('action')"
-              onfocus="storeValueAndEmpty('action')"
-              onfocusout="replaceValueIfEmpty('action')"
-              value="live in" pattern="live in|work in|moved to" >
-            <datalist id="action">
-              <option data-value="live" value="live in"></option>
-              <option data-value="work" value="work in"></option>
-              <option data-value="moved" value="moved to"></option>
-            </datalist>
+          <input type="list" list="action" name="action" id="action-list" autocomplete="off" required
+            onkeyup="validateInput('action')" onfocus="storeValueAndEmpty('action')"
+            onfocusout="replaceValueIfEmpty('action')" value="live in" pattern="live in|work in|moved to">
+          <datalist id="action">
+            <option data-value="live" value="live in"></option>
+            <option data-value="work" value="work in"></option>
+            <option data-value="moved" value="moved to"></option>
+          </datalist>
           </input>
 
-          <input type="list" list="location" name="location" id="location-list"
-              autocomplete="off" required onkeyup="validateInput('location')"
-              onfocus="storeValueAndEmpty('location')"
-              onfocusout="replaceValueIfEmpty('location')"
-              value="each U.S. state">
-            <datalist id="location"></datalist>
+          <input type="list" list="location" name="location" id="location-list" autocomplete="off" required
+            onkeyup="validateInput('location')" onfocus="storeValueAndEmpty('location')"
+            onfocusout="replaceValueIfEmpty('location')" value="each U.S. state">
+          <datalist id="location"></datalist>
           </input>
           in
-          <input type="list" list="year" name="year" id="year-list"
-              autocomplete="off" required onkeyup="validateInput('year')"
-              onfocus="storeValueAndEmpty('year')"
-              onfocusout="replaceValueIfEmpty('year')"
-              value="2018" pattern="201[0-8]">
-            <datalist id="year">
-              <option value="2010"></option>
-              <option value="2011"></option>
-              <option value="2012"></option>
-              <option value="2013"></option>
-              <option value="2014"></option>
-              <option value="2015"></option>
-              <option value="2016"></option>
-              <option value="2017"></option>
-              <option value="2018"></option>
-            </datalist>
+          <input type="list" list="year" name="year" id="year-list" autocomplete="off" required
+            onkeyup="validateInput('year')" onfocus="storeValueAndEmpty('year')"
+            onfocusout="replaceValueIfEmpty('year')" value="2018" pattern="201[0-8]">
+          <datalist id="year">
+            <option value="2010"></option>
+            <option value="2011"></option>
+            <option value="2012"></option>
+            <option value="2013"></option>
+            <option value="2014"></option>
+            <option value="2015"></option>
+            <option value="2016"></option>
+            <option value="2017"></option>
+            <option value="2018"></option>
+          </datalist>
           </input>
           ?
         </p>
@@ -83,12 +75,18 @@
       </form>
     </div>
     <div id="result">
+      <div id="map-options">
+        <div class="map-option">Flat map</div>
+        <div class="map-option">
+          <label class="switch" id="map-toggle-switch">
+            <input type="checkbox" id="map-toggle" onchange="toggleMap()">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="map-option">Map overlay</div>
+      </div>
       <div id="map-title"></div>
       <div id="more-info"></div>
-      <div id="buttons">
-        <button onclick="toggle('am-charts', 'map')">AmCharts</button>
-        <button onclick="toggle('map', 'am-charts')">GeoJson</button>
-      </div>
       <div id="am-charts"></div>
       <div id="map"></div>
       <button id="toggle-data-btn" onclick="toggleDataTable()">Display raw data</button>
@@ -100,4 +98,5 @@
     </footer>
   </main>
 </body>
+
 </html>
