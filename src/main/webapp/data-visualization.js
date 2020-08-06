@@ -315,9 +315,9 @@ function drawTable(dataArray, isCountyQuery) {
     const table = new google.visualization.Table(
         document.getElementById('data-table'));
     table.draw(data, {
-      width: '30%', 
+      width: '30%',
       height: '100%',
-      cssClassNames: {headerRow: 'data-table-header'},});
+      cssClassNames: {headerRow: 'data-table-header'}});
   });
 }
 
