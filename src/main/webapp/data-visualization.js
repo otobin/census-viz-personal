@@ -37,10 +37,11 @@ async function displayVisualization(censusDataArray, description,
   document.getElementById('more-info').innerText = '';
 }
 
+let chart;
 // Create and display amcharts map using data and geoData.
 function displayAmChartsMap(data, description, geoData) {
   am4core.useTheme(am4themes_animated);
-  const chart = am4core.create('am-charts', am4maps.MapChart);
+  chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons
@@ -61,8 +62,8 @@ function displayAmChartsMap(data, description, geoData) {
   polygonSeries.heatRules.push({
     property: 'fill',
     target: polygonSeries.mapPolygons.template,
-    min: chart.colors.getIndex(1).brighten(1),
-    max: chart.colors.getIndex(1).brighten(-0.3),
+    min: am4core.color('#FFFFFF'),
+    max: am4core.color('#3c5bdc'),
     logarithmic: true,
   });
   polygonSeries.useGeodata = true;
@@ -309,14 +310,25 @@ function setStyle(isCountyQuery) {
 }
 
 function changeColor(colorParam) {
-  const colorScale = chroma.scale(['white', colorParam.value]).domain([mapData.minValue,
-    mapData.maxValue]);
-  map.data.forEach(function(feature) {
-    map.data.setStyle((feature) => {
-      return {
-        fillColor: colorScale(mapData.map[feature.j.name]).toString(),
-      };
+  if (typeof map !== 'undefined') {
+    const colorScale = chroma.scale(['white', colorParam.value]).domain([mapData.minValue,
+      mapData.maxValue]);
+    map.data.forEach(function(feature) {
+      map.data.setStyle((feature) => {
+        return {
+          fillColor: colorScale(mapData.map[feature.j.name]).toString(),
+        };
+      });
     });
+  }
+  const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+  // Set min/max fill color for each area
+  polygonSeries.heatRules.push({
+    property: 'fill',
+    target: polygonSeries.mapPolygons.template,
+    min: am4core.color('#FFFFFF'),
+    max: am4core.color(colorParam.value),
+    logarithmic: true,
   });
 }
 
