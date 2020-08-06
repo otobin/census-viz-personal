@@ -72,7 +72,7 @@ function displayAmChartsMap(data, description, geoData, color) {
     property: 'fill',
     target: polygonSeries.mapPolygons.template,
     min: am4core.color(color).brighten(1),
-    max: am4core.color(color).brighten(-0.7),
+    max: am4core.color(color).brighten(-1),
     logarithmic: true,
   });
   polygonSeries.useGeodata = true;
@@ -245,7 +245,7 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
   const minColor = chroma(color).brighten(1);
-  const maxColor = chroma(color).darken(-.5);
+  const maxColor = chroma(color).darken(1);
   const colorScale = chroma.scale([minColor, maxColor]).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateNumber, true);
