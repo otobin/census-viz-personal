@@ -89,7 +89,7 @@ input[type=submit]:hover {
 }
 
 #map {
-  height: 600px;
+  height: 700px;
   display: none;
 }
 
@@ -110,6 +110,10 @@ input[type=submit]:hover {
 
 #data-table {
   display: none;
+}
+
+.data-table-header {
+  background-color: white;
 }
 
 table {
