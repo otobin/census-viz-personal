@@ -28,6 +28,7 @@ let globalGeoData;
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   // set global variables
+  document.getElementById('colors').style.display = 'block';
   globalGeoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
   amChartsData = createDataArray(censusDataArray, isCountyQuery);
