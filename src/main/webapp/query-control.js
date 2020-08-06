@@ -47,11 +47,11 @@ function passQuery() {
 
   const actionToPerson = new Map();
   actionToPerson.set(
-        'live', 'Population'
+        'live', 'Population',
       ).set(
-        'work', 'Workers'
+        'work', 'Workers',
       ).set(
-        'moved', 'New inhabitants'
+        'moved', 'New inhabitants',
       );
   const description = `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 

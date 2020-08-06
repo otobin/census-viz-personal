@@ -245,7 +245,7 @@ async function displayCountyGeoJson(mapsData, description, stateNumber) {
   const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateNumber, true);
-  
+
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
@@ -260,7 +260,7 @@ async function displayCountyGeoJson(mapsData, description, stateNumber) {
     map.data.overrideStyle(event.feature, {
       fillColor: '#00ffff',
     });
-    const contentString = 
+    const contentString =
         `<p>${event.feature.j.name}<p>${description}: ${countyToPopMap[event.feature.j.name]}`;
     const infoWindow = new google.maps.InfoWindow({
       content: contentString,
@@ -302,7 +302,7 @@ function setStyle(isCountyQuery) {
   mapsDiv.style.display = 'none';
 }
 
-// Changes the color of the current visualizations on the page. 
+// Changes the color of the current visualizations on the page.
 function changeColor(colorParam) {
   if (typeof map !== 'undefined') {
     const colorScale = chroma.scale(['white', colorParam.value]).domain([mapData.minValue,
