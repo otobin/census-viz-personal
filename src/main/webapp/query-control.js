@@ -18,7 +18,7 @@ function clearPreviousResult() {
   document.getElementById('map-title').innerText = '';
   document.getElementById('data-table').innerHTML = '';
   document.getElementById('colors').style.display = 'none';
-  document.getElementById('setColor').value = "#0000ff";
+  document.getElementById('setColor').value = '#0071bd';
   document.getElementById('census-link').style.display = 'none';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
