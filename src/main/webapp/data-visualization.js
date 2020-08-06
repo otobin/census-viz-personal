@@ -140,14 +140,14 @@ function createDataArray(censusDataArray, isCountyQuery) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        name: location[0],
+        fullCountyName: location[0],
         value: percentToTotal(location[1], location[2])});
     });
   } else {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        name: location[0],
+        fullCountyName: location[0],
         value: location[1]});
     });
   }
@@ -312,7 +312,7 @@ function drawTable(dataArray, isCountyQuery) {
     data.addColumn('string', nameHeader);
     data.addColumn('number', 'Population');
     dataArray.forEach((elem) => {
-      data.addRow([elem.name, parseInt(elem.value)]);
+      data.addRow([elem.fullCountyName, parseInt(elem.value)]);
     });
     const table = new google.visualization.Table(
         document.getElementById('data-table'));
