@@ -244,8 +244,8 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
   countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
-  const minColor = chroma(color).brighten(2);
-  const maxColor = chroma(color).darken(2);
+  const minColor = chroma(color).brighten(1);
+  const maxColor = chroma(color).darken(1);
   const colorScale = chroma.scale([minColor, maxColor]).domain([minPopulation,
     maxPopulation]);
   const geoData = await getGeoData(stateNumber, true);
@@ -309,6 +309,8 @@ function setStyle(isCountyQuery) {
 
 // Changes the color of the current visualizations on the page.
 function changeColor(colorParam) {
+  // map is undefined on a state query, so check to be sure that 
+  // it is undefined before calling displayCountyGeoJson.
   if (typeof map !== 'undefined') {
     displayCountyGeoJson(globalMapsData, globalLocation, colorParam.value);
   }
