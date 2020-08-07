@@ -283,27 +283,39 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, geoData,
   });
 }
 
-// Functions to toggle between amcharts and maps.
-function toggle(divToShow, divToHide) {
-  const visibleElement = document.getElementById(divToShow);
-  const hiddenElement = document.getElementById(divToHide);
-  hiddenElement.style.display = 'none';
-  visibleElement.style.display = 'block';
+// Toggle between amcharts and maps.
+function toggleMap() {
+  const checkbox = document.getElementById('map-toggle');
+  if (checkbox.checked) {
+    document.getElementById('am-charts').style.display = 'none';
+    document.getElementById('map').style.display = 'block';
+    document.getElementById('map-toggle-msg').innerText = 'Disable map overlay';
+  } else {
+    document.getElementById('map').style.display = 'none';
+    document.getElementById('am-charts').style.display = 'block';
+    document.getElementById('map-toggle-msg').innerText = 'Enable map overlay';
+  }
 }
 
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
-  if (isCountyQuery) {
-    const buttonsDiv = document.getElementById('buttons');
-    buttonsDiv.style.display = 'block';
-  } else {
-    const buttonsDiv = document.getElementById('buttons');
-    buttonsDiv.style.display = 'none';
-  }
+  const mapOptions = document.getElementById('map-options');
   const chartsDiv = document.getElementById('am-charts');
-  chartsDiv.style.display = 'block';
   const mapsDiv = document.getElementById('map');
-  mapsDiv.style.display = 'none';
+  if (isCountyQuery) {
+    mapOptions.style.display = 'block';
+    if (!document.getElementById('map-toggle').checked) {
+      chartsDiv.style.display = 'block';
+      mapsDiv.style.display = 'none';
+    } else {
+      mapsDiv.style.display = 'block';
+      chartsDiv.style.display = 'none';
+    }
+  } else {
+    mapOptions.style.display = 'none';
+    chartsDiv.style.display = 'block';
+    mapsDiv.style.display = 'none';
+  }
 }
 
 // Changes the color of the current visualizations on the page.
