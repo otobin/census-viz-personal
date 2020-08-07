@@ -42,7 +42,7 @@ public class QueryServlet extends HttpServlet {
               "female",
               "DP03_0013E"),
           "moved", /* TODO: All of these really should be two to three columns added together,
-          and then calculated as a percentage */
+                   and then calculated as a percentage */
           ImmutableMap.of(
               "all-ages",
               "S0201_119E,S0201_126E",
@@ -66,14 +66,12 @@ public class QueryServlet extends HttpServlet {
               "K200101_003E"),
           "work",
           ImmutableMap.of(
-              "all-ages",
-              "K202301_004E",
-              "over-18",
-              "K202301_004E"),
+              "all-ages", "K202301_004E", "over-18", "K202301_004E"),
           "moved",
           ImmutableMap.of(
               "all-ages",
-              "S0201_119E,S0201_126E")); /* TODO: K200701_005E + K200701_006E for state query,
+              "S0201_119E,S0201_126E")); 
+              /* TODO: K200701_005E + K200701_006E for state query,
               but actually have to add K200701_004E as well for county query */
 
   Map<String, String> tableNameToAbbrev =
@@ -96,8 +94,9 @@ public class QueryServlet extends HttpServlet {
 
   private String getcensusTableLink(String dataRow, String dataTablePrefix, String year) {
     return "https://data.census.gov/cedsci/table?tid=ACS"
-        + (dataRow.substring(0,1).equals("K") ? "SE" : 
-            (tableNameToAbbrev.get(dataTablePrefix.substring(1)) + "1Y"))
+        + (dataRow.substring(0,1).equals("K") 
+            ? "SE" 
+            : (tableNameToAbbrev.get(dataTablePrefix.substring(1)) + "1Y"))
         + year
         + "."
         + dataRow.substring(0, dataRow.indexOf("_"));
@@ -126,8 +125,9 @@ public class QueryServlet extends HttpServlet {
     }
     
     String dataRow;
-    if (year > 2013 && queryToDataRowPost2013.containsKey(action) && 
-      queryToDataRowPost2013.get(action).containsKey(personType)) {
+    if (year > 2013
+      && queryToDataRowPost2013.containsKey(action)
+      && queryToDataRowPost2013.get(action).containsKey(personType)) {
       dataRow = queryToDataRowPost2013.get(action).get(personType);
     } else {
       dataRow = queryToDataRowGeneric.get(action).get(personType);
@@ -144,7 +144,7 @@ public class QueryServlet extends HttpServlet {
             "https://api.census.gov/data/"
                 + year
                 + "/acs/"
-                + (dataRow.substring(0,1).equals("K") ? "acsse" : "acs1")
+                + (dataRow.substring(0, 1).equals("K") ? "acsse" : "acs1")
                 + dataTablePrefix
                 + "?get=NAME,"
                 + dataRow
