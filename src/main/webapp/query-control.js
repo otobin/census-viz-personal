@@ -92,10 +92,7 @@ function removeErroneousData(dataArray) {
   dataArray.forEach((elem, index) => {
     // Using splice, directly modifies array
     elem.forEach((item) => {
-      // Removes items > 400,000,000 under assumption
-      // that no state should have a population
-      // greater than the total U.S. pop (currently 330 million)
-      if (item === null || item < 0 || item > 400000000) {
+      if (item === null || item < 0) {
         dataArray.splice(index, 1);
       }
     });

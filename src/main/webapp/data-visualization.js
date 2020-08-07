@@ -67,6 +67,14 @@ function displayAmChartsMap(data, description, geoData) {
     max: chart.colors.getIndex(1).brighten(-0.3),
     logarithmic: true,
   });
+
+  let descriptionString = 'Population of people ' +
+  description.age + ' who ' + description.action;
+  // make it moved to
+  if (description.action === 'moved') {
+    descriptionString += ' to';
+  }
+  addTooltipText(data, geoData.features, descriptionString);
   polygonSeries.useGeodata = true;
   polygonSeries.data = data;
 
@@ -87,13 +95,7 @@ function displayAmChartsMap(data, description, geoData) {
 
   // Configure series tooltip
   const polygonTemplate = polygonSeries.mapPolygons.template;
-  let descriptionString = 'Population of people ' +
-    description.age + ' who ' + description.action;
-  // make it moved to
-  if (description.action === 'moved') {
-    descriptionString += ' to';
-  }
-  polygonTemplate.tooltipText = '{name}\n' + descriptionString + ': {value}';
+  polygonTemplate.tooltipText = '{name}\n{tooltipText}';
   polygonTemplate.nonScalingStroke = true;
   polygonTemplate.strokeWidth = 0.5;
 
@@ -118,6 +120,20 @@ function displayAmChartsMap(data, description, geoData) {
   polygonSeries.mapPolygons.template.events.on('out', function(event) {
     heatLegend.valueAxis.hideTooltip();
   });
+}
+
+function addTooltipText(data, geoDataFeatures, descriptionString) {
+  geoDataFeatures.forEach((location) => {
+    let index = data.findIndex(elem => elem.id === location.id);
+    if (index !== -1) {
+      data[index].tooltipText = `${descriptionString}: ${data[index].value}`;
+    } else {
+      data.push({
+        id: location.id,
+        tooltipText: 'Insufficient data',
+      })
+    }
+  })
 }
 
 // Get the location id used by amCharts geoJson file for a given location.
@@ -314,13 +330,17 @@ function setStyle(isCountyQuery) {
 
 // Draw data table using Visualization API
 function drawTable(dataArray, isCountyQuery) {
+  // For some reason data array was changing, between here and
+  // the for each loop used to populate the data table,
+  // so I made a copy
+  const dataArrayCopy = dataArray.slice();
   google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
     data.addColumn('string', nameHeader);
     data.addColumn('number', 'Population');
-    dataArray.forEach((elem) => {
+    dataArrayCopy.forEach((elem) => {
       data.addRow([elem.locationName, parseInt(elem.value)]);
     });
     const table = new google.visualization.Table(
