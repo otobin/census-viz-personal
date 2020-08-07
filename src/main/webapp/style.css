@@ -153,6 +153,10 @@ input:checked + .slider::before {
   display: inline-block;
 }
 
+#map-toggle-msg {
+  width: 180px;
+}
+
 #map-options {
   white-space: nowrap;
   display: none;

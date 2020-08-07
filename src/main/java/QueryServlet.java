@@ -65,6 +65,17 @@ public class QueryServlet extends HttpServlet {
     return ""; // should never reach this point
   }
 
+  private String getcensusTableLink(String fetchUrlString, String dataTablePrefix, String year) {
+    return "https://data.census.gov/cedsci/table?tid=ACS"
+        + tableNameToAbbrev.get(
+            fetchUrlString.substring(
+                fetchUrlString.indexOf(dataTablePrefix), fetchUrlString.indexOf("?")))
+        + "1Y"
+        + year
+        + "."
+        + fetchUrlString.substring(fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String personType = request.getParameter("person-type");
@@ -104,17 +115,7 @@ public class QueryServlet extends HttpServlet {
                 + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
-    String fetchUrlString = fetchUrl.toString();
-    String censusTableLink =
-        "https://data.census.gov/cedsci/table?tid=ACS"
-            + tableNameToAbbrev.get(
-                fetchUrlString.substring(
-                    fetchUrlString.indexOf("acs1/") + 5, fetchUrlString.indexOf("?")))
-            + "1Y"
-            + year
-            + "."
-            + fetchUrlString.substring(
-                fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
+    String censusTableLink = getcensusTableLink(fetchUrl.toString(), dataTablePrefix, year);
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
