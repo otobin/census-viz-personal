@@ -330,7 +330,7 @@ function changeColor(colorParam) {
   const cacheDescription = localStorage.getItem('description');
   // map is undefined on a state query, so check to be sure that 
   // it is undefined before calling displayCountyGeoJson.
-  if (typeof map !== 'undefined') {
+  if (typeof cacheMapsData !== 'undefined') {
     displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation, cacheGeoData, color);
   }
   displayAmChartsMap(cacheAmCharts, cacheDescription, cacheGeoData, color);
