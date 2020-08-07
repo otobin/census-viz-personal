@@ -21,20 +21,27 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
+let globalGeoData; 
+let globalAmChartsData;
+let globalLocation;
+let globalDescription;
+let globalMapsData;
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
-  const geoData = await getGeoData(location, isCountyQuery);
+  globalGeoData = await getGeoData(location, isCountyQuery);
   setStyle(isCountyQuery);
-  const amChartsData = createDataArray(censusDataArray, isCountyQuery);
-  drawTable(amChartsData, description, isCountyQuery);
+  globalAmChartsData = createDataArray(censusDataArray, isCountyQuery);
+  globalDescription = description;
+  globalLocation = location;
+  drawTable(globalAmChartsData, globalDescription, isCountyQuery);
   if (isCountyQuery) {
-      const mapsData = getMapsData(censusDataArray);
-      displayAmChartsMap(amChartsData, description, geoData, '#3c5bdc');
-      displayCountyGeoJson(mapsData, description, location,'#3c5bdc');
+      globalMapsData = getMapsData(censusDataArray);
+      displayAmChartsMap(globalAmChartsData, globalDescription, globalGeoData, '#3c5bdc');
+      displayCountyGeoJson(globalMapsData, globalDescription, globalLocation, globalGeoData, '#3c5bdc');
   } else {
-      displayAmChartsMap(amChartsData, description, geoData, '#3c5bdc');
+      displayAmChartsMap(globalAmChartsData, globalDescription, globalGeoData, '#3c5bdc');
   }
   document.getElementById('more-info').innerText = '';
 }
@@ -112,9 +119,6 @@ function displayAmChartsMap(data, description, geoData, color) {
   polygonSeries.mapPolygons.template.events.on('out', function(event) {
     heatLegend.valueAxis.hideTooltip();
   });
-
-  // store chart in global cache
-  localStorage.setItem('amCharts', chart);
 }
 
 // Get the location id used by amCharts geoJson file for a given location.
@@ -226,10 +230,11 @@ function getMinAndMaxPopulation(populationArray) {
   return {max: max, min: min};
 }
 
+
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
+async function displayCountyGeoJson(mapsData, description, stateNumber, geoData, color) {
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
@@ -239,10 +244,9 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
   const minColor = chroma(color).brighten(1);
-  const maxColor = chroma(color).darken(-.5);
+  const maxColor = chroma(color).darken(-0.6);
   const colorScale = chroma.scale([minColor, maxColor]).domain([minPopulation,
     maxPopulation]);
-  const geoData = await getGeoData(stateNumber, true);
 
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
@@ -276,8 +280,6 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
       openInfoWindows[i].close();
     }
   });
-
-  localStorage.setItem('map', map);
 }
 
 // Functions to toggle between amcharts and maps.
@@ -308,11 +310,9 @@ function changeColor(colorParam) {
   // map is undefined on a state query, so check to be sure that 
   // it is undefined before calling displayCountyGeoJson.
   if (typeof map !== 'undefined') {
-    const map = localStorage.get('map');
-    console.log(map);
+    displayCountyGeoJson(globalMapsData, globalDescription, globalLocation, globalGeoData, colorParam.value);
   }
-  const amCharts = localStorage.get('amCharts');
-  console.log(amCharts);
+  displayAmChartsMap(globalAmChartsData, globalDescription, globalGeoData, colorParam.value);
 }
 
 // Draw data table using Visualization API
