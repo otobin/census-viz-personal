@@ -75,7 +75,8 @@ function passQuery() {
             // censusDataArray is a 2D array, where the first row is a
             // header row and all subsequent rows are one piece of
             // data (e.g. for a state or county)
-            displayVisualization(JSON.parse(response.data), description,
+            const data = removeErroneousData(JSON.parse(response.data));
+            displayVisualization(data, description,
               location, isCountyQuery);
             displayLinkToCensusTable(response.tableLink);
             document.getElementById('more-info').innerText = '';
@@ -84,6 +85,20 @@ function passQuery() {
         displayError(response.status, response.statusText);
       }
     });
+}
+
+// Remove incorrect data returned by the census API
+// such as Puerto Rico data and negative numbers
+function removeErroneousData(dataArray) {
+  dataArray.forEach((elem, index) => {
+    // Using splice, directly modifies array
+    elem.forEach((item) => {
+      if (item === null || item < 0 || item > 400000000) {
+        dataArray.splice(index, 1);
+      }
+    });
+  });
+  return dataArray;
 }
 
 // Check that the input being written to a datalist can match one of its options
