@@ -14,16 +14,15 @@ function registerServiceWorker() {
   }
 }
 
-// Sets the value of the color input. Checks to see if a color is in 
-// the cache already, and returns a nice blue if it isn't.
+// Returns the color to set the value to based on whether 
+// there is an existing color in the cache
 function setColor() {
-  const color = localStorage.getItem('color');
-  if (color !== null) {
-    document.getElementById('setColor').value = localStorage.getItem('color');
-  } else {
-    document.getElementById('setColor').value = '#0071bd';
-    localStorage.setItem('color', '#0071bd');
+  let color = localStorage.getItem('color');
+  if (color === null) {
+    color = '#0071bd'
+    localStorage.setItem('color', color);
   }
+  return color;
 }
 
 function clearPreviousResult() {

@@ -25,8 +25,8 @@ async function getGeoData(location, isCountyQuery) {
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
-  setColor();
-  const color = localStorage.getItem('color');
+  const color = setColor();
+  document.getElementById('setColor').value = color;
   const geoData = await getGeoData(location, isCountyQuery);
   // Put all necessary data in the cache
   localStorage.setItem('geoData', JSON.stringify(geoData));
