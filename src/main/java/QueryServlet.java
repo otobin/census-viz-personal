@@ -67,14 +67,13 @@ public class QueryServlet extends HttpServlet {
 
   private String getcensusTableLink(String fetchUrlString, String dataTablePrefix, String year) {
     return "https://data.census.gov/cedsci/table?tid=ACS"
-            + tableNameToAbbrev.get(
-                fetchUrlString.substring(
-                    fetchUrlString.indexOf(dataTablePrefix), fetchUrlString.indexOf("?")))
-            + "1Y"
-            + year
-            + "."
-            + fetchUrlString.substring(
-                fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
+        + tableNameToAbbrev.get(
+            fetchUrlString.substring(
+                fetchUrlString.indexOf(dataTablePrefix), fetchUrlString.indexOf("?")))
+        + "1Y"
+        + year
+        + "."
+        + fetchUrlString.substring(fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
   }
 
   @Override
