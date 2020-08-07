@@ -235,7 +235,8 @@ function getMinAndMaxPopulation(populationArray) {
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, description, stateNumber, geoData, color) {
+async function displayCountyGeoJson(mapsData, description, 
+    stateNumber, geoData, color) {
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
@@ -265,7 +266,8 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, geoData,
       fillColor: maxColor,
     });
     const contentString =
-        `<p>${event.feature.j.name}<p>${description}: ${countyToPopMap[event.feature.j.name]}`;
+        `<p>${event.feature.j.name}<p>${description}: 
+        ${countyToPopMap[event.feature.j.name]}`;
     const infoWindow = new google.maps.InfoWindow({
       content: contentString,
       maxWidth: 100,
@@ -328,10 +330,11 @@ function changeColor(colorParam) {
   const cacheAmCharts = JSON.parse(localStorage.getItem('amChartsData'));
   const cacheLocation = localStorage.getItem('location');
   const cacheDescription = localStorage.getItem('description');
-  // map is undefined on a state query, so check to be sure that 
+  // map is undefined on a state query, so check to be sure that
   // it is undefined before calling displayCountyGeoJson.
   if (cacheLocation !== 'state') {
-    displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation, cacheGeoData, color);
+    displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation, 
+      cacheGeoData, color);
   }
   displayAmChartsMap(cacheAmCharts, cacheDescription, cacheGeoData, color);
 }
