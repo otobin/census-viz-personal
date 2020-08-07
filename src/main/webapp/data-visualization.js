@@ -40,7 +40,7 @@ async function displayVisualization(censusDataArray, description,
   if (isCountyQuery) {
       globalMapsData = getMapsData(censusDataArray);
       displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
-      displayCountyGeoJson(globalMapsData, globalDescription, globalLocation,'#3c5bdc');
+      displayCountyGeoJson(globalMapsData, globalDescription, globalLocation, globalGeoData, '#3c5bdc');
   } else {
       displayAmChartsMap(amChartsData, globalDescription, globalGeoData, '#3c5bdc');
   }
@@ -231,12 +231,12 @@ function getMinAndMaxPopulation(populationArray) {
   return {max: max, min: min};
 }
 
-let map;
+
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
-  map = new google.maps.Map(document.getElementById('map'), {
+async function displayCountyGeoJson(mapsData, description, stateNumber, geoData, color) {
+  const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
   });
@@ -248,7 +248,6 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, color) {
   const maxColor = chroma(color).darken(1);
   const colorScale = chroma.scale([minColor, maxColor]).domain([minPopulation,
     maxPopulation]);
-  const geoData = await getGeoData(stateNumber, true);
 
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
@@ -312,7 +311,7 @@ function changeColor(colorParam) {
   // map is undefined on a state query, so check to be sure that 
   // it is undefined before calling displayCountyGeoJson.
   if (typeof map !== 'undefined') {
-    displayCountyGeoJson(globalMapsData, globalLocation, colorParam.value);
+    displayCountyGeoJson(globalMapsData, globalDescription, globalLocation, colorParam.value);
   }
   displayAmChartsMap(amChartsData, globalDescription, globalGeoData, colorParam.value);
 }
