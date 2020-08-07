@@ -244,8 +244,8 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, geoData,
   countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
-  const minColor = chroma(color).brighten(1);
-  const maxColor = chroma(color).darken(-0.6);
+  const minColor = chroma(color).brighten(2);
+  const maxColor = chroma(color).darken(2);
   const colorScale = chroma.scale([minColor, maxColor]).domain([minPopulation,
     maxPopulation]);
 
