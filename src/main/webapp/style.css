@@ -206,3 +206,10 @@ footer {
  #colors {
   text-align: center;
 }
+
+input[type="color"] {
+  padding: 0;    
+  box-shadow: none;
+  border-radius: 50%;
+  background-color: 'blue';
+}
