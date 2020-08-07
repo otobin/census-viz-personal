@@ -91,7 +91,7 @@ public class QueryServlet extends HttpServlet {
 
   private String getcensusTableLink(String dataRow, String dataTablePrefix, String year) {
     return "https://data.census.gov/cedsci/table?tid=ACS"
-        + (dataRow.substring(0, 1).equals("K") 
+        + (dataRow.substring(0, 1).equals("K")
             ? "SE"
             : (tableNameToAbbrev.get(dataTablePrefix.substring(1)) + "1Y"))
         + year
