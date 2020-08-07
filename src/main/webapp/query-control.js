@@ -76,8 +76,7 @@ function passQuery() {
             // header row and all subsequent rows are one piece of
             // data (e.g. for a state or county)
             const data = removeErroneousData(JSON.parse(response.data));
-            displayVisualization(data, description,
-              location, isCountyQuery);
+            displayVisualization(data, description, location, isCountyQuery);
             displayLinkToCensusTable(response.tableLink);
             document.getElementById('more-info').innerText = '';
           });
@@ -93,6 +92,9 @@ function removeErroneousData(dataArray) {
   dataArray.forEach((elem, index) => {
     // Using splice, directly modifies array
     elem.forEach((item) => {
+      // Removes items > 400,000,000 under assumption
+      // that no state should have a population
+      // greater than the total U.S. pop (currently 330 million)
       if (item === null || item < 0 || item > 400000000) {
         dataArray.splice(index, 1);
       }
