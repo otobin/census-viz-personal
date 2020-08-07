@@ -16,7 +16,7 @@ function registerServiceWorker() {
 
 // Sets the value of the color input. Checks to see if a color is in 
 // the cache already, and returns a nice blue if it isn't.
-function getColor() {
+function setColor() {
   const color = localStorage.getItem('color');
   if (color !== null) {
     document.getElementById('setColor').value = localStorage.getItem('color');

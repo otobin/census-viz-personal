@@ -25,7 +25,7 @@ async function getGeoData(location, isCountyQuery) {
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
-  getColor();
+  setColor();
   const color = localStorage.getItem('color');
   const geoData = await getGeoData(location, isCountyQuery);
   // Put all necessary data in the cache
@@ -254,7 +254,7 @@ async function displayCountyGeoJson(mapsData, description, stateNumber, geoData,
     map.data.setStyle((feature) => {
       return {
         fillColor: colorScale(countyToPopMap[feature.j.name]).toString(),
-        fillOpacity: 0.4,
+        fillOpacity: 0.5,
       };
     });
   });
