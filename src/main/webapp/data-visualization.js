@@ -31,7 +31,6 @@ async function displayVisualization(censusDataArray, description,
   // Put all necessary data in the cache
   localStorage.setItem('geoData', JSON.stringify(geoData));
   localStorage.setItem('location', location);
-  console.log(location);
   localStorage.setItem('description', description);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
