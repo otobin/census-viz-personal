@@ -65,14 +65,11 @@ public class QueryServlet extends HttpServlet {
               "female",
               "K200101_003E"),
           "work",
-          ImmutableMap.of(
-              "all-ages", "K202301_004E", "over-18", "K202301_004E"),
+          ImmutableMap.of("all-ages", "K202301_004E", "over-18", "K202301_004E"),
           "moved",
-          ImmutableMap.of(
-              "all-ages",
-              "S0201_119E,S0201_126E")); 
-              /* TODO: K200701_005E + K200701_006E for state query,
-              but actually have to add K200701_004E as well for county query */
+          /* TODO: K200701_005E + K200701_006E for state query,
+          but actually have to add K200701_004E as well for county query */
+          ImmutableMap.of("all-ages", "S0201_119E,S0201_126E")); 
 
   Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
@@ -95,7 +92,7 @@ public class QueryServlet extends HttpServlet {
   private String getcensusTableLink(String dataRow, String dataTablePrefix, String year) {
     return "https://data.census.gov/cedsci/table?tid=ACS"
         + (dataRow.substring(0,1).equals("K") 
-            ? "SE" 
+            ? "SE"
             : (tableNameToAbbrev.get(dataTablePrefix.substring(1)) + "1Y"))
         + year
         + "."
@@ -126,8 +123,8 @@ public class QueryServlet extends HttpServlet {
     
     String dataRow;
     if (year > 2013
-      && queryToDataRowPost2013.containsKey(action)
-      && queryToDataRowPost2013.get(action).containsKey(personType)) {
+        && queryToDataRowPost2013.containsKey(action)
+        && queryToDataRowPost2013.get(action).containsKey(personType)) {
       dataRow = queryToDataRowPost2013.get(action).get(personType);
     } else {
       dataRow = queryToDataRowGeneric.get(action).get(personType);
