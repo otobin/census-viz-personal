@@ -93,6 +93,7 @@ function passQuery() {
             document.getElementById('more-info').innerText = '';
           });
       } else {
+        document.getElementById('map-options').style.display = 'none';
         displayError(response.status, response.statusText);
       }
     });
