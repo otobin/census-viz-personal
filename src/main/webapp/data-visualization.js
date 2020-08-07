@@ -26,7 +26,7 @@ async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
   const color = getColor();
-  document.getElementById('setColor').value = color;
+  document.getElementById('set-color').value = color;
   const geoData = await getGeoData(location, isCountyQuery);
   // Put all necessary data in the cache
   localStorage.setItem('geoData', JSON.stringify(geoData));
@@ -235,7 +235,7 @@ function getMinAndMaxPopulation(populationArray) {
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, description, 
+async function displayCountyGeoJson(mapsData, description,
     stateNumber, geoData, color) {
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
@@ -333,7 +333,7 @@ function changeColor(colorParam) {
   // map is undefined on a state query, so check to be sure that
   // it is undefined before calling displayCountyGeoJson.
   if (cacheLocation !== 'state') {
-    displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation, 
+    displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation,
       cacheGeoData, color);
   }
   displayAmChartsMap(cacheAmCharts, cacheDescription, cacheGeoData, color);
