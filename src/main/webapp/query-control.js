@@ -16,7 +16,7 @@ function registerServiceWorker() {
 
 // Returns the color to set the value to based on whether 
 // there is an existing color in the cache
-function setColor() {
+function getColor() {
   let color = localStorage.getItem('color');
   if (color === null) {
     color = '#0071bd'

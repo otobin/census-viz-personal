@@ -25,12 +25,13 @@ async function getGeoData(location, isCountyQuery) {
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
-  const color = setColor();
+  const color = getColor();
   document.getElementById('setColor').value = color;
   const geoData = await getGeoData(location, isCountyQuery);
   // Put all necessary data in the cache
   localStorage.setItem('geoData', JSON.stringify(geoData));
   localStorage.setItem('location', location);
+  console.log(location);
   localStorage.setItem('description', description);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
@@ -330,7 +331,7 @@ function changeColor(colorParam) {
   const cacheDescription = localStorage.getItem('description');
   // map is undefined on a state query, so check to be sure that 
   // it is undefined before calling displayCountyGeoJson.
-  if (typeof cacheMapsData !== 'undefined') {
+  if (cacheLocation !== 'state') {
     displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation, cacheGeoData, color);
   }
   displayAmChartsMap(cacheAmCharts, cacheDescription, cacheGeoData, color);
