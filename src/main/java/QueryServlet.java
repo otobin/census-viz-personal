@@ -69,7 +69,7 @@ public class QueryServlet extends HttpServlet {
           "moved",
           /* TODO: K200701_005E + K200701_006E for state query,
           but actually have to add K200701_004E as well for county query */
-          ImmutableMap.of("all-ages", "S0201_119E,S0201_126E")); 
+          ImmutableMap.of("all-ages", "S0201_119E,S0201_126E"));
 
   Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
@@ -91,7 +91,7 @@ public class QueryServlet extends HttpServlet {
 
   private String getcensusTableLink(String dataRow, String dataTablePrefix, String year) {
     return "https://data.census.gov/cedsci/table?tid=ACS"
-        + (dataRow.substring(0,1).equals("K") 
+        + (dataRow.substring(0, 1).equals("K") 
             ? "SE"
             : (tableNameToAbbrev.get(dataTablePrefix.substring(1)) + "1Y"))
         + year
@@ -120,7 +120,7 @@ public class QueryServlet extends HttpServlet {
           "This query is not supported by census data. Try asking a more general one.");
       return;
     }
-    
+
     String dataRow;
     if (year > 2013
         && queryToDataRowPost2013.containsKey(action)
