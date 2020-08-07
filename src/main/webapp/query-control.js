@@ -14,9 +14,21 @@ function registerServiceWorker() {
   }
 }
 
+// Returns the color to set the value to based on whether
+// there is an existing color in the cache
+function getColor() {
+  let color = localStorage.getItem('color');
+  if (color === null) {
+    color = '#0071bd';
+    localStorage.setItem('color', color);
+  }
+  return color;
+}
+
 function clearPreviousResult() {
   document.getElementById('map-title').innerText = '';
   document.getElementById('data-table').innerHTML = '';
+  document.getElementById('colors').style.display = 'none';
   document.getElementById('census-link').style.display = 'none';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
@@ -43,23 +55,23 @@ function passQuery() {
   const location = document.querySelector(
     '#location option[value=\'' + locationInput + '\']').dataset.value;
 
-  const actionToText = new Map();
-  actionToText['moved'] = 'moved to';
-  if (actionToText.has(action)) {
-    action = actionToText[action];
-  }
-  const description = {action: action, age: personType};
+  const actionToPerson = new Map();
+  actionToPerson.set(
+        'live', 'Population',
+      ).set(
+        'work', 'Workers',
+      ).set(
+        'moved', 'New inhabitants',
+      );
+  const description = `${actionToPerson.get(action)} 
+    (${personType.replace('-', ' ')})`;
+
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
-  let title = 'Population who ' + action;
-  if (action === 'moved') {
-    title += ' to ';
-  } else {
-    title += ' in ';
-  }
-  title += 'each ' + region + ' (' +
-      personType.replace('-', ' ') + ')' +
-      ' in ' + year;
+  const title = 'Population who ' + actionInput +
+    ' each ' + region + ' (' +
+    personType.replace('-', ' ') + ')' +
+    ' in ' + year;
   document.getElementById('map-title').innerText = title;
 
   const fetchUrl = '/query?person-type=' + personType +
