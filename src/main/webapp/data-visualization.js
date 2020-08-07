@@ -21,27 +21,28 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
-let globalGeoData; 
-let globalAmChartsData;
-let globalLocation;
-let globalDescription;
-let globalMapsData;
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
-  globalGeoData = await getGeoData(location, isCountyQuery);
+  getColor();
+  const color = localStorage.getItem('color');
+  const geoData = await getGeoData(location, isCountyQuery);
+  // Put all necessary data in the cache
+  localStorage.setItem('geoData', JSON.stringify(geoData));
+  localStorage.setItem('location', location);
+  localStorage.setItem('description', description);
   setStyle(isCountyQuery);
-  globalAmChartsData = createDataArray(censusDataArray, isCountyQuery);
-  globalDescription = description;
-  globalLocation = location;
-  drawTable(globalAmChartsData, globalDescription, isCountyQuery);
+  const amChartsData = createDataArray(censusDataArray, isCountyQuery);
+  localStorage.setItem('amChartsData', JSON.stringify(amChartsData));
+  drawTable(amChartsData, description, isCountyQuery);
   if (isCountyQuery) {
-      globalMapsData = getMapsData(censusDataArray);
-      displayAmChartsMap(globalAmChartsData, globalDescription, globalGeoData, '#3c5bdc');
-      displayCountyGeoJson(globalMapsData, globalDescription, globalLocation, globalGeoData, '#3c5bdc');
+      const mapsData = getMapsData(censusDataArray);
+      localStorage.setItem('mapsData', JSON.stringify(mapsData));
+      displayAmChartsMap(amChartsData, description, geoData, color);
+      displayCountyGeoJson(mapsData, description, location, geoData, color);
   } else {
-      displayAmChartsMap(globalAmChartsData, globalDescription, globalGeoData, '#3c5bdc');
+      displayAmChartsMap(amChartsData, description, geoData, color);
   }
   document.getElementById('more-info').innerText = '';
 }
@@ -307,12 +308,20 @@ function setStyle(isCountyQuery) {
 
 // Changes the color of the current visualizations on the page.
 function changeColor(colorParam) {
+  const color = colorParam.value;
+  localStorage.setItem('color', color);
+  // Get variables out of cache
+  const cacheMapsData = JSON.parse(localStorage.getItem('mapsData'));
+  const cacheGeoData = JSON.parse(localStorage.getItem('geoData'));
+  const cacheAmCharts = JSON.parse(localStorage.getItem('amChartsData'));
+  const cacheLocation = localStorage.getItem('location');
+  const cacheDescription = localStorage.getItem('description');
   // map is undefined on a state query, so check to be sure that 
   // it is undefined before calling displayCountyGeoJson.
   if (typeof map !== 'undefined') {
-    displayCountyGeoJson(globalMapsData, globalDescription, globalLocation, globalGeoData, colorParam.value);
+    displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation, cacheGeoData, color);
   }
-  displayAmChartsMap(globalAmChartsData, globalDescription, globalGeoData, colorParam.value);
+  displayAmChartsMap(cacheAmCharts, cacheDescription, cacheGeoData, color);
 }
 
 // Draw data table using Visualization API
