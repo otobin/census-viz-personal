@@ -73,8 +73,8 @@ public class QueryServlet extends HttpServlet {
           "moved",
           ImmutableMap.of(
               "all-ages",
-              "S0201_119E,S0201_126E", /* TODO: K200701_005E + K200701_006E for state query,
-              but actually have to add K200701_004E for county query */);
+              "S0201_119E,S0201_126E"); /* TODO: K200701_005E + K200701_006E for state query,
+              but actually have to add K200701_004E as well for county query */
 
   Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
