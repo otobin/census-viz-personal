@@ -24,7 +24,7 @@ public class QueryServlet extends HttpServlet {
               "under-18",
               "DP05_0019E",
               "over-18",
-              "DP05_0021E", /* still available for post-2013 if you do math */
+              "DP05_0021E", /* TODO: could be added to post2013 using subtraction */
               "all-ages",
               "DP05_0001E",
               "male",
@@ -47,7 +47,7 @@ public class QueryServlet extends HttpServlet {
               "all-ages",
               "S0201_119E,S0201_126E",
               "male",
-              "S0701_C01_012E,S0701_C04_012E", 
+              "S0701_C01_012E,S0701_C04_012E",
               "female",
               "S0701_C01_013E,S0701_C04_013E"));
 
@@ -139,7 +139,7 @@ public class QueryServlet extends HttpServlet {
           HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
     }
 
-    URL fetchUrl = /*BUG*/
+    URL fetchUrl =
         new URL(
             "https://api.census.gov/data/"
                 + year
