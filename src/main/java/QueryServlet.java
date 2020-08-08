@@ -89,7 +89,7 @@ public class QueryServlet extends HttpServlet {
     return "N/A"; // should never reach this point
   }
 
-  private String getcensusTableLink(String dataRow, String dataTablePrefix, String year) {
+  private String getCensusTableLink(String dataRow, String dataTablePrefix, String year) {
     return "https://data.census.gov/cedsci/table?tid=ACS"
         + (dataRow.substring(0, 1).equals("K")
             ? "SE"
@@ -149,7 +149,7 @@ public class QueryServlet extends HttpServlet {
                 + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
-    String censusTableLink = getcensusTableLink(dataRow, dataTablePrefix, yearStr);
+    String censusTableLink = getCensusTableLink(dataRow, dataTablePrefix, yearStr);
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
