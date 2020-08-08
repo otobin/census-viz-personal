@@ -208,8 +208,12 @@ footer {
 }
 
 input[type="color"] {
-  padding: 0;    
-  box-shadow: none;
-  border-radius: 50%;
-  background-color: 'blue';
+  visibility: hidden;
+}
+
+#set-color-label {
+  background-color: black;
+  height: 32px;
+  width: 32px;
+  border-radius: 25px;
 }

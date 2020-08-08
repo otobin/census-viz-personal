@@ -321,6 +321,7 @@ function setStyle(isCountyQuery) {
 // Changes the color of the current visualizations on the page.
 function changeColor(colorParam) {
   const color = colorParam.value;
+  document.getElementById('set-color-label').style.backgroundColor = color;
   localStorage.setItem('color', color);
   // Get variables out of cache
   const cacheMapsData = JSON.parse(localStorage.getItem('mapsData'));
