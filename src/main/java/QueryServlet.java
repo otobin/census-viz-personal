@@ -97,7 +97,7 @@ public class QueryServlet extends HttpServlet {
             : (tableNameToAbbrev.get(dataTablePrefix.substring(1)) + "1Y"))
         + year
         + "."
-        + dataRow.substring(0, dataRow.indexOf("_"));
+        + dataRow.substring(0, (dataRow.contains("_") ? dataRow.indexOf("_") : dataRow.length() + 1));
   }
 
   @Override
