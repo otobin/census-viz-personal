@@ -21,26 +21,34 @@ async function getGeoData(location, isCountyQuery) {
   }
 }
 
-// Display amCharts and geoJson visulizations and create data table
-// for given data.
+// Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
+  document.getElementById('colors').style.display = 'block';
+  const color = getColor();
+  document.getElementById('set-color').value = color;
   const geoData = await getGeoData(location, isCountyQuery);
+  // Put all necessary data in the cache
+  localStorage.setItem('geoData', JSON.stringify(geoData));
+  localStorage.setItem('location', location);
+  localStorage.setItem('description', description);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
-  drawTable(amChartsData, isCountyQuery);
+  localStorage.setItem('amChartsData', JSON.stringify(amChartsData));
+  drawTable(amChartsData, description, isCountyQuery);
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
-      displayAmChartsMap(amChartsData, description, geoData);
-      displayCountyGeoJson(mapsData, location);
+      localStorage.setItem('mapsData', JSON.stringify(mapsData));
+      displayAmChartsMap(amChartsData, description, geoData, color);
+      displayCountyGeoJson(mapsData, description, location, geoData, color);
   } else {
-      displayAmChartsMap(amChartsData, description, geoData);
+      displayAmChartsMap(amChartsData, description, geoData, color);
   }
   document.getElementById('more-info').innerText = '';
 }
 
 // Create and display amcharts map using data and geoData.
-function displayAmChartsMap(data, description, geoData) {
+function displayAmChartsMap(data, description, geoData, color) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
@@ -63,8 +71,8 @@ function displayAmChartsMap(data, description, geoData) {
   polygonSeries.heatRules.push({
     property: 'fill',
     target: polygonSeries.mapPolygons.template,
-    min: chart.colors.getIndex(1).brighten(1),
-    max: chart.colors.getIndex(1).brighten(-0.3),
+    min: am4core.color(color).brighten(1),
+    max: am4core.color(color).brighten(-0.7),
     logarithmic: true,
   });
 
@@ -101,7 +109,7 @@ function displayAmChartsMap(data, description, geoData) {
 
   // Create hover state and set alternative fill color
   const hs = polygonTemplate.states.create('hover');
-  hs.properties.fill = am4core.color('#3c5bdc');
+  hs.properties.fill = am4core.color(color);
 
   // heat legend behavior
   polygonSeries.mapPolygons.template.events.on('over', function(event) {
@@ -122,6 +130,7 @@ function displayAmChartsMap(data, description, geoData) {
   });
 }
 
+// Add tooltip used for amCharts map to data
 function addTooltipText(data, geoDataFeatures, descriptionString) {
   geoDataFeatures.forEach((location) => {
     let index = data.findIndex(elem => elem.id === location.id);
@@ -156,14 +165,14 @@ function createDataArray(censusDataArray, isCountyQuery) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        locationName: location[0],
+        name: location[0],
         value: percentToTotal(location[1], location[2])});
     });
   } else {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        locationName: location[0],
+        name: location[0],
         value: location[1]});
     });
   }
@@ -224,8 +233,9 @@ function getMapsData(censusDataArray) {
     populationsList.push(parseInt(county[1]));
     });
   const minAndMax = getMinAndMaxPopulation(populationsList);
-  return {map: countyToPopMap,
+  mapData = {map: countyToPopMap,
     minValue: minAndMax.min, maxValue: minAndMax.max};
+  return mapData;
 }
 
 // Returns an object with the min and max population of the
@@ -244,27 +254,31 @@ function getMinAndMaxPopulation(populationArray) {
   return {max: max, min: min};
 }
 
+
 // Takes in mapsData object which has a data structure that maps
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
-async function displayCountyGeoJson(mapsData, stateNumber) {
+async function displayCountyGeoJson(mapsData, description,
+    stateNumber, geoData, color) {
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[stateNumber].zoomLevel,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
   });
 
-  const countyToPopMap = mapsData.map;
+  countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
-  const colorScale = chroma.scale(['white', 'blue']).domain([minPopulation,
+  const minColor = chroma(color).brighten(2);
+  const maxColor = chroma(color).darken(2);
+  const colorScale = chroma.scale([minColor, maxColor]).domain([minPopulation,
     maxPopulation]);
 
-  const geoData = await getGeoData(stateNumber, true);
   map.data.addGeoJson(geoData);
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
       return {
         fillColor: colorScale(countyToPopMap[feature.j.name]).toString(),
+        fillOpacity: 0.5,
       };
     });
   });
@@ -272,7 +286,7 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
   const openInfoWindows = [];
   map.data.addListener('mouseover', function(event) {
     map.data.overrideStyle(event.feature, {
-      fillColor: '#00ffff',
+      fillColor: maxColor,
     });
     let contentString;
     if (countyToPopMap[event.feature.j.name] !== undefined) {
@@ -282,7 +296,6 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
       contentString = '<p>' + event.feature.j.name +
           '<p>Data not available';
     }
-    
     const infoWindow = new google.maps.InfoWindow({
       content: contentString,
       maxWidth: 100,
@@ -335,18 +348,38 @@ function setStyle(isCountyQuery) {
   }
 }
 
+// Changes the color of the current visualizations on the page.
+function changeColor(colorParam) {
+  const color = colorParam.value;
+  localStorage.setItem('color', color);
+  // Get variables out of cache
+  const cacheMapsData = JSON.parse(localStorage.getItem('mapsData'));
+  const cacheGeoData = JSON.parse(localStorage.getItem('geoData'));
+  const cacheAmCharts = JSON.parse(localStorage.getItem('amChartsData'));
+  const cacheLocation = localStorage.getItem('location');
+  const cacheDescription = localStorage.getItem('description');
+  // map is undefined on a state query, so check to be sure that
+  // it is undefined before calling displayCountyGeoJson.
+  if (cacheLocation !== 'state') {
+    displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation,
+      cacheGeoData, color);
+  }
+  displayAmChartsMap(cacheAmCharts, cacheDescription, cacheGeoData, color);
+}
+
 // Draw data table using Visualization API
-function drawTable(dataArray, isCountyQuery) {
+function drawTable(dataArray, description, isCountyQuery) {
   // For some reason data array was changing, between here and
   // the for each loop used to populate the data table,
   // so I made a copy
   const dataArrayCopy = dataArray.slice();
+function drawTable(dataArray, description, isCountyQuery) {
   google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
     data.addColumn('string', nameHeader);
-    data.addColumn('number', 'Population');
+    data.addColumn('number', description);
     dataArrayCopy.forEach((elem) => {
       data.addRow([elem.locationName, parseInt(elem.value)]);
     });
@@ -370,6 +403,11 @@ function toggleDataTable() {
     dataTable.style.display = 'none';
     document.getElementById('toggle-data-btn').innerText = 'Display raw data';
   }
+
+  const chartsDiv = document.getElementById('am-charts');
+  chartsDiv.style.display = 'block';
+  const mapsDiv = document.getElementById('map');
+  mapsDiv.style.display = 'none';
 }
 
 // Display link to data.census.gov table for the table the displayed

@@ -4,7 +4,7 @@ const stateInfo = {
         'ISO': 'US-AL',
         'lat': 32.778,
         'lng': -86.929,
-        'zoomLevel': 8,
+        'zoomLevel': 7,
     },
     '02': {
         'name': 'Alaska',
