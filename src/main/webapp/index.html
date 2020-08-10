@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Census Viz</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
@@ -15,12 +16,33 @@
   <script src="data-visualization.js"></script>
   <script src="query-control.js"></script>
   <link rel="stylesheet" href="style.css">
+  <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
 <body onload="registerServiceWorker(); createStateDropdownList();">
   <main>
     <div id="header">
-      <h1>Census Viz</h1>
+      <h1>Census Viz
+        <div class="tooltip">
+          <i class="material-icons" id="faq">help_outline</i>
+          <p class="tooltiptext">Census Viz makes it easy to explore U.S.
+            Census data by creating custom visualizations to answer your
+            questions about America.
+            <br><br>
+            To use Census Viz, select an option
+            from each dropdown list and click the green Go button. You can
+            also start typing in any dropdown box to filter the options you'll
+            see. You can mix and match between the lists to get answers to
+            many different questions.
+            <br><br>
+            The data you see comes from several sources within the census.
+            Depending on your question, we choose the census data with the most
+            information available. Most of our data come from the annual
+            American Community Survey; coming soon, if you ask about a year ending
+            in 0, you'll get information from the larger Decennial Survey instead.
+          </p>
+        </div>
+      </h1>
     </div>
     <div id="query">
       <form id="query-form" onsubmit="passQuery(); return false;">
