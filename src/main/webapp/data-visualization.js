@@ -373,6 +373,7 @@ function drawTable(dataArray, description, isCountyQuery) {
   // the for each loop used to populate the data table,
   // so I made a copy
   const dataArrayCopy = dataArray.slice();
+function drawTable(dataArray, description, isCountyQuery) {
   google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
