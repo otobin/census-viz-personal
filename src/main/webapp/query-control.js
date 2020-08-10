@@ -14,18 +14,20 @@ function registerServiceWorker() {
   }
 }
 
-// Sets the value of the color input. Checks to see if a color is in 
-// the cache already, and returns a nice blue if it isn't.
-function setColor() {
+// Returns the color to set the value to based on whether
+// there is an existing color in the cache
+function getColor() {
   const color = localStorage.getItem('color');
   if (color !== null) {
     document.getElementById('setColor').value = color;
     document.getElementById('set-color-label').style.backgroundColor = color;
   } else {
-    document.getElementById('setColor').value = '#0071bd';
-    localStorage.setItem('color', '#0071bd');
-    document.getElementById('set-color-label').style.backgroundColor = '#0071bd';
+    color = '#0071bd';
+    document.getElementById('setColor').value = color;
+    localStorage.setItem('color', color);
+    document.getElementById('set-color-label').style.backgroundColor = color;
   }
+  return color;
 }
 
 function clearPreviousResult() {
@@ -66,7 +68,8 @@ function passQuery() {
       ).set(
         'moved', 'New inhabitants',
       );
-  const description = `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+  const description = `${actionToPerson.get(action)} 
+    (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
