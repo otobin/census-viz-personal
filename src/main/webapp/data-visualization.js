@@ -128,7 +128,8 @@ function addTooltipText(data, geoDataFeatures, description) {
   geoDataFeatures.forEach((location) => {
     const index = data.findIndex((elem) => elem.id === location.id);
     if (index !== -1) {
-      data[index].tooltipText = `${description}: ${data[index].value}`;
+      data[index].tooltipText =
+          `${description}: ${parseInt(data[index].value).toLocaleString()}`;
     } else {
       data.push({
         id: location.id,
@@ -284,7 +285,8 @@ async function displayCountyGeoJson(mapsData, description,
     let contentString;
     if (countyToPopMap[event.feature.j.name] !== undefined) {
       contentString = '<p>' + event.feature.j.name +
-          '<p>' + description + ': ' + countyToPopMap[event.feature.j.name];
+          '<p>' + description + ': ' 
+          + parseInt(countyToPopMap[event.feature.j.name]).toLocaleString();
     } else {
       contentString = '<p>' + event.feature.j.name +
           '<p>Data not available';
