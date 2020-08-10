@@ -77,7 +77,11 @@ public class QueryServlet extends HttpServlet {
           "live",
           ImmutableMap.of(
             "all-ages",
-            "P001001"));
+            "P001001",
+            "male",
+            "P012002",
+            "female",
+            "P012026")); /* TODO: can't do over/under-18 until after adding is implemented */
 
   Map<String, String> tableNameToAbbrev = 
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
@@ -96,14 +100,14 @@ public class QueryServlet extends HttpServlet {
     } else if (firstChar.equals("P")) {
       return "/dec/sf1";
     }
-    // should never reach this point
+    // Should never reach this point
     throw new NoSuchFieldException("This string doesn't correspond to any data table.");
   }
 
   private String getCensusTableLink(String dataRow, String dataTablePrefix, String year) {
     if (dataRow.substring(0, 1).equals("P")) {
-      // Decennial queries have less useful tables, so return a general informational link instead
-      return "https://www.census.gov/programs-surveys/decennial-census/about/why.html";
+      // Decennial queries have overly specific tables, so always return a general one instead
+      return "https://data.census.gov/cedsci/table?tid=DECENNIALSF12010.P12";
     }
     return "https://data.census.gov/cedsci/table?tid=ACS"
         + (dataRow.substring(0, 1).equals("K")
