@@ -114,7 +114,7 @@ public class QueryServlet extends HttpServlet {
             ? "SE"
             : (tableNameToAbbrev.get(
                     dataTablePrefix.substring(dataTablePrefix.lastIndexOf("/") + 1))
-              + "1Y"))
+                + "1Y"))
         + year
         + "."
         + dataRow.substring(0, (dataRow.contains("_") ? dataRow.indexOf("_") : dataRow.length()));
