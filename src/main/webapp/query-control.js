@@ -19,10 +19,12 @@ function registerServiceWorker() {
 function setColor() {
   const color = localStorage.getItem('color');
   if (color !== null) {
-    document.getElementById('setColor').value = localStorage.getItem('color');
+    document.getElementById('setColor').value = color;
+    document.getElementById('set-color-label').style.backgroundColor = color;
   } else {
     document.getElementById('setColor').value = '#0071bd';
     localStorage.setItem('color', '#0071bd');
+    document.getElementById('set-color-label').style.backgroundColor = '#0071bd';
   }
 }
 
