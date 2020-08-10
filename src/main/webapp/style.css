@@ -36,6 +36,10 @@ select:focus {
   padding-left: 30px;
 }
 
+.tooltip {
+  display: inline;
+}
+
 #faq {
   float: right;
   font-size: 125%;
