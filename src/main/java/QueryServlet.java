@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.NoSuchFieldException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -75,18 +76,19 @@ public class QueryServlet extends HttpServlet {
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
 
   // Depending on the beginning of the data table string, the query URL changes slightly
-  private String getDataTableString(String tablePrefix) {
+  private String getDataTableString(String tablePrefix) throws NoSuchFieldException {
     String firstChar = tablePrefix.substring(0, 1);
     if (firstChar.equals("K")) {
       return "";
     } else if (firstChar.equals("D")) {
       return "/profile";
-    } else if (tablePrefix.substring(0, 5).equals("S0201")) {
+    } else if (tablePrefix.length() >= 5 && tablePrefix.substring(0, 5).equals("S0201")) {
       return "/spp"; // Special case - different from the other S tables
     } else if (firstChar.equals("S")) {
       return "/subject";
     }
-    return "N/A"; // should never reach this point
+    // should never reach this point
+    throw new NoSuchFieldException("This string doesn't correspond to any data table.");
   }
 
   private String getCensusTableLink(String dataRow, String dataTablePrefix, String year) {
@@ -121,19 +123,20 @@ public class QueryServlet extends HttpServlet {
       return;
     }
 
-    String dataRow;
+    String dataRow = queryToDataRowGeneric.get(action).get(personType);
     if (year > 2013
         && queryToDataRowPost2013.containsKey(action)
         && queryToDataRowPost2013.get(action).containsKey(personType)) {
       dataRow = queryToDataRowPost2013.get(action).get(personType);
-    } else {
-      dataRow = queryToDataRowGeneric.get(action).get(personType);
     }
 
-    String dataTablePrefix = getDataTableString(dataRow);
-    if (dataTablePrefix.equals("N/A")) {
+    String dataTablePrefix;
+    try {
+      dataTablePrefix = getDataTableString(dataRow);
+    } catch (NoSuchFieldException e) {
       response.sendError(
           HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
+      return;
     }
 
     URL fetchUrl =
