@@ -76,13 +76,7 @@ function displayAmChartsMap(data, description, geoData, color) {
     logarithmic: true,
   });
 
-  let descriptionString = 'Population of people ' +
-  description.age + ' who ' + description.action;
-  // make it moved to
-  if (description.action === 'moved') {
-    descriptionString += ' to';
-  }
-  addTooltipText(data, geoData.features, descriptionString);
+  addTooltipText(data, geoData.features, description);
   polygonSeries.useGeodata = true;
   polygonSeries.data = data;
 
@@ -131,11 +125,11 @@ function displayAmChartsMap(data, description, geoData, color) {
 }
 
 // Add tooltip used for amCharts map to data
-function addTooltipText(data, geoDataFeatures, descriptionString) {
+function addTooltipText(data, geoDataFeatures, description) {
   geoDataFeatures.forEach((location) => {
     let index = data.findIndex(elem => elem.id === location.id);
     if (index !== -1) {
-      data[index].tooltipText = `${descriptionString}: ${data[index].value}`;
+      data[index].tooltipText = `${description}: ${data[index].value}`;
     } else {
       data.push({
         id: location.id,
@@ -165,14 +159,14 @@ function createDataArray(censusDataArray, isCountyQuery) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        name: location[0],
+        locationName: location[0],
         value: percentToTotal(location[1], location[2])});
     });
   } else {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        name: location[0],
+        locationName: location[0],
         value: location[1]});
     });
   }
@@ -291,7 +285,7 @@ async function displayCountyGeoJson(mapsData, description,
     let contentString;
     if (countyToPopMap[event.feature.j.name] !== undefined) {
       contentString = '<p>' + event.feature.j.name +
-          '<p>Population: ' + countyToPopMap[event.feature.j.name];
+          '<p>' + description + ': ' + countyToPopMap[event.feature.j.name];
     } else {
       contentString = '<p>' + event.feature.j.name +
           '<p>Data not available';
