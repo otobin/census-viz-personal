@@ -285,8 +285,8 @@ async function displayCountyGeoJson(mapsData, description,
     let contentString;
     if (countyToPopMap[event.feature.j.name] !== undefined) {
       contentString = '<p>' + event.feature.j.name +
-          '<p>' + description + ': ' 
-          + parseInt(countyToPopMap[event.feature.j.name]).toLocaleString();
+          '<p>' + description + ': ' +
+          parseInt(countyToPopMap[event.feature.j.name]).toLocaleString();
     } else {
       contentString = '<p>' + event.feature.j.name +
           '<p>Data not available';
