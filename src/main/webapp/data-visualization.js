@@ -127,16 +127,16 @@ function displayAmChartsMap(data, description, geoData, color) {
 // Add tooltip used for amCharts map to data
 function addTooltipText(data, geoDataFeatures, description) {
   geoDataFeatures.forEach((location) => {
-    let index = data.findIndex(elem => elem.id === location.id);
+    const index = data.findIndex((elem) => elem.id === location.id);
     if (index !== -1) {
       data[index].tooltipText = `${description}: ${data[index].value}`;
     } else {
       data.push({
         id: location.id,
         tooltipText: 'Data not available',
-      })
+      });
     }
-  })
+  });
 }
 
 // Get the location id used by amCharts geoJson file for a given location.
