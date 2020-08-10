@@ -237,3 +237,13 @@ footer {
 #colors {
   text-align: center;
 }
+
+input[type="color"] {
+  opacity: 0;
+}
+
+#set-color-label {
+  height: 32px;
+  width: 32px;
+  border-radius: 25px;
+}

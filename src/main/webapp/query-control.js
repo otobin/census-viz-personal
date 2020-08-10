@@ -18,9 +18,14 @@ function registerServiceWorker() {
 // there is an existing color in the cache
 function getColor() {
   let color = localStorage.getItem('color');
-  if (color === null) {
+  if (color !== null) {
+    document.getElementById('set-color').value = color;
+    document.getElementById('set-color-label').style.backgroundColor = color;
+  } else {
     color = '#0071bd';
+    document.getElementById('set-color').value = color;
     localStorage.setItem('color', color);
+    document.getElementById('set-color-label').style.backgroundColor = color;
   }
   return color;
 }
@@ -97,7 +102,8 @@ function passQuery() {
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
-        displayError(response.status, response.data.errorMessage);
+        document.getElementById('map-options').style.display = 'none';
+        displayError(response.status, response.statusText);
       }
     });
 }
