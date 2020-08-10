@@ -130,7 +130,7 @@ function addTooltipText(data, geoDataFeatures, descriptionString) {
     } else {
       data.push({
         id: location.id,
-        tooltipText: 'Insufficient data',
+        tooltipText: 'Data not available',
       })
     }
   })
@@ -274,8 +274,15 @@ async function displayCountyGeoJson(mapsData, stateNumber) {
     map.data.overrideStyle(event.feature, {
       fillColor: '#00ffff',
     });
-    const contentString = '<p>' + event.feature.j.name +
-    '<p>Population: ' + countyToPopMap[event.feature.j.name];
+    let contentString;
+    if (countyToPopMap[event.feature.j.name] !== undefined) {
+      contentString = '<p>' + event.feature.j.name +
+          '<p>Population: ' + countyToPopMap[event.feature.j.name];
+    } else {
+      contentString = '<p>' + event.feature.j.name +
+          '<p>Data not available';
+    }
+    
     const infoWindow = new google.maps.InfoWindow({
       content: contentString,
       maxWidth: 100,
