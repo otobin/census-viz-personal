@@ -133,7 +133,7 @@ public class QueryServlet extends HttpServlet {
                   "This query is not supported by census data. Try asking a more general one."));
       return;
     }
-    
+
     String dataRow = queryToDataRowGeneric.get(action).get(personType);
     if (year > 2013
         && queryToDataRowPost2013.containsKey(action)
