@@ -76,6 +76,12 @@ public class QueryServlet extends HttpServlet {
         + fetchUrlString.substring(fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
   }
 
+  private String sendError(String errorMessage) {
+      JsonObject jsonResponse = new JsonObject();
+      jsonResponse.addProperty("errorMessage", errorMessage);
+      return jsonResponse.toString();
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String personType = request.getParameter("person-type");
@@ -85,23 +91,27 @@ public class QueryServlet extends HttpServlet {
 
     if (!queryToDataRow.containsKey(action)) {
       // We don't have information on this action
-      response.sendError(
-          HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
+      response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+      response.setContentType("application/json;");
+      response.getWriter().println(sendError("We do not support this visualization yet."));
       return;
     } else if (!queryToDataRow.get(action).containsKey(personType)) {
       // This action doesn't make sense with this type of person,
       // or the census doesn't keep data on it that we could find
-      response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST,
-          "This query is not supported by census data. Try asking a more general one.");
+      response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+      response.setContentType("application/json;");
+      response.getWriter().println(sendError(
+          "This query is not supported by census data. Try asking a more general one."));
       return;
     }
 
     String dataRow = queryToDataRow.get(action).get(personType);
     String dataTablePrefix = getDataTableString(dataRow);
     if (dataTablePrefix.equals("")) {
-      response.sendError(
-          HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
+      response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+      response.setContentType("application/json;");
+      response.getWriter().println(sendError("We do not support this visualization yet."));
+      return;
     }
 
     URL fetchUrl =
@@ -138,13 +148,15 @@ public class QueryServlet extends HttpServlet {
       }
       reader.close();
       if (data.isEmpty()) {
-        response.sendError(
-            HttpServletResponse.SC_BAD_REQUEST,
-            "This query is not supported by census data. Try asking a more general one.");
+        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+        response.setContentType("application/json;");
+        response.getWriter().println(sendError(
+            "This query is not supported by census data. Try asking a more general one."));
+        return;
       }
       JsonObject jsonResponse = new JsonObject();
       Gson gson = new Gson();
-      jsonResponse.addProperty("data", data);
+      jsonResponse.addProperty("censusData", data);
       jsonResponse.addProperty("tableLink", censusTableLink);
       response.setContentType("application/json;");
       response.getWriter().println(jsonResponse.toString());

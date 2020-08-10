@@ -30,6 +30,8 @@ function clearPreviousResult() {
   document.getElementById('data-table').innerHTML = '';
   document.getElementById('colors').style.display = 'none';
   document.getElementById('census-link').style.display = 'none';
+  document.getElementById('toggle-data-btn').style.display = 'none';
+  document.getElementById('map-options').style.display = 'none';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('result').style.display = 'block';
@@ -80,20 +82,22 @@ function passQuery() {
     '&year=' + year;
 
   fetch(fetchUrl)
+    .then(response => response.json().then(jsonResponse => ({
+      data: jsonResponse,
+      success: response.ok,
+      status: response.status,
+    })))
     .then((response) => {
-      if (response.ok) {
-        response.json()
-        .then((response) => {
-            // censusDataArray is a 2D array, where the first row is a
-            // header row and all subsequent rows are one piece of
-            // data (e.g. for a state or county)
-            const data = removeErroneousData(JSON.parse(response.data));
-            displayVisualization(data, description, location, isCountyQuery);
-            displayLinkToCensusTable(response.tableLink);
-            document.getElementById('more-info').innerText = '';
-          });
+      if (response.success) {
+        // censusDataArray is a 2D array, where the first row is a
+        // header row and all subsequent rows are one piece of
+        // data (e.g. for a state or county)
+        const data = removeErroneousData(JSON.parse(response.data.censusData));
+        displayVisualization(data, description, location, isCountyQuery);
+        displayLinkToCensusTable(response.data.tableLink);
+        document.getElementById('more-info').innerText = '';
       } else {
-        displayError(response.status, response.statusText);
+        displayError(response.status, response.data.errorMessage);
       }
     });
 }
