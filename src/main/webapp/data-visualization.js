@@ -75,6 +75,8 @@ function displayAmChartsMap(data, description, geoData, color) {
     max: am4core.color(color).brighten(-0.7),
     logarithmic: true,
   });
+
+  addTooltipText(data, geoData.features, description);
   polygonSeries.useGeodata = true;
   polygonSeries.data = data;
 
@@ -95,7 +97,7 @@ function displayAmChartsMap(data, description, geoData, color) {
 
   // Configure series tooltip
   const polygonTemplate = polygonSeries.mapPolygons.template;
-  polygonTemplate.tooltipText = '{name}\n' + description + ': {value}';
+  polygonTemplate.tooltipText = '{name}\n{tooltipText}';
   polygonTemplate.nonScalingStroke = true;
   polygonTemplate.strokeWidth = 0.5;
 
@@ -122,6 +124,21 @@ function displayAmChartsMap(data, description, geoData, color) {
   });
 }
 
+// Add tooltip used for amCharts map to data
+function addTooltipText(data, geoDataFeatures, description) {
+  geoDataFeatures.forEach((location) => {
+    const index = data.findIndex((elem) => elem.id === location.id);
+    if (index !== -1) {
+      data[index].tooltipText = `${description}: ${data[index].value}`;
+    } else {
+      data.push({
+        id: location.id,
+        tooltipText: 'Data not available',
+      });
+    }
+  });
+}
+
 // Get the location id used by amCharts geoJson file for a given location.
 function getLocationId(location, isCountyQuery, regionIndex) {
   if (isCountyQuery) {
@@ -142,14 +159,14 @@ function createDataArray(censusDataArray, isCountyQuery) {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        name: location[0],
+        locationName: location[0],
         value: percentToTotal(location[1], location[2])});
     });
   } else {
     censusDataArray.forEach((location) => {
       vizDataArray.push({
         id: getLocationId(location, isCountyQuery, regionIndex),
-        name: location[0],
+        locationName: location[0],
         value: location[1]});
     });
   }
@@ -265,9 +282,14 @@ async function displayCountyGeoJson(mapsData, description,
     map.data.overrideStyle(event.feature, {
       fillColor: maxColor,
     });
-    const contentString =
-        `<p>${event.feature.j.name}<p>${description}: 
-        ${countyToPopMap[event.feature.j.name]}`;
+    let contentString;
+    if (countyToPopMap[event.feature.j.name] !== undefined) {
+      contentString = '<p>' + event.feature.j.name +
+          '<p>' + description + ': ' + countyToPopMap[event.feature.j.name];
+    } else {
+      contentString = '<p>' + event.feature.j.name +
+          '<p>Data not available';
+    }
     const infoWindow = new google.maps.InfoWindow({
       content: contentString,
       maxWidth: 100,
@@ -301,6 +323,7 @@ function toggleMap() {
 
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
+  document.getElementById('toggle-data-btn').style.display = 'inline-block';
   const mapOptions = document.getElementById('map-options');
   const chartsDiv = document.getElementById('am-charts');
   const mapsDiv = document.getElementById('map');
@@ -341,14 +364,18 @@ function changeColor(colorParam) {
 
 // Draw data table using Visualization API
 function drawTable(dataArray, description, isCountyQuery) {
+  // For some reason data array was changing, between here and
+  // the for each loop used to populate the data table,
+  // so I made a copy
+  const dataArrayCopy = dataArray.slice();
   google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
     data.addColumn('string', nameHeader);
     data.addColumn('number', description);
-    dataArray.forEach((elem) => {
-      data.addRow([elem.name, parseInt(elem.value)]);
+    dataArrayCopy.forEach((elem) => {
+      data.addRow([elem.locationName, parseInt(elem.value)]);
     });
     const table = new google.visualization.Table(
         document.getElementById('data-table'));
