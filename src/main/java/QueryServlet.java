@@ -17,14 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 public class QueryServlet extends HttpServlet {
 
   // Hardcoded initial choices for which lines of which data table are accessed
-  Map<String, Map<String, String>> queryToDataRow =
+  Map<String, Map<String, String>> queryToDataRowGeneric =
       ImmutableMap.of(
           "live",
           ImmutableMap.of(
               "under-18",
               "DP05_0019E",
               "over-18",
-              "DP05_0021E",
+              "DP05_0021E", /* TODO: could be added to post2013 using subtraction */
               "all-ages",
               "DP05_0001E",
               "male",
@@ -41,7 +41,8 @@ public class QueryServlet extends HttpServlet {
               "S0201_182E",
               "female",
               "DP03_0013E"),
-          "moved",
+          "moved", /* TODO: All of these really should be two to three columns added together,
+                   and then calculated as a percentage */
           ImmutableMap.of(
               "all-ages",
               "S0201_119E,S0201_126E",
@@ -50,30 +51,54 @@ public class QueryServlet extends HttpServlet {
               "female",
               "S0701_C01_013E,S0701_C04_013E"));
 
+  // After 2013, some queries have more data available
+  Map<String, Map<String, String>> queryToDataRowPost2013 =
+      ImmutableMap.of(
+          "live",
+          ImmutableMap.of(
+              "under-18",
+              "K200102_001E",
+              "all-ages",
+              "K200104_001E",
+              "male",
+              "K200101_002E",
+              "female",
+              "K200101_003E"),
+          "work",
+          ImmutableMap.of("all-ages", "K202301_004E", "over-18", "K202301_004E"),
+          "moved",
+          /* TODO: K200701_005E + K200701_006E for state query,
+          but actually have to add K200701_004E as well for county query */
+          ImmutableMap.of("all-ages", "S0201_119E,S0201_126E"));
+
   Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
 
   // Depending on the beginning of the data table string, the query URL changes slightly
-  private String getDataTableString(String tablePrefix) {
-    if (tablePrefix.substring(0, 1).equals("D")) {
-      return "profile?get=NAME,";
-    } else if (tablePrefix.substring(0, 5).equals("S0201")) {
-      return "spp?get=NAME,"; // Special case - different from the other S tables
-    } else if (tablePrefix.substring(0, 1).equals("S")) {
-      return "subject?get=NAME,";
+  private String getDataTableString(String tablePrefix) throws NoSuchFieldException {
+    String firstChar = tablePrefix.substring(0, 1);
+    if (firstChar.equals("K")) {
+      return "";
+    } else if (firstChar.equals("D")) {
+      return "/profile";
+    } else if (tablePrefix.length() >= 5 && tablePrefix.substring(0, 5).equals("S0201")) {
+      return "/spp"; // Special case - different from the other S tables
+    } else if (firstChar.equals("S")) {
+      return "/subject";
     }
-    return ""; // should never reach this point
+    // should never reach this point
+    throw new NoSuchFieldException("This string doesn't correspond to any data table.");
   }
 
-  private String getcensusTableLink(String fetchUrlString, String dataTablePrefix, String year) {
+  private String getCensusTableLink(String dataRow, String dataTablePrefix, String year) {
     return "https://data.census.gov/cedsci/table?tid=ACS"
-        + tableNameToAbbrev.get(
-            fetchUrlString.substring(
-                fetchUrlString.indexOf(dataTablePrefix), fetchUrlString.indexOf("?")))
-        + "1Y"
+        + (dataRow.substring(0, 1).equals("K")
+            ? "SE"
+            : (tableNameToAbbrev.get(dataTablePrefix.substring(1)) + "1Y"))
         + year
         + "."
-        + fetchUrlString.substring(fetchUrlString.indexOf(",") + 1, fetchUrlString.indexOf("_"));
+        + dataRow.substring(
+            0, (dataRow.contains("_") ? dataRow.indexOf("_") : dataRow.length() + 1));
   }
 
   @Override
@@ -81,14 +106,15 @@ public class QueryServlet extends HttpServlet {
     String personType = request.getParameter("person-type");
     String action = request.getParameter("action");
     String location = request.getParameter("location");
-    String year = request.getParameter("year");
+    String yearStr = request.getParameter("year");
+    int year = Integer.parseInt(yearStr);
 
-    if (!queryToDataRow.containsKey(action)) {
+    if (!queryToDataRowGeneric.containsKey(action)) {
       // We don't have information on this action
       response.sendError(
           HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
       return;
-    } else if (!queryToDataRow.get(action).containsKey(personType)) {
+    } else if (!queryToDataRowGeneric.get(action).containsKey(personType)) {
       // This action doesn't make sense with this type of person,
       // or the census doesn't keep data on it that we could find
       response.sendError(
@@ -97,25 +123,36 @@ public class QueryServlet extends HttpServlet {
       return;
     }
 
-    String dataRow = queryToDataRow.get(action).get(personType);
-    String dataTablePrefix = getDataTableString(dataRow);
-    if (dataTablePrefix.equals("")) {
+    String dataRow = queryToDataRowGeneric.get(action).get(personType);
+    if (year > 2013
+        && queryToDataRowPost2013.containsKey(action)
+        && queryToDataRowPost2013.get(action).containsKey(personType)) {
+      dataRow = queryToDataRowPost2013.get(action).get(personType);
+    }
+
+    String dataTablePrefix;
+    try {
+      dataTablePrefix = getDataTableString(dataRow);
+    } catch (NoSuchFieldException e) {
       response.sendError(
           HttpServletResponse.SC_NOT_IMPLEMENTED, "We do not support this visualization yet.");
+      return;
     }
 
     URL fetchUrl =
         new URL(
             "https://api.census.gov/data/"
                 + year
-                + "/acs/acs1/"
+                + "/acs/"
+                + (dataRow.substring(0, 1).equals("K") ? "acsse" : "acs1")
                 + dataTablePrefix
+                + "?get=NAME,"
                 + dataRow
                 + "&for="
                 + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
 
-    String censusTableLink = getcensusTableLink(fetchUrl.toString(), dataTablePrefix, year);
+    String censusTableLink = getCensusTableLink(dataRow, dataTablePrefix, yearStr);
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
     connection.setRequestMethod("GET");
