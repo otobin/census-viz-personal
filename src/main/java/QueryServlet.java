@@ -72,18 +72,18 @@ public class QueryServlet extends HttpServlet {
           ImmutableMap.of("all-ages", "S0201_119E,S0201_126E"));
 
   // Even more data available for population in 2010 when the decennial census happened
-  Map<String, Map<String, String>> queryToDataRowDecennial = 
+  Map<String, Map<String, String>> queryToDataRowDecennial =
       ImmutableMap.of(
           "live",
           ImmutableMap.of(
-            "all-ages",
-            "P001001",
-            "male",
-            "P012002",
-            "female",
-            "P012026")); /* TODO: can't do over/under-18 until after adding is implemented */
+              "all-ages",
+              "P001001",
+              "male",
+              "P012002",
+              "female",
+              "P012026")); /* TODO: can't do over/under-18 until after adding is implemented */
 
-  Map<String, String> tableNameToAbbrev = 
+  Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
 
   // Depending on the beginning of the data table string, the query URL changes slightly
@@ -113,12 +113,11 @@ public class QueryServlet extends HttpServlet {
         + (dataRow.substring(0, 1).equals("K")
             ? "SE"
             : (tableNameToAbbrev.get(
-                  dataTablePrefix.substring(dataTablePrefix.lastIndexOf("/") + 1))
+                    dataTablePrefix.substring(dataTablePrefix.lastIndexOf("/") + 1))
               + "1Y"))
         + year
         + "."
-        + dataRow.substring(
-            0, (dataRow.contains("_") ? dataRow.indexOf("_") : dataRow.length()));
+        + dataRow.substring(0, (dataRow.contains("_") ? dataRow.indexOf("_") : dataRow.length()));
   }
 
   private String sendError(String errorMessage) {
