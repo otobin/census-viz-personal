@@ -82,7 +82,7 @@ function passQuery() {
     '&year=' + year;
 
   fetch(fetchUrl)
-    .then(response => response.json().then(jsonResponse => ({
+    .then((response) => response.json().then((jsonResponse) => ({
       data: jsonResponse,
       success: response.ok,
       status: response.status,

@@ -102,9 +102,9 @@ public class QueryServlet extends HttpServlet {
   }
 
   private String sendError(String errorMessage) {
-      JsonObject jsonResponse = new JsonObject();
-      jsonResponse.addProperty("errorMessage", errorMessage);
-      return jsonResponse.toString();
+    JsonObject jsonResponse = new JsonObject();
+    jsonResponse.addProperty("errorMessage", errorMessage);
+    return jsonResponse.toString();
   }
 
   @Override
@@ -126,8 +126,11 @@ public class QueryServlet extends HttpServlet {
       // or the census doesn't keep data on it that we could find
       response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
       response.setContentType("application/json;");
-      response.getWriter().println(sendError(
-          "This query is not supported by census data. Try asking a more general one."));
+      response
+          .getWriter()
+          .println(
+              sendError(
+                  "This query is not supported by census data. Try asking a more general one."));
       return;
     }
     
@@ -186,8 +189,11 @@ public class QueryServlet extends HttpServlet {
       if (data.isEmpty()) {
         response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
         response.setContentType("application/json;");
-        response.getWriter().println(sendError(
-            "This query is not supported by census data. Try asking a more general one."));
+        response
+            .getWriter()
+            .println(
+                sendError(
+                    "This query is not supported by census data. Try asking a more general one."));
         return;
       }
       JsonObject jsonResponse = new JsonObject();
