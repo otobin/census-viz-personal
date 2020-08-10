@@ -68,10 +68,6 @@ select:focus {
   display: flex;
 }
 
-.tooltip:hover .tooltiptext {
-  display: flex;
-}
-
 #query-form {
   display: inline-flex;
 }
