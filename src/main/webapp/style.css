@@ -36,6 +36,38 @@ select:focus {
   padding-left: 30px;
 }
 
+#faq {
+  float: right;
+  font-size: 125%;
+  line-height: .5;
+}
+
+.tooltip .tooltiptext {
+  background-color: rgba(255,255,255,.9);
+  border: solid black 2px;
+  border-radius: 5px;
+  display: none;
+  font-size: 50%;
+  font-weight: normal;
+  left: 77%;
+  line-height: 1.15;
+  padding: 8px;
+  position: absolute;
+  text-align: right;
+  top: 7%;
+  text-align: center;
+  width: 20%;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  display: flex;
+}
+
+.tooltip:hover .tooltiptext {
+  display: flex;
+}
+
 #query-form {
   display: inline-flex;
 }
