@@ -208,7 +208,7 @@ footer {
 }
 
 input[type="color"] {
-  visibility: hidden;
+  opacity: 0;
 }
 
 #set-color-label {

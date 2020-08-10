@@ -17,13 +17,13 @@ function registerServiceWorker() {
 // Returns the color to set the value to based on whether
 // there is an existing color in the cache
 function getColor() {
-  const color = localStorage.getItem('color');
+  let color = localStorage.getItem('color');
   if (color !== null) {
-    document.getElementById('setColor').value = color;
+    document.getElementById('set-color').value = color;
     document.getElementById('set-color-label').style.backgroundColor = color;
   } else {
     color = '#0071bd';
-    document.getElementById('setColor').value = color;
+    document.getElementById('set-color').value = color;
     localStorage.setItem('color', color);
     document.getElementById('set-color-label').style.backgroundColor = color;
   }
