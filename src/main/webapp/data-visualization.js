@@ -26,7 +26,6 @@ async function displayVisualization(censusDataArray, description,
   location, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
   const color = getColor();
-  document.getElementById('set-color').value = color;
   const geoData = await getGeoData(location, isCountyQuery);
   // Put all necessary data in the cache
   localStorage.setItem('geoData', JSON.stringify(geoData));
@@ -129,7 +128,8 @@ function addTooltipText(data, geoDataFeatures, description) {
   geoDataFeatures.forEach((location) => {
     const index = data.findIndex((elem) => elem.id === location.id);
     if (index !== -1) {
-      data[index].tooltipText = `${description}: ${data[index].value}`;
+      data[index].tooltipText =
+          `${description}: ${parseInt(data[index].value).toLocaleString()}`;
     } else {
       data.push({
         id: location.id,
@@ -259,7 +259,7 @@ async function displayCountyGeoJson(mapsData, description,
     center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
   });
 
-  countyToPopMap = mapsData.map;
+  const countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
   const minPopulation = mapsData.minValue;
   const minColor = chroma(color).brighten(2);
@@ -271,7 +271,8 @@ async function displayCountyGeoJson(mapsData, description,
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
       return {
-        fillColor: colorScale(countyToPopMap[feature.j.name]).toString(),
+        fillColor: colorScale(
+            countyToPopMap[feature.j.name.replace('Saint', 'St.')]).toString(),
         fillOpacity: 0.5,
       };
     });
@@ -283,9 +284,11 @@ async function displayCountyGeoJson(mapsData, description,
       fillColor: maxColor,
     });
     let contentString;
-    if (countyToPopMap[event.feature.j.name] !== undefined) {
+    if (countyToPopMap[event.feature.j.name.replace('Saint', 'St.')] !==
+        undefined) {
       contentString = '<p>' + event.feature.j.name +
-          '<p>' + description + ': ' + countyToPopMap[event.feature.j.name];
+          '<p>' + description + ': ' +
+          parseInt(countyToPopMap[event.feature.j.namereplace('Saint', 'St.')]).toLocaleString();
     } else {
       contentString = '<p>' + event.feature.j.name +
           '<p>Data not available';
@@ -346,6 +349,7 @@ function setStyle(isCountyQuery) {
 // Changes the color of the current visualizations on the page.
 function changeColor(colorParam) {
   const color = colorParam.value;
+  document.getElementById('set-color-label').style.backgroundColor = color;
   localStorage.setItem('color', color);
   // Get variables out of cache
   const cacheMapsData = JSON.parse(localStorage.getItem('mapsData'));

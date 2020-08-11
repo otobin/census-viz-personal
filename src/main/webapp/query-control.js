@@ -3,14 +3,7 @@
 // We're using this service worker to intercept fetch requests.
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(function(response) {
-        // Service worker registration done
-        console.log('Registration Successful', response);
-      }, function(error) {
-        // Service worker registration failed
-        console.log('Registration Failed', error);
-      });
+    navigator.serviceWorker.register('/service-worker.js');
   }
 }
 
@@ -18,9 +11,14 @@ function registerServiceWorker() {
 // there is an existing color in the cache
 function getColor() {
   let color = localStorage.getItem('color');
-  if (color === null) {
+  if (color !== null) {
+    document.getElementById('set-color').value = color;
+    document.getElementById('set-color-label').style.backgroundColor = color;
+  } else {
     color = '#0071bd';
+    document.getElementById('set-color').value = color;
     localStorage.setItem('color', color);
+    document.getElementById('set-color-label').style.backgroundColor = color;
   }
   return color;
 }
@@ -44,7 +42,6 @@ function clearPreviousResult() {
 function passQuery() {
   clearPreviousResult();
   const query = new FormData(document.getElementById('query-form'));
-
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
   const locationInput = query.get('location');
