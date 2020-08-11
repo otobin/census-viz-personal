@@ -189,6 +189,9 @@ function getSortedStateInfoArray() {
 
 // Append all locations to the location dropdown element.
 function createStateDropdownList() {
+  const value = setDefaultValue();
+  console.log(value);
+  document.getElementById('location-list').value = value;
   const datalist = document.getElementById('location');
   let optionElem = document.createElement('option');
   optionElem.value = 'each U.S. state';
