@@ -1,11 +1,19 @@
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InvalidObjectException;
+import java.lang.Math;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.function.BiFunction;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -90,6 +98,7 @@ public class QueryServlet extends HttpServlet {
     throw new NoSuchFieldException("This string doesn't correspond to any data table.");
   }
 
+  // Link to the human-readable version of the same data table
   private String getCensusTableLink(String dataRow, String dataTablePrefix, String year) {
     return "https://data.census.gov/cedsci/table?tid=ACS"
         + (dataRow.substring(0, 1).equals("K")
@@ -171,9 +180,9 @@ public class QueryServlet extends HttpServlet {
 
     if (connection.getResponseCode() > 299) {
       // An error occurred
-      response.sendError(
-          HttpServletResponse.SC_BAD_GATEWAY,
-          "An error occurred while trying to retrieve census data.");
+      response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+      response.setContentType("application/json;");
+      response.getWriter().println(sendError("An error occurred while trying to retrieve census data."));
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
@@ -196,12 +205,91 @@ public class QueryServlet extends HttpServlet {
                     "This query is not supported by census data. Try asking a more general one."));
         return;
       }
+
+      String formattedData;
+      try {
+        formattedData = reformatDataArray(data, dataRow, !location.equals("state"));
+      } catch (InvalidObjectException e) {
+        response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+        response.setContentType("application/json;");
+        response.getWriter().println(sendError("An error occurred while trying to retrieve census data."));
+        return;
+      }
+      
       JsonObject jsonResponse = new JsonObject();
-      Gson gson = new Gson();
-      jsonResponse.addProperty("censusData", data);
+      jsonResponse.addProperty("censusData", formattedData);
       jsonResponse.addProperty("tableLink", censusTableLink);
       response.setContentType("application/json;");
       response.getWriter().println(jsonResponse.toString());
     }
+  }
+
+  // Some data arrays need reformatting (columns added together, etc.) before they can be
+  // visualized.
+  BiFunction<Float, Float, Integer> add = (Float a, Float b) -> (int)Math.round(a + b);
+  BiFunction<Float, Float, Integer> percent = (Float a, Float b) -> (int)Math.round((a/100.0) * b);
+
+  Map<String, List<BiFunction>> dataRowToReformatFunction = 
+      ImmutableMap.of(
+        "S0201_119E,S0201_126E",
+        ImmutableList.of(percent));
+
+  private String reformatDataArray(String data, String dataIdentifier, boolean isCountyQuery) 
+      throws InvalidObjectException {
+    if (!dataRowToReformatFunction.containsKey(dataIdentifier)) {
+      return data; // This data doesn't need reformatting
+    }
+    if ((dataRowToReformatFunction.get(dataIdentifier).size() + (isCountyQuery ? 2 : 1)) != 
+        dataIdentifier.split(",").length) {
+      // We should have enough functions listed to apply them to each group
+      // of two rows - (a, b) and then (their product, c), etc.
+      throw new InvalidObjectException(
+          "There aren't the right number of functions to apply to these data columns.");
+    }
+
+    // Convert from the census API's JSON string to a Java matrix
+    Gson gson = new Gson();
+    Type dataArrayType = new TypeToken<ArrayList<List<String>>>(){}.getType();
+    ArrayList<List<String>> originalDataArray = gson.fromJson(data, dataArrayType);
+    ArrayList<List<String>> newDataArray = new ArrayList<List<String>>();
+
+    // Add back the the first column, which is the string identifier of the location, 
+    // and the second column, the first numerical value
+    for (int i = 0; i < originalDataArray.size(); i++) {
+      List<String> originalDataRow = originalDataArray.get(i);
+      List<String> newDataRow = new ArrayList<String>();
+      newDataRow.add(originalDataRow.get(0));
+      newDataRow.add(originalDataRow.get(1));
+      newDataArray.add(newDataRow);
+    }
+
+    // Combine the original data, skipping the header row, by iterating over the functions
+    // given and successively combining the next datapoint with the previous result
+    List<BiFunction> numberCombiners = dataRowToReformatFunction.get(dataIdentifier);
+    for (int i = 0; i < numberCombiners.size(); i++) {
+      BiFunction numberCombiner = numberCombiners.get(i);
+      for (int j = 1; j < originalDataArray.size(); j++) {
+        List<String> originalDataRow = originalDataArray.get(j);
+        List<String> newDataRow = newDataArray.get(j);
+        int newValue = (int)numberCombiner.apply(
+            Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
+            Float.parseFloat(originalDataRow.get(i+2))); // Moving along list of original values
+        newDataRow.set(1, String.valueOf(newValue));
+      }
+    }
+
+    // Add remaining identifier columns (state and county numbers)
+    for (int i = 0; i < originalDataArray.size(); i++) {
+        List<String> originalDataRow = originalDataArray.get(i);
+        List<String> newDataRow = newDataArray.get(i);
+        newDataRow.add(originalDataRow.get(numberCombiners.size() + 2));
+        if (isCountyQuery) {
+          newDataRow.add(originalDataRow.get(numberCombiners.size() + 1));
+        }
+      }
+
+    // Convert back into a JSON string for the JavaScript to read
+    String jsonData = gson.toJson(newDataArray);
+    return jsonData;
   }
 }
