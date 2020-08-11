@@ -3,14 +3,7 @@
 // We're using this service worker to intercept fetch requests.
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(function(response) {
-        // Service worker registration done
-        console.log('Registration Successful', response);
-      }, function(error) {
-        // Service worker registration failed
-        console.log('Registration Failed', error);
-      });
+    navigator.serviceWorker.register('/service-worker.js');
   }
 }
 
@@ -49,7 +42,6 @@ function clearPreviousResult() {
 function passQuery() {
   clearPreviousResult();
   const query = new FormData(document.getElementById('query-form'));
-
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
   const locationInput = query.get('location');
@@ -102,8 +94,7 @@ function passQuery() {
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
-        document.getElementById('map-options').style.display = 'none';
-        displayError(response.status, response.statusText);
+        displayError(response.status, response.data.errorMessage);
       }
     });
 }
