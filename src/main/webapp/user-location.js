@@ -11,11 +11,11 @@ const geoLocationUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=
 async function getUserState(lat, lng) {
   const geoCodingFetch = geoCodingUrl + lat + ',' + lng + '&key=' + apiKey;
   return fetch(geoCodingFetch).then(function(response) {
-      return response.json()
+      return response.json();
     })
     .then(function(jsonResponse) {
-      // Traverse all of the addresses and find one that 
-      // has administrative_area_level_1 as one of the address 
+      // Traverse all of the addresses and find one that
+      // has administrative_area_level_1 as one of the address
       // components. Then return the addressComponent.long_name
       // which will be the state name.
       const results = jsonResponse.results;
@@ -28,20 +28,20 @@ async function getUserState(lat, lng) {
             if (type === 'administrative_area_level_1') {
               state = component.long_name;
             }
-          })
-        })
-      })
+          });
+        });
+      });
       return state;
-    })
+    });
 }
 
 async function getUserLocation() {
   const geoLocationFetchUrl = geoLocationUrl + apiKey;
   return fetch(geoLocationFetchUrl, {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify(fetchJson),
   }).then(function(response) {
-    return response.json()
+    return response.json();
   }).then(function(jsonResponse) {
     return jsonResponse.location;
   });
@@ -54,6 +54,3 @@ async function setDefaultValue() {
   const state = await getUserState(lat, lng);
   return state;
 }
-
-
-
