@@ -10,9 +10,7 @@ const geoLocationUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=
 // the coordinates and get the user's current state.
 async function getUserState(lat, lng) {
   const geoCodingFetch = geoCodingUrl + lat + ',' + lng + '&key=' + apiKey;
-  return fetch(geoCodingFetch).then(function(response) {
-      return response.json();
-    })
+  return fetch(geoCodingFetch).then((response) => response.json())
     .then(function(jsonResponse) {
       // Traverse all of the addresses and find one that
       // has administrative_area_level_1 (state) as one of the address
@@ -42,9 +40,8 @@ async function getUserLocation() {
   return fetch(geoLocationFetchUrl, {
     method: 'POST',
     body: JSON.stringify(fetchJson),
-  }).then(function(response) {
-    return response.json();
-  }).then(function(jsonResponse) {
+  }).then((response) => response.json())
+    .then(function(jsonResponse) {
     return jsonResponse.location;
   });
 }
