@@ -15,8 +15,8 @@ async function getUserState(lat, lng) {
     })
     .then(function(jsonResponse) {
       // Traverse all of the addresses and find one that
-      // has administrative_area_level_1 as one of the address
-      // components. Then return the addressComponent.long_name
+      // has administrative_area_level_1 (state) as one of the address
+      // components.Then return the addressComponent.long_name
       // which will be the state name.
       const results = jsonResponse.results;
       let state;
@@ -35,6 +35,8 @@ async function getUserState(lat, lng) {
     });
 }
 
+// Makes a call to the geoLocation API to get the current 
+// lat and lng of the user based on IP address.
 async function getUserLocation() {
   const geoLocationFetchUrl = geoLocationUrl + apiKey;
   return fetch(geoLocationFetchUrl, {
@@ -47,7 +49,9 @@ async function getUserLocation() {
   });
 }
 
-async function setDefaultValue() {
+// Returns the state to set as the default value for 
+// location field. 
+async function getDefaultValue() {
   const location = await getUserLocation();
   const lat = location.lat;
   const lng = location.lng;
