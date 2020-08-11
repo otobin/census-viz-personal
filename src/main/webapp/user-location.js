@@ -33,16 +33,17 @@ function getUserState(lat, lng) {
 }
 
 function getUserLocation() {
-  geoLocationFetchUrl = geoLocationUrl + apiKey;
+  const geoLocationFetchUrl = geoLocationUrl + apiKey;
   fetch(geoLocationFetchUrl, {
     method: "POST",
-    body: fetchJson,
-  }).then(res => res.json()).then(res => {
-    return res.location;
+    body: JSON.stringify(fetchJson),
+  }).then(function(response) {
+    return response.json()}).then(function(jsonResponse) {
+    return jsonResponse.location;
   });
 }
 
-function setDefaultValue() {
+async function setDefaultValue() {
   const location = getUserLocation();
   const lat = location.lat;
   const lng = location.lng;
