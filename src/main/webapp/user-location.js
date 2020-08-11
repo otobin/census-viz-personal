@@ -43,7 +43,7 @@ function getUserLocation() {
   });
 }
 
-async function setDefaultValue() {
+function setDefaultValue() {
   const location = getUserLocation();
   const lat = location.lat;
   const lng = location.lng;
