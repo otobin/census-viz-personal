@@ -8,33 +8,34 @@ const geoLocationUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=
 // Given the user's lat and lng from the geoLocation API,
 // getUserState calls to the geoCoding API to reverse geoCode
 // the coordinates and get the user's current state.
-function getUserState(lat, lng) {
+async function getUserState(lat, lng) {
   const geoCodingFetch = geoCodingUrl + lat + ',' + lng + '&key=' + apiKey;
-  fetch(geoCodingFetch).then(function(response) {
-    response.json().then(function(jsonResponse) {
+  return fetch(geoCodingFetch).then(function(response) {
+    return response.json()}).then(function(jsonResponse) {
       // Traverse all of the addresses and find one that 
       // has administrative_area_level_1 as one of the address 
-      // components. Then return the addressComponent[long_name] 
+      // components. Then return the addressComponent.long_name
       // which will be the state name.
       const results = jsonResponse.results;
+      let state;
       results.forEach((address) => {
         const addressComponents = address.address_components;
         addressComponents.forEach((component) => {
           const types = component.types;
           types.forEach((type) => {
             if (type === 'administrative_area_level_1') {
-              return component.long_name;
+              state = component.long_name;
             }
           })
         })
       })
+      return state;
     })
-  });
 }
 
-function getUserLocation() {
+async function getUserLocation() {
   const geoLocationFetchUrl = geoLocationUrl + apiKey;
-  fetch(geoLocationFetchUrl, {
+  return fetch(geoLocationFetchUrl, {
     method: "POST",
     body: JSON.stringify(fetchJson),
   }).then(function(response) {
@@ -43,11 +44,11 @@ function getUserLocation() {
   });
 }
 
-function setDefaultValue() {
-  const location = getUserLocation();
+async function setDefaultValue() {
+  const location = await getUserLocation();
   const lat = location.lat;
   const lng = location.lng;
-  const state = getUserState(lat, lng);
+  const state = await getUserState(lat, lng);
   return state;
 }
 
