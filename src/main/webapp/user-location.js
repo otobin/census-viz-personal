@@ -1,6 +1,6 @@
 const apiKey = 'AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ';
 const fetchJson = {
-  "considerIp": "true",
+  'considerIp': 'true',
 };
 const geoCodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
 const geoLocationUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=';
@@ -11,7 +11,9 @@ const geoLocationUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=
 async function getUserState(lat, lng) {
   const geoCodingFetch = geoCodingUrl + lat + ',' + lng + '&key=' + apiKey;
   return fetch(geoCodingFetch).then(function(response) {
-    return response.json()}).then(function(jsonResponse) {
+      return response.json()
+    })
+    .then(function(jsonResponse) {
       // Traverse all of the addresses and find one that 
       // has administrative_area_level_1 as one of the address 
       // components. Then return the addressComponent.long_name
@@ -39,7 +41,8 @@ async function getUserLocation() {
     method: "POST",
     body: JSON.stringify(fetchJson),
   }).then(function(response) {
-    return response.json()}).then(function(jsonResponse) {
+    return response.json()
+  }).then(function(jsonResponse) {
     return jsonResponse.location;
   });
 }
