@@ -35,7 +35,7 @@ async function getUserState(lat, lng) {
     });
 }
 
-// Makes a call to the geoLocation API to get the current 
+// Makes a call to the geoLocation API to get the current
 // lat and lng of the user based on IP address.
 async function getUserLocation() {
   const geoLocationFetchUrl = geoLocationUrl + apiKey;
@@ -49,8 +49,8 @@ async function getUserLocation() {
   });
 }
 
-// Returns the state to set as the default value for 
-// location field. 
+// Returns the state to set as the default value for
+// location field.
 async function getDefaultValue() {
   const location = await getUserLocation();
   const lat = location.lat;
