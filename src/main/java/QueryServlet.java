@@ -71,6 +71,18 @@ public class QueryServlet extends HttpServlet {
           but actually have to add K200701_004E as well for county query */
           ImmutableMap.of("all-ages", "S0201_119E,S0201_126E"));
 
+  // Even more data available for population in 2010 when the decennial census happened
+  Map<String, Map<String, String>> queryToDataRowDecennial =
+      ImmutableMap.of(
+          "live",
+          ImmutableMap.of(
+              "all-ages",
+              "P001001",
+              "male",
+              "P012002",
+              "female",
+              "P012026")); /* TODO: can't do over/under-18 until after adding is implemented */
+
   Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
 
@@ -78,27 +90,34 @@ public class QueryServlet extends HttpServlet {
   private String getDataTableString(String tablePrefix) throws NoSuchFieldException {
     String firstChar = tablePrefix.substring(0, 1);
     if (firstChar.equals("K")) {
-      return "";
+      return "/acs/acsse";
     } else if (firstChar.equals("D")) {
-      return "/profile";
+      return "/acs/acs1/profile";
     } else if (tablePrefix.length() >= 5 && tablePrefix.substring(0, 5).equals("S0201")) {
-      return "/spp"; // Special case - different from the other S tables
+      return "/acs/acs1/spp"; // Special case - different from the other S tables
     } else if (firstChar.equals("S")) {
-      return "/subject";
+      return "/acs/acs1/subject";
+    } else if (firstChar.equals("P")) {
+      return "/dec/sf1";
     }
-    // should never reach this point
+    // Should never reach this point
     throw new NoSuchFieldException("This string doesn't correspond to any data table.");
   }
 
   private String getCensusTableLink(String dataRow, String dataTablePrefix, String year) {
+    if (dataRow.substring(0, 1).equals("P")) {
+      // Decennial queries have overly specific tables, so always return a general one instead
+      return "https://data.census.gov/cedsci/table?tid=DECENNIALSF12010.P12";
+    }
     return "https://data.census.gov/cedsci/table?tid=ACS"
         + (dataRow.substring(0, 1).equals("K")
             ? "SE"
-            : (tableNameToAbbrev.get(dataTablePrefix.substring(1)) + "1Y"))
+            : (tableNameToAbbrev.get(
+                    dataTablePrefix.substring(dataTablePrefix.lastIndexOf("/") + 1))
+                + "1Y"))
         + year
         + "."
-        + dataRow.substring(
-            0, (dataRow.contains("_") ? dataRow.indexOf("_") : dataRow.length() + 1));
+        + dataRow.substring(0, (dataRow.contains("_") ? dataRow.indexOf("_") : dataRow.length()));
   }
 
   private String sendError(String errorMessage) {
@@ -140,6 +159,11 @@ public class QueryServlet extends HttpServlet {
         && queryToDataRowPost2013.get(action).containsKey(personType)) {
       dataRow = queryToDataRowPost2013.get(action).get(personType);
     }
+    if (year == 2010
+        && queryToDataRowDecennial.containsKey(action)
+        && queryToDataRowDecennial.get(action).containsKey(personType)) {
+      dataRow = queryToDataRowDecennial.get(action).get(personType);
+    }
 
     String dataTablePrefix;
     try {
@@ -155,8 +179,6 @@ public class QueryServlet extends HttpServlet {
         new URL(
             "https://api.census.gov/data/"
                 + year
-                + "/acs/"
-                + (dataRow.substring(0, 1).equals("K") ? "acsse" : "acs1")
                 + dataTablePrefix
                 + "?get=NAME,"
                 + dataRow
