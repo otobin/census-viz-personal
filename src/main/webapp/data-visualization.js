@@ -283,10 +283,10 @@ async function displayCountyGeoJson(mapsData, description,
       fillColor: maxColor,
     });
     let contentString;
-    if (countyToPopMap[event.feature.j.name.replace('Saint', 'St.')] 
-        !== undefined) {
+    if (countyToPopMap[event.feature.j.name.replace('Saint', 'St.')] !==
+        undefined) {
       contentString = '<p>' + event.feature.j.name +
-          '<p>' + description + ': ' + 
+          '<p>' + description + ': ' +
           countyToPopMap[event.feature.j.name.replace('Saint', 'St.')];
     } else {
       contentString = '<p>' + event.feature.j.name +
