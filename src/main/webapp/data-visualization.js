@@ -270,7 +270,8 @@ async function displayCountyGeoJson(mapsData, description,
   map.data.forEach(function(feature) {
     map.data.setStyle((feature) => {
       return {
-        fillColor: colorScale(countyToPopMap[feature.j.name.replace("Saint", "St.")]).toString(),
+        fillColor: colorScale(
+            countyToPopMap[feature.j.name.replace('Saint', 'St.')]).toString(),
         fillOpacity: 0.5,
       };
     });
@@ -282,9 +283,11 @@ async function displayCountyGeoJson(mapsData, description,
       fillColor: maxColor,
     });
     let contentString;
-    if (countyToPopMap[event.feature.j.name.replace("Saint", "St.")] !== undefined) {
+    if (countyToPopMap[event.feature.j.name.replace('Saint', 'St.')] 
+        !== undefined) {
       contentString = '<p>' + event.feature.j.name +
-          '<p>' + description + ': ' + countyToPopMap[event.feature.j.name.replace("Saint", "St.")];
+          '<p>' + description + ': ' + 
+          countyToPopMap[event.feature.j.name.replace('Saint', 'St.')];
     } else {
       contentString = '<p>' + event.feature.j.name +
           '<p>Data not available';
