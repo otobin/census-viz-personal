@@ -7,14 +7,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
-import java.lang.Math;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.function.BiFunction;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -220,7 +219,9 @@ public class QueryServlet extends HttpServlet {
       // An error occurred
       response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
       response.setContentType("application/json;");
-      response.getWriter().println(sendError("An error occurred while trying to retrieve census data."));
+      response
+          .getWriter()
+          .println(sendError("An error occurred while trying to retrieve census data."));
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
@@ -250,7 +251,9 @@ public class QueryServlet extends HttpServlet {
       } catch (InvalidObjectException e) {
         response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
         response.setContentType("application/json;");
-        response.getWriter().println(sendError("An error occurred while trying to retrieve census data."));
+        response
+            .getWriter()
+            .println(sendError("An error occurred while trying to retrieve census data."));
         return;
       }
       
@@ -269,43 +272,38 @@ public class QueryServlet extends HttpServlet {
   // will always be smaller than the U.S. population (~330 million)
   BiFunction<Float, Float, Integer> add = (Float a, Float b) -> (int)Math.round(a + b);
   BiFunction<Float, Float, Integer> rightSubtract = (Float a, Float b) -> (int)Math.round(a - b);
-  BiFunction<Float, Float, Integer> percent = (Float a, Float b) -> (int)Math.round((a/100.0) * b);
+  BiFunction<Float, Float, Integer> percent =
+      (Float a, Float b) -> (int)Math.round((a/100.0) * b);
 
   Map<String, List<BiFunction>> dataRowToReformatFunction =
       ImmutableMap.<String, List<BiFunction>>builder()
-      .put("DP05_0001E,DP05_0018E",
-          ImmutableList.of(rightSubtract))
-      .put("S0201_119E,S0201_126E",
-          ImmutableList.of(percent))
-      .put("K200104_001E,K200102_001E",
-          ImmutableList.of(rightSubtract))
-      .put("S0701_C04_012E,S0701_C05_012E,S0701_C01_012E",
-          ImmutableList.of(add, percent))
-      .put("S0701_C04_013E,S0701_C05_013E,S0701_C01_013E",
-          ImmutableList.of(add, percent))
-      .put("S0201_125E,S0201_126E,S0201_119E",
-          ImmutableList.of(add, percent))
-      .put("K200701_005E,K200701_006E",
-          ImmutableList.of(add))
-      .put("K200701_004E,K200701_005E,K200701_006E",
-          ImmutableList.of(add, add))
-      .put("S0201_124E,S0201_125E,S0201_126E,S0201_119E",
-          ImmutableList.of(add, add, percent))
-      .put("S0701_C03_012E,S0701_C04_012E,S0701_C05_012E,S0701_C01_012E",
-          ImmutableList.of(add, add, percent))
-      .put("S0701_C03_013E,S0701_C04_013E,S0701_C05_013E,S0701_C01_013E",
-          ImmutableList.of(add, add, percent))
-      .put("P014001,P014021,P014022,P014042,P014043",
-          ImmutableList.of(rightSubtract, rightSubtract, rightSubtract, rightSubtract))
-      .build();
+          .put("DP05_0001E,DP05_0018E", ImmutableList.of(rightSubtract))
+          .put("S0201_119E,S0201_126E", ImmutableList.of(percent))
+          .put("K200104_001E,K200102_001E", ImmutableList.of(rightSubtract))
+          .put("S0701_C04_012E,S0701_C05_012E,S0701_C01_012E", ImmutableList.of(add, percent))
+          .put("S0701_C04_013E,S0701_C05_013E,S0701_C01_013E", ImmutableList.of(add, percent))
+          .put("S0201_125E,S0201_126E,S0201_119E", ImmutableList.of(add, percent))
+          .put("K200701_005E,K200701_006E", ImmutableList.of(add))
+          .put("K200701_004E,K200701_005E,K200701_006E", ImmutableList.of(add, add))
+          .put("S0201_124E,S0201_125E,S0201_126E,S0201_119E", ImmutableList.of(add, add, percent))
+          .put(
+              "S0701_C03_012E,S0701_C04_012E,S0701_C05_012E,S0701_C01_012E",
+              ImmutableList.of(add, add, percent))
+          .put(
+              "S0701_C03_013E,S0701_C04_013E,S0701_C05_013E,S0701_C01_013E",
+              ImmutableList.of(add, add, percent))
+          .put(
+              "P014001,P014021,P014022,P014042,P014043",
+              ImmutableList.of(rightSubtract, rightSubtract, rightSubtract, rightSubtract))
+          .build();
 
-  private String reformatDataArray(String data, String dataIdentifier, boolean isCountyQuery) 
+  private String reformatDataArray(String data, String dataIdentifier, boolean isCountyQuery)
       throws InvalidObjectException {
     if (!dataRowToReformatFunction.containsKey(dataIdentifier)) {
       return data; // This data doesn't need reformatting
     }
-    if ((dataRowToReformatFunction.get(dataIdentifier).size() + 1) != 
-        dataIdentifier.split(",").length) {
+    if ((dataRowToReformatFunction.get(dataIdentifier).size() + 1)
+        != dataIdentifier.split(",").length) {
       // We should have enough functions listed to apply them to each group
       // of two rows - (a, b) and then (their product, c), etc.
       throw new InvalidObjectException(
@@ -314,11 +312,11 @@ public class QueryServlet extends HttpServlet {
 
     // Convert from the census API's JSON string to a Java matrix
     Gson gson = new Gson();
-    Type dataArrayType = new TypeToken<ArrayList<List<String>>>(){}.getType();
+    Type dataArrayType = new TypeToken<ArrayList<List<String>>>() {}.getType();
     ArrayList<List<String>> originalDataArray = gson.fromJson(data, dataArrayType);
     ArrayList<List<String>> newDataArray = new ArrayList<List<String>>();
 
-    // Add back the the first column, which is the string identifier of the location, 
+    // Add back the the first column, which is the string identifier of the location,
     // and the second column, the first numerical value
     for (int i = 0; i < originalDataArray.size(); i++) {
       List<String> originalDataRow = originalDataArray.get(i);
@@ -342,9 +340,12 @@ public class QueryServlet extends HttpServlet {
           newDataRow.set(1, "-1");
         } else {
           try {
-            int newValue = (int)numberCombiner.apply(
-                Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
-                Float.parseFloat(originalDataRow.get(i+2))); // Moving along list of original values
+            int newValue = 
+                (int)
+                    numberCombiner.apply(
+                        Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
+                        Float.parseFloat(
+                            originalDataRow.get(i+2))); // Moving along list of original values
             newDataRow.set(1, String.valueOf(newValue));
           } catch (NumberFormatException e) {
             newDataRow.set(1, "-1");
@@ -355,13 +356,13 @@ public class QueryServlet extends HttpServlet {
 
     // Add remaining identifier columns (state and county numbers)
     for (int i = 0; i < originalDataArray.size(); i++) {
-        List<String> originalDataRow = originalDataArray.get(i);
-        List<String> newDataRow = newDataArray.get(i);
-        newDataRow.add(originalDataRow.get(numberCombiners.size() + 2));
-        if (isCountyQuery) {
-          newDataRow.add(originalDataRow.get(numberCombiners.size() + 3));
-        }
+      List<String> originalDataRow = originalDataArray.get(i);
+      List<String> newDataRow = newDataArray.get(i);
+      newDataRow.add(originalDataRow.get(numberCombiners.size() + 2));
+      if (isCountyQuery) {
+        newDataRow.add(originalDataRow.get(numberCombiners.size() + 3));
       }
+    }
 
     // Convert back into a JSON string for the JavaScript to read
     String jsonData = gson.toJson(newDataArray);
