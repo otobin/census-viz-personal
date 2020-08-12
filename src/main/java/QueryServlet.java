@@ -30,9 +30,9 @@ public class QueryServlet extends HttpServlet {
           "live",
           ImmutableMap.of(
               "under-18",
-              "DP05_0019E",
+              "DP05_0001E,DP05_0018E",
               "over-18",
-              "DP05_0021E",
+              "DP05_0018E",
               "all-ages",
               "DP05_0001E",
               "male",
@@ -269,6 +269,8 @@ public class QueryServlet extends HttpServlet {
 
   Map<String, List<BiFunction>> dataRowToReformatFunction =
       ImmutableMap.<String, List<BiFunction>>builder()
+      .put("DP05_0001E,DP05_0018E",
+          ImmutableList.of(rightSubtract))
       .put("S0201_119E,S0201_126E",
           ImmutableList.of(percent))
       .put("K200104_001E,K200102_001E",
