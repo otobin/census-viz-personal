@@ -32,7 +32,7 @@ async function getUserState(lat, lng) {
           });
         });
       });
-      // Check to see that the state is valid 
+      // Check to see that the state is valid
       if (country !== 'United States' || typeof state === 'undefined') {
         return 'each U.S. state';
       } else {
