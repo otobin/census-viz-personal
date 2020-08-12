@@ -242,7 +242,7 @@ public class QueryServlet extends HttpServlet {
     if (!dataRowToReformatFunction.containsKey(dataIdentifier)) {
       return data; // This data doesn't need reformatting
     }
-    if ((dataRowToReformatFunction.get(dataIdentifier).size() + (isCountyQuery ? 2 : 1)) != 
+    if ((dataRowToReformatFunction.get(dataIdentifier).size() + 1) != 
         dataIdentifier.split(",").length) {
       // We should have enough functions listed to apply them to each group
       // of two rows - (a, b) and then (their product, c), etc.
@@ -297,7 +297,7 @@ public class QueryServlet extends HttpServlet {
         List<String> newDataRow = newDataArray.get(i);
         newDataRow.add(originalDataRow.get(numberCombiners.size() + 2));
         if (isCountyQuery) {
-          newDataRow.add(originalDataRow.get(numberCombiners.size() + 1));
+          newDataRow.add(originalDataRow.get(numberCombiners.size() + 3));
         }
       }
 
