@@ -256,7 +256,7 @@ public class QueryServlet extends HttpServlet {
             .println(sendError("An error occurred while trying to retrieve census data."));
         return;
       }
-      
+
       JsonObject jsonResponse = new JsonObject();
       jsonResponse.addProperty("censusData", formattedData);
       jsonResponse.addProperty("tableLink", censusTableLink);
