@@ -273,7 +273,7 @@ public class QueryServlet extends HttpServlet {
   BiFunction<Float, Float, Integer> add = (Float a, Float b) -> (int) Math.round(a + b);
   BiFunction<Float, Float, Integer> rightSubtract = (Float a, Float b) -> (int) Math.round(a - b);
   BiFunction<Float, Float, Integer> percent =
-      (Float a, Float b) -> (int) Math.round((a/100.0) * b);
+      (Float a, Float b) -> (int) Math.round((a / 100.0) * b);
 
   Map<String, List<BiFunction>> dataRowToReformatFunction =
       ImmutableMap.<String, List<BiFunction>>builder()
