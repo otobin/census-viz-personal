@@ -270,10 +270,10 @@ public class QueryServlet extends HttpServlet {
 
   // Math.round returns a long, but we can cast to int (max value ~2 billion) because our numbers
   // will always be smaller than the U.S. population (~330 million)
-  BiFunction<Float, Float, Integer> add = (Float a, Float b) -> (int)Math.round(a + b);
-  BiFunction<Float, Float, Integer> rightSubtract = (Float a, Float b) -> (int)Math.round(a - b);
+  BiFunction<Float, Float, Integer> add = (Float a, Float b) -> (int) Math.round(a + b);
+  BiFunction<Float, Float, Integer> rightSubtract = (Float a, Float b) -> (int) Math.round(a - b);
   BiFunction<Float, Float, Integer> percent =
-      (Float a, Float b) -> (int)Math.round((a/100.0) * b);
+      (Float a, Float b) -> (int) Math.round((a/100.0) * b);
 
   Map<String, List<BiFunction>> dataRowToReformatFunction =
       ImmutableMap.<String, List<BiFunction>>builder()
@@ -340,12 +340,12 @@ public class QueryServlet extends HttpServlet {
           newDataRow.set(1, "-1");
         } else {
           try {
-            int newValue = 
+            int newValue =
                 (int)
                     numberCombiner.apply(
                         Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
                         Float.parseFloat(
-                            originalDataRow.get(i+2))); // Moving along list of original values
+                            originalDataRow.get(i + 2))); // Moving along list of original values
             newDataRow.set(1, String.valueOf(newValue));
           } catch (NumberFormatException e) {
             newDataRow.set(1, "-1");
