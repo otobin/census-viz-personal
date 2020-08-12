@@ -29,7 +29,7 @@
             <i class="material-icons" id="feedback" href="cnn.com">feedback</i>
           </a>
           <p class="tooltiptext">Click here to provide feedback - thank you!</p>
-      </div>
+        </div>
         <div class="tooltip">
           <i class="material-icons" id="faq">help_outline</i>
           <p class="tooltiptext">Census Viz makes it easy to explore U.S.
@@ -47,6 +47,16 @@
             information available. Most of our data come from the annual
             American Community Survey; if you ask about a year ending
             in 0, you'll get information from the larger Decennial Survey instead.
+          </p>
+        </div>
+        <div class="tooltip">
+          <i class="material-icons" onmouseover="openNav()">explore</i>
+          <p class="tooltiptext" id="location-settings">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            Turn Location On
+            <button id="location-on" onclick="changeLocationSettings(this)"></button>
+            Turn Location off
+            <button id="location-off" onclick="changeLocationSettings(this)"></button>
           </p>
         </div>
       </h1>

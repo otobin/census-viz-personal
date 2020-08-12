@@ -61,6 +61,5 @@ async function getDefaultValue() {
   const lat = location.lat;
   const lng = location.lng;
   const state = await getUserState(lat, lng);
-  console.log(state);
   return state;
 }

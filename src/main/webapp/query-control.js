@@ -180,8 +180,14 @@ function getSortedStateInfoArray() {
 
 // Append all locations to the location dropdown element.
 async function createStateDropdownList() {
-  const value = await getDefaultValue();
-  document.getElementById('location-list').value = value;
+  const locationSetting = localStorage.getItem('locationSettings');
+  let defaultLocation;
+  if (locationSetting === 'on') {
+    defaultLocation = await getDefaultValue();
+  } else {
+    defaultLocation = 'each U.S. state';
+  }
+  document.getElementById('location-list').value = defaultLocation;
   const datalist = document.getElementById('location');
   let optionElem = document.createElement('option');
   optionElem.value = 'each U.S. state';
@@ -194,4 +200,21 @@ async function createStateDropdownList() {
     optionElem.setAttribute('data-value', value.number);
     datalist.appendChild(optionElem);
   });
+}
+
+function changeLocationSettings(button) {
+  if (button.id == 'location-on') {
+    localStorage.setItem('locationSettings', 'on');
+  } else {
+    localStorage.setItem('locationSettings', 'off');
+  }
+  console.log(localStorage.getItem('locationSettings'));
+}
+
+function closeNav() {
+  document.getElementById("location-settings").style.display = 'none';
+}
+
+function openNav() {
+  document.getElementById('location-settings').style.display = 'flex';
 }
