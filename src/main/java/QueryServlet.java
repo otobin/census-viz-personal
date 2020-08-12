@@ -88,7 +88,11 @@ public class QueryServlet extends HttpServlet {
               "male",
               "P012002",
               "female",
-              "P012026")); /* TODO: can't do over/under-18 until after adding is implemented */
+              "P012026",
+              "under-18",
+              "P014001,P014021,P014022,P014042,P014043",
+              "over-18",
+              "P010001"));
 
   Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
@@ -291,6 +295,8 @@ public class QueryServlet extends HttpServlet {
           ImmutableList.of(add, add, percent))
       .put("S0701_C03_013E,S0701_C04_013E,S0701_C05_013E,S0701_C01_013E",
           ImmutableList.of(add, add, percent))
+      .put("P014001,P014021,P014022,P014042,P014043",
+          ImmutableList.of(rightSubtract, rightSubtract, rightSubtract, rightSubtract))
       .build();
 
   private String reformatDataArray(String data, String dataIdentifier, boolean isCountyQuery) 
