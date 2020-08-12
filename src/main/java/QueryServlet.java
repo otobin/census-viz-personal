@@ -49,7 +49,7 @@ public class QueryServlet extends HttpServlet {
               "S0201_182E",
               "female",
               "DP03_0013E"),
-          "moved", /* TODO: add row for county query */
+          "moved",
           ImmutableMap.of(
               "all-ages",
               "S0201_125E,S0201_126E,S0201_119E",
@@ -76,7 +76,6 @@ public class QueryServlet extends HttpServlet {
           "work",
           ImmutableMap.of("all-ages", "K202301_004E", "over-18", "K202301_004E"),
           "moved",
-          /* TODO: have to add K200701_004E as well for county query */
           ImmutableMap.of("all-ages", "K200701_005E,K200701_006E"));
 
   // Even more data available for population in 2010 when the decennial census happened
@@ -174,6 +173,19 @@ public class QueryServlet extends HttpServlet {
       dataRow = queryToDataRowDecennial.get(action).get(personType);
     }
 
+    // Queries about moving to counties instead of states need additional data
+    if (!location.equals("state") && action.equals("moved")) {
+      if (personType.equals("all-ages") && year > 2013) {
+        dataRow = "K200701_004E," + dataRow;
+      } else if (personType.equals("all-ages")) {
+        dataRow = "S0201_124E," + dataRow;
+      } else if (personType.equals("male")) {
+        dataRow = "S0701_C03_012E," + dataRow;
+      } else if (personType.equals("female")) {
+        dataRow = "S0701_C03_013E," + dataRow;
+      }
+    }
+
     String dataTablePrefix;
     try {
       dataTablePrefix = getDataTableString(dataRow);
@@ -269,6 +281,14 @@ public class QueryServlet extends HttpServlet {
           ImmutableList.of(add, percent))
       .put("K200701_005E,K200701_006E",
           ImmutableList.of(add))
+      .put("K200701_004E,K200701_005E,K200701_006E",
+          ImmutableList.of(add, add))
+      .put("S0201_124E,S0201_125E,S0201_126E,S0201_119E",
+          ImmutableList.of(add, add, percent))
+      .put("S0701_C03_012E,S0701_C04_012E,S0701_C05_012E,S0701_C01_012E",
+          ImmutableList.of(add, add, percent))
+      .put("S0701_C03_013E,S0701_C04_013E,S0701_C05_013E,S0701_C01_013E",
+          ImmutableList.of(add, add, percent))
       .build();
 
   private String reformatDataArray(String data, String dataIdentifier, boolean isCountyQuery) 
