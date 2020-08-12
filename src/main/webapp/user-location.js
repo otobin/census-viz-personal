@@ -18,6 +18,7 @@ async function getUserState(lat, lng) {
       // which will be the state name.
       const results = jsonResponse.results;
       let state;
+      let country;
       results.forEach((address) => {
         const addressComponents = address.address_components;
         addressComponents.forEach((component) => {
@@ -25,11 +26,18 @@ async function getUserState(lat, lng) {
           types.forEach((type) => {
             if (type === 'administrative_area_level_1') {
               state = component.long_name;
+            } else if (type === 'country') {
+              country = component.long_name;
             }
           });
         });
       });
-      return state;
+      // Check to see that the state is valid 
+      if (country !== 'United States' || typeof state === 'undefined') {
+        return 'each U.S. state';
+      } else {
+        return state;
+      }
     });
 }
 
@@ -53,5 +61,6 @@ async function getDefaultValue() {
   const lat = location.lat;
   const lng = location.lng;
   const state = await getUserState(lat, lng);
+  console.log(state);
   return state;
 }
