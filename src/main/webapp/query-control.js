@@ -205,10 +205,13 @@ async function createStateDropdownList() {
 function changeLocationSettings(button) {
   if (button.id == 'location-on') {
     localStorage.setItem('locationSettings', 'on');
+    document.getElementById('location-off-icon').style.display = 'none';
+    document.getElementById('location-on-icon').style.display = 'inline';
   } else {
     localStorage.setItem('locationSettings', 'off');
+    document.getElementById('location-on-icon').style.display = 'none';
+    document.getElementById('location-off-icon').style.display = 'inline';
   }
-  console.log(localStorage.getItem('locationSettings'));
 }
 
 function closeNav() {
