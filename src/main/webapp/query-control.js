@@ -202,6 +202,7 @@ async function createStateDropdownList() {
   });
 }
 
+// On page load, show appropriate icon based on the localStorage
 function loadAppropriateIcon() {
   const locationSettings = localStorage.getItem('locationSettings');
   if (typeof locationSettings === 'undefined' || locationSettings === 'off') {
@@ -215,6 +216,8 @@ function loadAppropriateIcon() {
   }
 }
 
+// When the icon is clicked, change the location settings to the opposite
+// and show the opposite icon
 function changeLocationSettings(icon) {
   const iconId = icon.id;
   if (iconId === 'location-on-icon') {
