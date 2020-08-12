@@ -226,6 +226,9 @@ public class QueryServlet extends HttpServlet {
 
   // Some data arrays need reformatting (columns added together, etc.) before they can be
   // visualized.
+
+  // Math.round returns a long, but we can cast to int (max value ~2 billion) because our numbers
+  // will always be smaller than the U.S. population (~330 million)
   BiFunction<Float, Float, Integer> add = (Float a, Float b) -> (int)Math.round(a + b);
   BiFunction<Float, Float, Integer> percent = (Float a, Float b) -> (int)Math.round((a/100.0) * b);
 
@@ -271,10 +274,20 @@ public class QueryServlet extends HttpServlet {
       for (int j = 1; j < originalDataArray.size(); j++) {
         List<String> originalDataRow = originalDataArray.get(j);
         List<String> newDataRow = newDataArray.get(j);
-        int newValue = (int)numberCombiner.apply(
-            Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
-            Float.parseFloat(originalDataRow.get(i+2))); // Moving along list of original values
-        newDataRow.set(1, String.valueOf(newValue));
+        if (newDataRow.get(1).startsWith("-")) {
+          // Sometimes the census API returns negative numbers by mistake;
+          // these get cleaned up in the JavaScript
+          newDataRow.set(1, "-1");
+        } else {
+          try {
+            int newValue = (int)numberCombiner.apply(
+                Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
+                Float.parseFloat(originalDataRow.get(i+2))); // Moving along list of original values
+            newDataRow.set(1, String.valueOf(newValue));
+          } catch (NumberFormatException e) {
+            newDataRow.set(1, "-1");
+          }
+        }
       }
     }
 
