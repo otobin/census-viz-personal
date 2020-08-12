@@ -36,14 +36,18 @@ select:focus {
   padding-left: 30px;
 }
 
-.tooltip {
-  display: inline;
-}
-
-#faq {
+.material-icons {
   float: right;
   font-size: 125%;
   line-height: .5;
+}
+
+#feedback {
+  color: black;
+}
+
+.tooltip {
+  display: inline;
 }
 
 .tooltip .tooltiptext {
