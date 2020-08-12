@@ -202,22 +202,28 @@ async function createStateDropdownList() {
   });
 }
 
-function changeLocationSettings(button) {
-  if (button.id == 'location-on') {
-    localStorage.setItem('locationSettings', 'on');
-    document.getElementById('location-off-icon').style.display = 'none';
-    document.getElementById('location-on-icon').style.display = 'inline';
-  } else {
+function loadAppropriateIcon() {
+  const locationSettings = localStorage.getItem('locationSettings');
+  if (typeof locationSettings === 'undefined' || locationSettings === 'off') {
     localStorage.setItem('locationSettings', 'off');
     document.getElementById('location-on-icon').style.display = 'none';
     document.getElementById('location-off-icon').style.display = 'inline';
+  } else {
+    localStorage.setItem('locationSettings', 'on');
+    document.getElementById('location-off-icon').style.display = 'none';
+    document.getElementById('location-on-icon').style.display = 'inline';
   }
 }
 
-function closeNav() {
-  document.getElementById("location-settings").style.display = 'none';
-}
-
-function openNav() {
-  document.getElementById('location-settings').style.display = 'flex';
+function changeLocationSettings(icon) {
+  const iconId = icon.id;
+  if (iconId === 'location-on-icon') {
+    localStorage.setItem('locationSettings', 'off');
+    document.getElementById('location-on-icon').style.display = 'none';
+    document.getElementById('location-off-icon').style.display = 'inline';
+  } else {
+    localStorage.setItem('locationSettings', 'on');
+    document.getElementById('location-off-icon').style.display = 'none';
+    document.getElementById('location-on-icon').style.display = 'inline';
+  }
 }

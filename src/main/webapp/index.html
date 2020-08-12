@@ -20,7 +20,7 @@
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
-<body onload="registerServiceWorker(); createStateDropdownList();">
+<body onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon();">
   <main>
     <div id="header">
       <h1>Census Viz
@@ -50,14 +50,10 @@
           </p>
         </div>
         <div class="tooltip">
-          <i class="material-icons" id="location-off-icon" onmouseover="openNav()">location_off</i>
-          <i class="material-icons" id="location-on-icon" onmouseover="openNav()">location_on</i>
-          <p class="tooltiptext" id="location-settings">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            Turn Location On
-            <button id="location-on" onclick="changeLocationSettings(this)"></button>
-            Turn Location off
-            <button id="location-off" onclick="changeLocationSettings(this)"></button>
+          <i class="material-icons" id="location-off-icon" onclick="changeLocationSettings(this)">location_off</i>
+          <i class="material-icons" id="location-on-icon" onclick="changeLocationSettings(this)">location_on</i>
+          <p class="tooltiptext">
+            Click to change location settings
           </p>
         </div>
       </h1>
