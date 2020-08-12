@@ -32,7 +32,7 @@ public class QueryServlet extends HttpServlet {
               "under-18",
               "DP05_0019E",
               "over-18",
-              "DP05_0021E", /* TODO: could be added to post2013 using subtraction */
+              "DP05_0021E",
               "all-ages",
               "DP05_0001E",
               "male",
@@ -49,15 +49,14 @@ public class QueryServlet extends HttpServlet {
               "S0201_182E",
               "female",
               "DP03_0013E"),
-          "moved", /* TODO: All of these really should be two to three columns added together,
-                   and then calculated as a percentage */
+          "moved", /* TODO: add row for county query */
           ImmutableMap.of(
               "all-ages",
-              "S0201_119E,S0201_126E",
+              "S0201_125E,S0201_126E,S0201_119E",
               "male",
-              "S0701_C01_012E,S0701_C04_012E",
+              "S0701_C04_012E,S0701_C05_012E,S0701_C01_012E",
               "female",
-              "S0701_C01_013E,S0701_C04_013E"));
+              "S0701_C04_013E,S0701_C05_013E,S0701_C01_013E"));
 
   // After 2013, some queries have more data available
   Map<String, Map<String, String>> queryToDataRowPost2013 =
@@ -66,6 +65,8 @@ public class QueryServlet extends HttpServlet {
           ImmutableMap.of(
               "under-18",
               "K200102_001E",
+              "over-18",
+              "K200104_001E,K200102_001E",
               "all-ages",
               "K200104_001E",
               "male",
@@ -75,9 +76,8 @@ public class QueryServlet extends HttpServlet {
           "work",
           ImmutableMap.of("all-ages", "K202301_004E", "over-18", "K202301_004E"),
           "moved",
-          /* TODO: K200701_005E + K200701_006E for state query,
-          but actually have to add K200701_004E as well for county query */
-          ImmutableMap.of("all-ages", "S0201_119E,S0201_126E"));
+          /* TODO: have to add K200701_004E as well for county query */
+          ImmutableMap.of("all-ages", "K200701_005E,K200701_006E"));
 
   Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
@@ -230,12 +230,24 @@ public class QueryServlet extends HttpServlet {
   // Math.round returns a long, but we can cast to int (max value ~2 billion) because our numbers
   // will always be smaller than the U.S. population (~330 million)
   BiFunction<Float, Float, Integer> add = (Float a, Float b) -> (int)Math.round(a + b);
+  BiFunction<Float, Float, Integer> rightSubtract = (Float a, Float b) -> (int)Math.round(a - b);
   BiFunction<Float, Float, Integer> percent = (Float a, Float b) -> (int)Math.round((a/100.0) * b);
 
-  Map<String, List<BiFunction>> dataRowToReformatFunction = 
-      ImmutableMap.of(
-        "S0201_119E,S0201_126E",
-        ImmutableList.of(percent));
+  Map<String, List<BiFunction>> dataRowToReformatFunction =
+      ImmutableMap.<String, List<BiFunction>>builder()
+      .put("S0201_119E,S0201_126E",
+          ImmutableList.of(percent))
+      .put("K200104_001E,K200102_001E",
+          ImmutableList.of(rightSubtract))
+      .put("S0701_C04_012E,S0701_C05_012E,S0701_C01_012E",
+          ImmutableList.of(add, percent))
+      .put("S0701_C04_013E,S0701_C05_013E,S0701_C01_013E",
+          ImmutableList.of(add, percent))
+      .put("S0201_125E,S0201_126E,S0201_119E",
+          ImmutableList.of(add, percent))
+      .put("K200701_005E,K200701_006E",
+          ImmutableList.of(add))
+      .build();
 
   private String reformatDataArray(String data, String dataIdentifier, boolean isCountyQuery) 
       throws InvalidObjectException {
@@ -274,8 +286,8 @@ public class QueryServlet extends HttpServlet {
       for (int j = 1; j < originalDataArray.size(); j++) {
         List<String> originalDataRow = originalDataArray.get(j);
         List<String> newDataRow = newDataArray.get(j);
-        if (newDataRow.get(1).startsWith("-")) {
-          // Sometimes the census API returns negative numbers by mistake;
+        if (newDataRow.get(1) == null || newDataRow.get(1).startsWith("-")) {
+          // Sometimes the census API returns missing or negative numbers by mistake;
           // these get cleaned up in the JavaScript
           newDataRow.set(1, "-1");
         } else {
