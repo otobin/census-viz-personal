@@ -99,7 +99,7 @@ public class DataFormatter {
       for (int j = 0; j < originalDataArray.size() - 1; j++) { // Moving down through the rows
         List<Double> newDataRow = newDataArray.get(j);
         // We always combine onto the first item in the data row, but combining it
-        // the second, third, etc. item as we iterate 
+        // the second, third, etc. item as we iterate
         Double newDataPoint =
             (double) numberCombiner.apply(newDataRow.get(0), newDataRow.get(i + 1));
         newDataRow.set(0, newDataPoint);
