@@ -205,22 +205,22 @@ async function createStateDropdownList() {
 // loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed is true, 
 // the location settings are set to the opposite of the current location settings 
 // and the opposite icon is shown. When buttonPressed is false, the location settings 
-// are not changed and the opposite icon is shown.
+// are not changed and the current icon is shown.
 function loadAppropriateIcon(buttonPressed) {
   const locationSettings = localStorage.getItem('locationSettings');
   const locationOffString = 'Your location settings are currently set to off.' +
-    'Click here to change your location settings.';
+    ' Click here to change your location settings.';
   const locationOnString = 'Your location settings are currently on.' + 
-    'Click here to change your location settings.';
-  if (((typeof locationSettings === 'undefined' || locationSettings === 'off') &&
+    ' Click here to change your location settings.';
+  if (((locationSettings === null || locationSettings === 'off') &&
     (buttonPressed === false)) || (locationSettings === 'on' && buttonPressed === true)) {
     // The user is turning their location off or it was already off and needs to 
     // be reloaded on page refresh
-      localStorage.setItem('locationSettings', 'off');
+    localStorage.setItem('locationSettings', 'off');
     document.getElementById('location-on-icon').style.display = 'none';
     document.getElementById('location-off-icon').style.display = 'inline';
     document.getElementById('location-id-text').innerText = locationOffString;
-  } else if (((typeof locationSettings === 'undefined' || locationSettings === 'off') &&
+  } else if (((locationSettings === null || locationSettings === 'off') &&
   (buttonPressed === true)) || (locationSettings === 'on' && buttonPressed === false)) {
     // The user is turning their location on or it was already on and needs to 
     // be reloaded on page refresh

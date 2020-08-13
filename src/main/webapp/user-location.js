@@ -48,9 +48,11 @@ async function getUserLocation() {
   return fetch(geoLocationFetchUrl, {
     method: 'POST',
     body: JSON.stringify(fetchJson),
-  }).then((response) => response.json())
+  }).then((response) => {
+    if (!response.ok) { throw "Unable to calculate location"}
+    return response.json()})
     .then(function(jsonResponse) {
-    return jsonResponse.location;
+      return jsonResponse.location;
   });
 }
 
