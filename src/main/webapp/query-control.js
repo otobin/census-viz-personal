@@ -196,10 +196,10 @@ async function createStateDropdownList() {
   });
 }
 
-// loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed is true, 
-// the location settings are set to the opposite of the current location settings 
-// and the opposite icon is shown. When buttonPressed is false, the location settings 
-// are not changed and the current icon is shown.
+// loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed
+// is true, the location settings are set to the opposite of the current
+// location settings and the opposite icon is shown. When buttonPressed is
+// false, the location settings are not changed and the current icon is shown.
 function loadAppropriateIcon(buttonPressed) {
   const locationSettings = localStorage.getItem('locationSettings');
   const locationOffString = 'Your location settings are currently set to off.' +
