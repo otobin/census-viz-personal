@@ -1,7 +1,9 @@
+import com.googlecode.objectify.ObjectifyService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.sps.data.DataFormatter;
+import com.google.sps.data.CensusData;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +17,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /** Servlet that handles census queries from users */
 @WebServlet("/query")
@@ -142,6 +146,17 @@ public class QueryServlet extends HttpServlet {
     String yearStr = request.getParameter("year");
     int year = Integer.parseInt(yearStr);
 
+    String query = personType + action + location + yearStr;
+    CensusData cachedData = ofy().load().type(CensusData.class).id(query).now();
+    if (cachedData != null) {
+      JsonObject jsonResponse = new JsonObject();
+      jsonResponse.addProperty("censusData", cachedData.getData());
+      jsonResponse.addProperty("tableLink", cachedData.getTableLink());
+      response.setContentType("application/json;");
+      response.getWriter().println(jsonResponse.toString());
+      return;
+    }
+
     if (!queryToDataRowGeneric.containsKey(action)) {
       // We don't have information on this action
       response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
@@ -253,6 +268,9 @@ public class QueryServlet extends HttpServlet {
             .println(sendError("An error occurred while trying to retrieve census data."));
         return;
       }
+
+      // Save this response to cache
+      ofy().save().entity(new CensusData(query, formattedData, censusTableLink)).now();
 
       JsonObject jsonResponse = new JsonObject();
       jsonResponse.addProperty("censusData", formattedData);
