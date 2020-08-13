@@ -49,7 +49,7 @@ async function getUserLocation() {
     method: 'POST',
     body: JSON.stringify(fetchJson),
   }).then((response) => {
-    if (!response.ok) { throw "Unable to calculate location"}
+    if (!response.ok) { throw "Unable to calculate location";}
     return response.json()})
     .then(function(jsonResponse) {
       return jsonResponse.location;
@@ -58,10 +58,21 @@ async function getUserLocation() {
 
 // Returns the state to set as the default value for
 // location field.
-async function getDefaultValue() {
-  const location = await getUserLocation();
-  const lat = location.lat;
-  const lng = location.lng;
-  const state = await getUserState(lat, lng);
-  return state;
+async function getDefaultLocation() {
+  const locationSetting = localStorage.getItem('locationSettings');
+  let location;
+  if (locationSetting === null || locationSetting === 'off') {
+    return 'each U.S. state';
+  } else {
+    try {
+      location = await getUserLocation();
+    }
+    catch (err) {
+      return 'each U.S. state';
+    }
+    const lat = location.lat;
+    const lng = location.lng;
+    const state = await getUserState(lat, lng);
+    return state;
+  }
 }

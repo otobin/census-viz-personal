@@ -180,13 +180,7 @@ function getSortedStateInfoArray() {
 
 // Append all locations to the location dropdown element.
 async function createStateDropdownList() {
-  const locationSetting = localStorage.getItem('locationSettings');
-  let defaultLocation;
-  if (locationSetting === 'on') {
-    defaultLocation = await getDefaultValue();
-  } else {
-    defaultLocation = 'each U.S. state';
-  }
+  const defaultLocation = await getDefaultLocation();
   document.getElementById('location-list').value = defaultLocation;
   const datalist = document.getElementById('location');
   let optionElem = document.createElement('option');
