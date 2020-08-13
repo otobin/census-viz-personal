@@ -20,7 +20,7 @@
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
-<body onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon();">
+<body onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false);">
   <main>
     <div id="header">
       <h1>Census Viz
@@ -50,10 +50,9 @@
           </p>
         </div>
         <div class="tooltip">
-          <i class="material-icons" id="location-off-icon" onclick="changeLocationSettings(this)">location_off</i>
-          <i class="material-icons" id="location-on-icon" onclick="changeLocationSettings(this)">location_on</i>
-          <p class="tooltiptext">
-            Click to change location settings
+          <i class="material-icons" id="location-off-icon" onclick="loadAppropriateIcon(true)">location_off</i>
+          <i class="material-icons" id="location-on-icon" onclick="loadAppropriateIcon(true)">location_on</i>
+          <p class="tooltiptext" id="location-id-text">
           </p>
         </div>
       </h1>
