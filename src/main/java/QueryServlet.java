@@ -1,11 +1,15 @@
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.sps.data.DataFormatter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InvalidObjectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,9 +26,9 @@ public class QueryServlet extends HttpServlet {
           "live",
           ImmutableMap.of(
               "under-18",
-              "DP05_0019E",
+              "DP05_0001E,DP05_0018E",
               "over-18",
-              "DP05_0021E", /* TODO: could be added to post2013 using subtraction */
+              "DP05_0018E",
               "all-ages",
               "DP05_0001E",
               "male",
@@ -41,15 +45,14 @@ public class QueryServlet extends HttpServlet {
               "S0201_182E",
               "female",
               "DP03_0013E"),
-          "moved", /* TODO: All of these really should be two to three columns added together,
-                   and then calculated as a percentage */
+          "moved",
           ImmutableMap.of(
               "all-ages",
-              "S0201_119E,S0201_126E",
+              "S0201_125E,S0201_126E,S0201_119E",
               "male",
-              "S0701_C01_012E,S0701_C04_012E",
+              "S0701_C04_012E,S0701_C05_012E,S0701_C01_012E",
               "female",
-              "S0701_C01_013E,S0701_C04_013E"));
+              "S0701_C04_013E,S0701_C05_013E,S0701_C01_013E"));
 
   // After 2013, some queries have more data available
   Map<String, Map<String, String>> queryToDataRowPost2013 =
@@ -58,6 +61,8 @@ public class QueryServlet extends HttpServlet {
           ImmutableMap.of(
               "under-18",
               "K200102_001E",
+              "over-18",
+              "K200104_001E,K200102_001E",
               "all-ages",
               "K200104_001E",
               "male",
@@ -67,9 +72,7 @@ public class QueryServlet extends HttpServlet {
           "work",
           ImmutableMap.of("all-ages", "K202301_004E", "over-18", "K202301_004E"),
           "moved",
-          /* TODO: K200701_005E + K200701_006E for state query,
-          but actually have to add K200701_004E as well for county query */
-          ImmutableMap.of("all-ages", "S0201_119E,S0201_126E"));
+          ImmutableMap.of("all-ages", "K200701_005E,K200701_006E"));
 
   // Even more data available for population in 2010 when the decennial census happened
   Map<String, Map<String, String>> queryToDataRowDecennial =
@@ -81,7 +84,11 @@ public class QueryServlet extends HttpServlet {
               "male",
               "P012002",
               "female",
-              "P012026")); /* TODO: can't do over/under-18 until after adding is implemented */
+              "P012026",
+              "under-18",
+              "P014001,P014021,P014022,P014042,P014043",
+              "over-18",
+              "P010001"));
 
   Map<String, String> tableNameToAbbrev =
       ImmutableMap.of("profile", "DP", "spp", "SPP", "subject", "ST");
@@ -104,6 +111,7 @@ public class QueryServlet extends HttpServlet {
     throw new NoSuchFieldException("This string doesn't correspond to any data table.");
   }
 
+  // Link to the human-readable version of the same data table
   private String getCensusTableLink(String dataRow, String dataTablePrefix, String year) {
     if (dataRow.substring(0, 1).equals("P")) {
       // Decennial queries have overly specific tables, so always return a general one instead
@@ -165,6 +173,19 @@ public class QueryServlet extends HttpServlet {
       dataRow = queryToDataRowDecennial.get(action).get(personType);
     }
 
+    // Queries about moving to counties instead of states need additional data
+    if (!location.equals("state") && action.equals("moved")) {
+      if (personType.equals("all-ages") && year > 2013) {
+        dataRow = "K200701_004E," + dataRow;
+      } else if (personType.equals("all-ages")) {
+        dataRow = "S0201_124E," + dataRow;
+      } else if (personType.equals("male")) {
+        dataRow = "S0701_C03_012E," + dataRow;
+      } else if (personType.equals("female")) {
+        dataRow = "S0701_C03_013E," + dataRow;
+      }
+    }
+
     String dataTablePrefix;
     try {
       dataTablePrefix = getDataTableString(dataRow);
@@ -193,9 +214,11 @@ public class QueryServlet extends HttpServlet {
 
     if (connection.getResponseCode() > 299) {
       // An error occurred
-      response.sendError(
-          HttpServletResponse.SC_BAD_GATEWAY,
-          "An error occurred while trying to retrieve census data.");
+      response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+      response.setContentType("application/json;");
+      response
+          .getWriter()
+          .println(sendError("An error occurred while trying to retrieve census data."));
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
@@ -218,9 +241,21 @@ public class QueryServlet extends HttpServlet {
                     "This query is not supported by census data. Try asking a more general one."));
         return;
       }
+
+      String formattedData;
+      try {
+        formattedData = DataFormatter.reformatDataArray(data, dataRow, !location.equals("state"));
+      } catch (InvalidObjectException e) {
+        response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+        response.setContentType("application/json;");
+        response
+            .getWriter()
+            .println(sendError("An error occurred while trying to retrieve census data."));
+        return;
+      }
+
       JsonObject jsonResponse = new JsonObject();
-      Gson gson = new Gson();
-      jsonResponse.addProperty("censusData", data);
+      jsonResponse.addProperty("censusData", formattedData);
       jsonResponse.addProperty("tableLink", censusTableLink);
       response.setContentType("application/json;");
       response.getWriter().println(jsonResponse.toString());
