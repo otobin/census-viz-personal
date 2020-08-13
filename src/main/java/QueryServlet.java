@@ -1,24 +1,20 @@
-import com.googlecode.objectify.ObjectifyService;
-import com.google.common.collect.ImmutableList;
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
-import com.google.sps.data.DataFormatter;
 import com.google.sps.data.CensusData;
+import com.google.sps.data.DataFormatter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /** Servlet that handles census queries from users */
 @WebServlet("/query")

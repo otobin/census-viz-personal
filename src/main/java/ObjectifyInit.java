@@ -1,21 +1,21 @@
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.sps.data.CensusData;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
-import com.google.sps.data.CensusData;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 
 public class ObjectifyInit implements ServletContextListener {
   public void contextInitialized(ServletContextEvent event) {
-    ObjectifyService.init(new ObjectifyFactory(
-    DatastoreOptions.newBuilder()
-    // This host is used for testing using a datastore emulator
-    .setHost("http://localhost:8484")
-    .setProjectId("censusviz")
-    .build()
-    .getService()
-    ));
+    ObjectifyService.init(
+        new ObjectifyFactory(
+            DatastoreOptions.newBuilder()
+                // This host is used for testing using a datastore emulator
+                .setHost("http://localhost:8484")
+                .setProjectId("censusviz")
+                .build()
+                .getService()));
     ObjectifyService.register(CensusData.class);
   }
 
