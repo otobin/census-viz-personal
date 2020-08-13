@@ -5,7 +5,6 @@ import com.googlecode.objectify.ObjectifyService;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-
 public class ObjectifyInit implements ServletContextListener {
   public void contextInitialized(ServletContextEvent event) {
     ObjectifyService.init(
