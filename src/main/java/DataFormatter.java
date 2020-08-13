@@ -14,15 +14,10 @@ import java.util.Map;
 // Reformats data from the QueryServlet according to a hard-coded list of instructions
 public class DataFormatter {
 
-  // Generic functions to combine numbers. Note that Math.round returns a long,
-  // but we can cast to int (max value ~2 billion) because our numbers
-  // will always be smaller than the U.S. population (~330 million)
-  private static BiFunction<Float, Float, Integer> add =
-      (Float a, Float b) -> (int) Math.round(a + b);
-  private static BiFunction<Float, Float, Integer> rightSubtract =
-      (Float a, Float b) -> (int) Math.round(a - b);
-  private static BiFunction<Float, Float, Integer> percent =
-      (Float a, Float b) -> (int) Math.round((a / 100.0) * b);
+  // Generic functions to combine numbers.
+  private static BiFunction<Double, Double, Double> add = (Double a, Double b) -> a + b;
+  private static BiFunction<Double, Double, Double> rightSubtract = (Double a, Double b) -> a - b;
+  private static BiFunction<Double, Double, Double> percent = (Double a, Double b) -> (a / 100.0) * b;
 
   // Mapping data columns to the functions we want to execute on them --
   // for example, if we are not able to access the population of children,
@@ -66,15 +61,31 @@ public class DataFormatter {
     Gson gson = new Gson();
     Type dataArrayType = new TypeToken<ArrayList<List<String>>>() {}.getType();
     ArrayList<List<String>> originalDataArray = gson.fromJson(data, dataArrayType);
-    ArrayList<List<String>> newDataArray = new ArrayList<List<String>>();
+    ArrayList<List<Double>> newDataArray = new ArrayList<List<Double>>();
 
-    // Create a new matrix to contain the reformatted data. Add in the the first column, which is
-    // the string identifier of the location, and the second column, the first numerical value
-    for (int i = 0; i < originalDataArray.size(); i++) {
+    // Create a new matrix to contain the reformatted data,
+    // moving down the rows but skipping the header row
+    for (int i = 1; i < originalDataArray.size(); i++) {
       List<String> originalDataRow = originalDataArray.get(i);
-      List<String> newDataRow = new ArrayList<String>();
-      newDataRow.add(originalDataRow.get(0));
-      newDataRow.add(originalDataRow.get(1));
+      List<Double> newDataRow = new ArrayList<Double>();
+
+      // Moving across each row; we only iterate through the numbers, skipping
+      // the initial identifier string and the last one or two state & county identifiers
+      for (int j = 1; j < originalDataRow.size() - (isCountyQuery ? 2 : 1); j++) { 
+        String originalDataPoint = originalDataRow.get(j);
+        if (originalDataPoint == null || originalDataPoint.startsWith("-")) {
+          // Sometimes the census API returns missing or negative numbers by mistake;
+          // these get cleaned up in the JavaScript
+          newDataRow.add(-1.0);
+        } else {
+          try {
+            newDataRow.add(Double.parseDouble(originalDataPoint));
+          } catch (NumberFormatException e) {
+            newDataRow.add(-1.0);
+          }
+        }
+      }
+
       newDataArray.add(newDataRow);
     }
 
@@ -84,42 +95,41 @@ public class DataFormatter {
     List<BiFunction> numberCombiners = dataRowToReformatFunction.get(dataIdentifier);
     for (int i = 0; i < numberCombiners.size(); i++) { // Moving across columns combining numbers
       BiFunction numberCombiner = numberCombiners.get(i);
-      for (int j = 1; j < originalDataArray.size(); j++) { // Moving down each row
-        List<String> originalDataRow = originalDataArray.get(j);
-        List<String> newDataRow = newDataArray.get(j);
-        if (newDataRow.get(1) == null || newDataRow.get(1).startsWith("-")) {
-          // Sometimes the census API returns missing or negative numbers by mistake;
-          // these get cleaned up in the JavaScript
-          newDataRow.set(1, "-1");
-        } else {
-          try {
-            int newValue =
-                (int)
-                    numberCombiner.apply(
-                        Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
-                        Float.parseFloat(
-                            originalDataRow.get(i + 2))); // Moving along list of original values,
-            // skipping name column and the first number (already in newData)
-            newDataRow.set(1, String.valueOf(newValue)); // Replace previous value
-          } catch (NumberFormatException e) {
-            newDataRow.set(1, "-1");
-          }
-        }
+      for (int j = 0; j < originalDataArray.size() - 1; j++) { // Moving down through the rows
+        List<Double> newDataRow = newDataArray.get(j);
+        // We always combine onto the first item in the data row, but combining it
+        // the second, third, etc. item as we iterate 
+        Double newDataPoint = (double)numberCombiner.apply(newDataRow.get(0), newDataRow.get(i+1));
+        newDataRow.set(0, newDataPoint);
       }
     }
 
-    // Add remaining identifier columns (state and county numbers)
+    // Now we have the final number; create a new String array and copy in identifying 
+    // info, plus the final number as a string
+    ArrayList<List<String>> finalDataArray = new ArrayList<List<String>>();
     for (int i = 0; i < originalDataArray.size(); i++) {
       List<String> originalDataRow = originalDataArray.get(i);
-      List<String> newDataRow = newDataArray.get(i);
-      newDataRow.add(originalDataRow.get(numberCombiners.size() + 2));
-      if (isCountyQuery) {
-        newDataRow.add(originalDataRow.get(numberCombiners.size() + 3));
+      List<String> finalDataRow = new ArrayList<String>();
+      finalDataRow.add(originalDataRow.get(0)); // identifier string
+
+      if (i == 0) { // header row
+        finalDataRow.add("Number");
+      } else {
+        List<Double> numberDataRow = newDataArray.get(i - 1); // since it skipped header row
+        finalDataRow.add(String.valueOf(Math.round(numberDataRow.get(0)))); // final number
       }
+
+      // We have one fewer number combiner than we have numbers, so increasing 
+      // its size by two gives us the first non-number row
+      finalDataRow.add(originalDataRow.get(numberCombiners.size() + 2)); // state ID
+      if (isCountyQuery) {
+        finalDataRow.add(originalDataRow.get(numberCombiners.size() + 3)); // county ID
+      }
+      finalDataArray.add(finalDataRow);
     }
 
     // Convert back into a JSON string for the JavaScript to read
-    String jsonData = gson.toJson(newDataArray);
+    String jsonData = gson.toJson(finalDataArray);
     return jsonData;
   }
 }
