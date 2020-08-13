@@ -131,7 +131,6 @@ public class DataFormatter {
     }
 
     // Convert back into a JSON string for the JavaScript to read
-    String jsonData = gson.toJson(finalDataArray);
-    return jsonData;
+    return gson.toJson(finalDataArray);
   }
 }
