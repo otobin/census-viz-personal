@@ -351,7 +351,7 @@ public class QueryServlet extends HttpServlet {
                         Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
                         Float.parseFloat(
                             originalDataRow.get(i + 2))); // Moving along list of original values,
-             // skipping name column and the first number (already in newData)
+            // skipping name column and the first number (already in newData)
             newDataRow.set(1, String.valueOf(newValue)); // Replace previous value
           } catch (NumberFormatException e) {
             newDataRow.set(1, "-1");
