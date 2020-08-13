@@ -268,13 +268,17 @@ public class QueryServlet extends HttpServlet {
   // Some data arrays need reformatting (columns added together, etc.) before they can be
   // visualized.
 
-  // Math.round returns a long, but we can cast to int (max value ~2 billion) because our numbers
+  // Generic functions to combine numbers. Note that Math.round returns a long,
+  // but we can cast to int (max value ~2 billion) because our numbers
   // will always be smaller than the U.S. population (~330 million)
   BiFunction<Float, Float, Integer> add = (Float a, Float b) -> (int) Math.round(a + b);
   BiFunction<Float, Float, Integer> rightSubtract = (Float a, Float b) -> (int) Math.round(a - b);
   BiFunction<Float, Float, Integer> percent =
       (Float a, Float b) -> (int) Math.round((a / 100.0) * b);
 
+  // Mapping data columns to the functions we want to execute on them --
+  // for example, if we are not able to access the population of children,
+  // instead we can do rightSubtract(total population, adult population)
   Map<String, List<BiFunction>> dataRowToReformatFunction =
       ImmutableMap.<String, List<BiFunction>>builder()
           .put("DP05_0001E,DP05_0018E", ImmutableList.of(rightSubtract))
@@ -316,8 +320,8 @@ public class QueryServlet extends HttpServlet {
     ArrayList<List<String>> originalDataArray = gson.fromJson(data, dataArrayType);
     ArrayList<List<String>> newDataArray = new ArrayList<List<String>>();
 
-    // Add back the the first column, which is the string identifier of the location,
-    // and the second column, the first numerical value
+    // Create a new matrix to contain the reformatted data. Add in the the first column, which is
+    // the string identifier of the location, and the second column, the first numerical value
     for (int i = 0; i < originalDataArray.size(); i++) {
       List<String> originalDataRow = originalDataArray.get(i);
       List<String> newDataRow = new ArrayList<String>();
@@ -326,12 +330,13 @@ public class QueryServlet extends HttpServlet {
       newDataArray.add(newDataRow);
     }
 
-    // Combine the original data, skipping the header row, by iterating over the functions
-    // given and successively combining the next datapoint with the previous result
+    // Combine the original numbers, skipping the header row, by iterating over the functions
+    // given for these data columns. For each row, we successively combine the next datapoint
+    // with the previous result, finally resulting in one single fully-combined data point per row.
     List<BiFunction> numberCombiners = dataRowToReformatFunction.get(dataIdentifier);
-    for (int i = 0; i < numberCombiners.size(); i++) {
+    for (int i = 0; i < numberCombiners.size(); i++) { // Moving across columns combining numbers
       BiFunction numberCombiner = numberCombiners.get(i);
-      for (int j = 1; j < originalDataArray.size(); j++) {
+      for (int j = 1; j < originalDataArray.size(); j++) { // Moving down each row
         List<String> originalDataRow = originalDataArray.get(j);
         List<String> newDataRow = newDataArray.get(j);
         if (newDataRow.get(1) == null || newDataRow.get(1).startsWith("-")) {
@@ -345,8 +350,9 @@ public class QueryServlet extends HttpServlet {
                     numberCombiner.apply(
                         Float.parseFloat(newDataRow.get(1)), // Always replacing previous value
                         Float.parseFloat(
-                            originalDataRow.get(i + 2))); // Moving along list of original values
-            newDataRow.set(1, String.valueOf(newValue));
+                            originalDataRow.get(i + 2))); // Moving along list of original values,
+                            // skipping name column and the first number (already in newData)
+            newDataRow.set(1, String.valueOf(newValue)); // Replace previous value
           } catch (NumberFormatException e) {
             newDataRow.set(1, "-1");
           }
