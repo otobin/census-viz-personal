@@ -7,9 +7,9 @@ import com.google.gson.reflect.TypeToken;
 import java.io.InvalidObjectException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.function.BiFunction;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 // Reformats data from the QueryServlet according to a hard-coded list of instructions
 public class DataFormatter {
@@ -17,7 +17,8 @@ public class DataFormatter {
   // Generic functions to combine numbers.
   private static BiFunction<Double, Double, Double> add = (Double a, Double b) -> a + b;
   private static BiFunction<Double, Double, Double> rightSubtract = (Double a, Double b) -> a - b;
-  private static BiFunction<Double, Double, Double> percent = (Double a, Double b) -> (a / 100.0) * b;
+  private static BiFunction<Double, Double, Double> percent =
+      (Double a, Double b) -> (a / 100.0) * b;
 
   // Mapping data columns to the functions we want to execute on them --
   // for example, if we are not able to access the population of children,
@@ -71,7 +72,7 @@ public class DataFormatter {
 
       // Moving across each row; we only iterate through the numbers, skipping
       // the initial identifier string and the last one or two state & county identifiers
-      for (int j = 1; j < originalDataRow.size() - (isCountyQuery ? 2 : 1); j++) { 
+      for (int j = 1; j < originalDataRow.size() - (isCountyQuery ? 2 : 1); j++) {
         String originalDataPoint = originalDataRow.get(j);
         if (originalDataPoint == null || originalDataPoint.startsWith("-")) {
           // Sometimes the census API returns missing or negative numbers by mistake;
@@ -99,12 +100,13 @@ public class DataFormatter {
         List<Double> newDataRow = newDataArray.get(j);
         // We always combine onto the first item in the data row, but combining it
         // the second, third, etc. item as we iterate 
-        Double newDataPoint = (double)numberCombiner.apply(newDataRow.get(0), newDataRow.get(i+1));
+        Double newDataPoint =
+            (double) numberCombiner.apply(newDataRow.get(0), newDataRow.get(i + 1));
         newDataRow.set(0, newDataPoint);
       }
     }
 
-    // Now we have the final number; create a new String array and copy in identifying 
+    // Now we have the final number; create a new String array and copy in identifying
     // info, plus the final number as a string
     ArrayList<List<String>> finalDataArray = new ArrayList<List<String>>();
     for (int i = 0; i < originalDataArray.size(); i++) {
@@ -119,7 +121,7 @@ public class DataFormatter {
         finalDataRow.add(String.valueOf(Math.round(numberDataRow.get(0)))); // final number
       }
 
-      // We have one fewer number combiner than we have numbers, so increasing 
+      // We have one fewer number combiner than we have numbers, so increasing
       // its size by two gives us the first non-number row
       finalDataRow.add(originalDataRow.get(numberCombiners.size() + 2)); // state ID
       if (isCountyQuery) {
