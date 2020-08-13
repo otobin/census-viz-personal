@@ -1,4 +1,3 @@
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.sps.data.DataFormatter;
@@ -8,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
