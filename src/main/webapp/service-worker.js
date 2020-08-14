@@ -9,21 +9,22 @@ self.addEventListener('activate', function(event) {
   // Useful if multiple versioned caches exist
   const expectedCacheNamesSet = new Set(Object.values(CURRENT_CACHES));
   event.waitUntil(
-      caches.keys().then(function(cacheNames) {
-        return Promise.all(
-            cacheNames.map(function(cacheName) {
-              if (!expectedCacheNamesSet.has(cacheName)) {
-                return caches.delete(cacheName);
-              }
-            }),
-        );
-      }),
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          if (!expectedCacheNamesSet.has(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        }),
+      );
+    }),
   );
 });
 
 // Check cache and cache data if necessary on every fetch()
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
+  if (event.request.url.indexOf('/login') === -1) {
+    event.respondWith(
       caches.open(CURRENT_CACHES.censusData).then(function(cache) {
         return cache.match(event.request).then(function(response) {
           if (response) {
@@ -35,8 +36,8 @@ self.addEventListener('fetch', function(event) {
           // and we might need to cache it
           return fetch(event.request.clone()).then(function(response) {
             if (response.status < 300 &&
-            response.headers.has('content-type') &&
-            response.headers.get('content-type').match(/application\/json/)) {
+              response.headers.has('content-type') &&
+              response.headers.get('content-type').match(/application\/json/)) {
               // only cache if non-error response
               // make a copy of response because put() "consumes" requests
               // and we will return original response object
@@ -45,11 +46,14 @@ self.addEventListener('fetch', function(event) {
             return response;
           });
         }).catch(function(error) {
-        // Handle exceptions from match() or fetch()
-        // Note: HTTP error response does not trigger exception
+          // Handle exceptions from match() or fetch()
+          // Note: HTTP error response does not trigger exception
           console.error('Error in fetch handler:', error);
           throw error;
         });
       }),
-  );
+    );
+  } else {
+    event.respondWith(fetch(event.request));
+  }
 });

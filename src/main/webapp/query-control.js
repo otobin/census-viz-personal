@@ -207,7 +207,7 @@ function setDropdownValue(datalistId, value) {
 function submitHashQuery() {
   const urlHash = window.location.hash;
   if (urlHash) {
-    let params = new URLSearchParams(urlHash.slice(1));
+    const params = new URLSearchParams(urlHash.slice(1));
     for (const [param, value] of params) {
       setDropdownValue(param, value);
     }
@@ -216,6 +216,6 @@ function submitHashQuery() {
 }
 
 // Listen for if user clicks back
-window.addEventListener('hashchange', function(){
+window.addEventListener('hashchange', function() {
   submitHashQuery();
-})
+});
