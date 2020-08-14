@@ -204,10 +204,11 @@ function loadAppropriateIcon(buttonPressed) {
   const locationSettings = localStorage.getItem('locationSettings');
   const locationOffString = 'Your location settings are currently set to off.' +
     ' Click here to change your location settings.';
-  const locationOnString = 'Your location settings are currently on.' + 
+  const locationOnString = 'Your location settings are currently on.' +
     ' Click here to change your location settings.';
   if (((locationSettings === null || locationSettings === 'off') &&
-    (buttonPressed === false)) || (locationSettings === 'on' && buttonPressed === true)) {
+    (buttonPressed === false)) || (locationSettings === 'on' 
+      && buttonPressed === true)) {
     // The user is turning their location off or it was already off and needs to 
     // be reloaded on page refresh
     localStorage.setItem('locationSettings', 'off');
