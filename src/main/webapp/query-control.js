@@ -67,6 +67,9 @@ async function passQuery() {
       };
   } else { // Have to manually find which state the location is in
     locationInfo = await findStateOfLocation(locationInput);
+    if (locationInfo === undefined) {
+      return; // error was thrown inside findStateOfLocation()
+    }
     locationInput = locationInfo.name;
     location = locationInfo.number;
   }
