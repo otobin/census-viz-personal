@@ -50,7 +50,7 @@ async function getUserLocation() {
       body: JSON.stringify(fetchJson),
     }).then((response) => {
       if (!response.ok) {
-        throw 'Unable to calculate location';
+        throw new Error('Unable to calculate location');
       }
       return response.json();
     })
