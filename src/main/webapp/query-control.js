@@ -195,6 +195,9 @@ async function createStateDropdownList() {
     optionElem.setAttribute('data-value', value.number);
     datalist.appendChild(optionElem);
   });
+  // This would be called in HTML onload
+  // but will not work until createStateDropdownList is done
+  submitHashQuery();
 }
 
 // Set dropdown for datalistId to value

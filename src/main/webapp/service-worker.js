@@ -23,7 +23,7 @@ self.addEventListener('activate', function(event) {
 
 // Check cache and cache data if necessary on every fetch()
 self.addEventListener('fetch', function(event) {
-  if (event.request.url.indexOf('/login') === -1) {
+  if (event.request.url.indexOf('/query?') !== -1) {
     event.respondWith(
       caches.open(CURRENT_CACHES.censusData).then(function(cache) {
         return cache.match(event.request).then(function(response) {

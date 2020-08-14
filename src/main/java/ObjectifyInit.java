@@ -16,7 +16,7 @@ public class ObjectifyInit implements ServletContextListener {
     //             .build()
     //             .getService()));
     // To deploy, everything above this must be commented out
-    // and replaced with only ObjectifyService.init();
+    // and line directly below show be uncommented
     ObjectifyService.init();
     ObjectifyService.register(CensusData.class);
   }
