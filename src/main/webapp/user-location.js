@@ -101,7 +101,7 @@ async function findStateOfLocation(location) {
   // TODO: change name of getUserState function to be more generic
   return getUserState(place.geometry.location.lat, place.geometry.location.lng)
     .then((state) => {
-      if (state === 'each U.S. state') { 
+      if (state === 'each U.S. state') {
         // TODO: have gUS() throw an error in this case instead
         displayError(
             400,
@@ -115,7 +115,7 @@ async function findStateOfLocation(location) {
             lng: place.geometry.location.lng,
             number: document
                 .querySelector(
-                    '#location option[value=\'' + 
+                    '#location option[value=\'' +
                     state + '\']').dataset.value};
       }
     });

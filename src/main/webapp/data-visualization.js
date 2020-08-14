@@ -41,10 +41,12 @@ async function displayVisualization(censusDataArray, description,
       localStorage.setItem(
           'mapsData',
           JSON.stringify(mapsData));
-      displayAmChartsMap(amChartsData, locationInfo, description, geoData, color);
+      displayAmChartsMap(
+          amChartsData, locationInfo, description, geoData, color);
       displayCountyGeoJson(mapsData, description, locationInfo, geoData, color);
   } else {
-      displayAmChartsMap(amChartsData, locationInfo, description, geoData, color);
+      displayAmChartsMap(
+          amChartsData, locationInfo, description, geoData, color);
   }
   document.getElementById('more-info').innerText = '';
 }
