@@ -67,7 +67,7 @@ async function getDefaultValue() {
   return state;
 }
 
-// Given a text location (e.g New York City), use the Places API and geoCoding API to
+// Given a text location (e.g 'New York City'), use the Places API and geoCoding API to
 // find out what state the location is in
 async function findStateOfLocation(location) {
   const fetchUrl =
@@ -77,19 +77,20 @@ async function findStateOfLocation(location) {
   if (!response.ok) {
     displayError(
         response.status,
-        'There was an error trying to find the location you entered.');
+        'There was an error while trying to find the location you entered.');
     return;
   }
   const geoInfo = await response.json();
   const place = geoInfo.candidates[0];
-  // TODO: change name of getUserState function
+  // TODO: change name of getUserState function to be more generic
   return getUserState(place.geometry.location.lat, place.geometry.location.lng)
     .then(state => {
-      if (state === 'each U.S. state') { // TODO: change what gUS() returns when it fails
+      if (state === 'each U.S. state') { // TODO: have gUS() throw an error in this case
         displayError(
             400, 
-            'This location is not in one of the 50 U.S. states, or we are not able to \
-            find it (try being more specific or adding the state code).');
+            'Either this location is not in one of the 50 U.S. states, or we \
+            are not able to find it (try being more specific or adding the \
+            state code).');
         return;
       }
       else {

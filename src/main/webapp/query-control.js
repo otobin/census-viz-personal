@@ -53,7 +53,7 @@ async function passQuery() {
   let locationInput = query.get('location');
   const locationSelector = document.querySelector('#location option[value=\'' + locationInput + '\']');
   let location;
-  let locationInfol
+  let locationInfo;
   if (locationSelector !== null) { // User picked a location from the dropdown
     location = locationSelector.dataset.value;
     locationInfo = {name: locationInput,
