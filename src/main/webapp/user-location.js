@@ -74,13 +74,13 @@ async function findStateOfLocation(location) {
       corsApiUrl + placesUrl + apiKey 
       + '&input=' + location + '&inputtype=textquery&fields=geometry';
   const response = await fetch(fetchUrl);
-  const geoInfo = await response.json();
-  /*if (!response.ok) { //TODO: would like to use this
+  if (!response.ok) {
     displayError(
         response.status,
         'There was an error trying to find the location you entered.');
     return;
-  }*/
+  }
+  const geoInfo = await response.json();
   const place = geoInfo.candidates[0];
   // TODO: change name of getUserState function
   return getUserState(place.geometry.location.lat, place.geometry.location.lng)
@@ -88,7 +88,8 @@ async function findStateOfLocation(location) {
       if (state === 'each U.S. state') { // TODO: change what gUS() returns when it fails
         displayError(
             400, 
-            'This location is not in one of the 50 U.S. states, or we are not able to find it.');
+            'This location is not in one of the 50 U.S. states, or we are not able to \
+            find it (try being more specific or adding the state code).');
         return;
       }
       else {
