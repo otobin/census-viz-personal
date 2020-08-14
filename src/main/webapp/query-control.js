@@ -51,8 +51,11 @@ function passQuery() {
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
     '#action option[value=\'' + actionInput + '\']').dataset.value;
-  const location = document.querySelector(
-    '#location option[value=\'' + locationInput + '\']').dataset.value;
+  let location;
+  const locationSelector = document.querySelector('#location option[value=\'' + locationInput + '\']');
+  if (locationSelector !== null) {
+    location = locationSelector.dataset.value;
+  }
 
   const actionToPerson = new Map();
   actionToPerson.set(
@@ -65,6 +68,38 @@ function passQuery() {
   const description = `${actionToPerson.get(action)} 
     (${personType.replace('-', ' ')})`;
 
+  //TODO: might make sense to rearrange the order some of this is happening in 
+
+  if (locationSelector === null) {
+    console.log("Did not find location: " + locationInput);
+    // Have to manually find which state the location is in
+    const fetchUrl =
+        placesUrl + apiKey + '&input=' + locationInput + '&inputtype=textquery';
+    fetch(fetchUrl).then(response => response.json())
+        .then(geoInfo => {
+          if (!response.ok) {
+            displayError(
+                response.status,
+                'There was an error trying to find the location you entered.');
+            return;
+          }
+          console.log(geoInfo);
+          // TODO: change name of getUserState function
+          getUserState(result.geometry.location.lat, result.geometry.location.lng)
+              .then(state => {
+                if (state === 'each U.S. state') { // TODO: change what gUS() returns when it fails
+                  displayError(
+                      400, 
+                      'This location is not in one of the 50 U.S. states, or we are not able to find it.');
+                  return;
+                } else {
+                  location = document.querySelector(
+                    '#location option[value=\'' + state + '\']').dataset.value;
+                }
+            });
+        });
+  }
+  
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
   const title = 'Population who ' + actionInput +
