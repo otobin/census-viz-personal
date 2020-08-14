@@ -154,48 +154,13 @@ function createDataArray(censusDataArray, isCountyQuery) {
   // first row is headers
   const regionIndex = censusDataArray[0].indexOf('state');
   censusDataArray = censusDataArray.slice(1); // get rid of header row
-  // Check to see if an extra calculation for percentages is needed
-  if (checkPercentage(censusDataArray[0], isCountyQuery)) {
-    censusDataArray.forEach((location) => {
-      vizDataArray.push({
-        id: getLocationId(location, isCountyQuery, regionIndex),
-        locationName: location[0],
-        value: percentToTotal(location[1], location[2])});
+  censusDataArray.forEach((location) => {
+    vizDataArray.push({
+      id: getLocationId(location, isCountyQuery, regionIndex),
+      locationName: location[0],
+      value: location[1]});
     });
-  } else {
-    censusDataArray.forEach((location) => {
-      vizDataArray.push({
-        id: getLocationId(location, isCountyQuery, regionIndex),
-        locationName: location[0],
-        value: location[1]});
-    });
-  }
   return vizDataArray;
-}
-
-// percentToTotal takes in the total number of people in a category
-// and the percentage and returns the total
-function percentToTotal(totalNumber, percentage) {
-  return Math.round((totalNumber/100) * percentage);
-}
-
-// checkPercentage() Takes in the header of a census query and returns
-// whether or not the total needs to be calculated using the
-// percentToTotal() function
-function checkPercentage(headerColumn, isCountyQuery) {
-  // Queries that are percentages will have two columns of numbers instead
-  // of one, where one is a total number and one is a number between 0 and 100
-  // (which represents the percentage of the total).
-  // County queries always have one more column (to list both county and state)
-  if ((!isCountyQuery && headerColumn.length !== 4) ||
-      (isCountyQuery && headerColumn.length !== 5)) {
-    return false;
-  }
-  const firstNum = Number(headerColumn[1]);
-  const secondNum = Number(headerColumn[2]);
-  return !(isNaN(firstNum) || isNaN(secondNum)) &&
-      ((firstNum > 100 && secondNum >= 0 && secondNum <= 100) ||
-      (secondNum > 100 && firstNum >= 0 && firstNum <= 100));
 }
 
 // Returns an object containing all of the relevant data in order
