@@ -57,13 +57,18 @@ function displayAmChartsMap(data, description, geoData, color) {
   chart.geodata = geoData;
   // Add button to zoom out
   const home = chart.chartContainer.createChild(am4core.Button);
-  home.label.text = 'Home';
+  home.label.text = 'Reset zoom level';
   home.align = 'right';
   home.events.on('hit', function(ev) {
     chart.goHome();
   });
 
-  chart.projection = new am4maps.projections.AlbersUsa();
+  // Albers projection for state level, Mercator for county level
+  if (data[0].id.indexOf('US') !== -1) {
+    chart.projection = new am4maps.projections.AlbersUsa();
+  } else {
+    chart.projection = new am4maps.projections.Mercator();
+  }
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
 
   // Set min/max fill color for each area

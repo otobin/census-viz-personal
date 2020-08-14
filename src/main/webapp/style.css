@@ -36,6 +36,11 @@ select:focus {
   padding-left: 30px;
 }
 
+#header a:-webkit-any-link {
+  color: black;
+  text-decoration: none;
+}
+
 .material-icons {
   float: right;
   font-size: 125%;
