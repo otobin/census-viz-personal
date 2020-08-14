@@ -2,7 +2,8 @@
 // loaded for the location.
 async function getGeoData(locationInfo, isCountyQuery) {
   if (isCountyQuery) {
-    const abbrev = stateInfo[locationInfo.number].ISO.replace(/US-/, '').toLowerCase();
+    const abbrev =
+        stateInfo[locationInfo.number].ISO.replace(/US-/, '').toLowerCase();
     if (!stateInfo[locationInfo.number].geoJsonLoaded) {
       await new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -37,7 +38,9 @@ async function displayVisualization(censusDataArray, description,
   drawTable(amChartsData, description, isCountyQuery);
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
-      localStorage.setItem('mapsData', JSON.stringify(mapsData));
+      localStorage.setItem(
+          'mapsData',
+          JSON.stringify(mapsData));
       displayAmChartsMap(amChartsData, locationInfo, description, geoData, color);
       displayCountyGeoJson(mapsData, description, locationInfo, geoData, color);
   } else {
@@ -53,7 +56,7 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   chart.height = 550;
   chart.homeGeoPoint = {
     latitude: locationInfo.lat,
-    longitude: locationInfo.lng
+    longitude: locationInfo.lng,
   };
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons

@@ -51,17 +51,19 @@ async function passQuery() {
     '#action option[value=\'' + actionInput + '\']').dataset.value;
 
   let locationInput = query.get('location');
-  const locationSelector = document.querySelector('#location option[value=\'' + locationInput + '\']');
+  const locationSelector =
+      document.querySelector('#location option[value=\'' + locationInput + '\']');
   let location;
   let locationInfo;
   if (locationSelector !== null) { // User picked a location from the dropdown
     location = locationSelector.dataset.value;
     locationInfo = {name: locationInput,
-      // either the center of the state, or the (slightly shifted for UX) center of the US
+      // Either the center of the state,
+      // or the (slightly shifted for UX) center of the US
       lat: location in stateInfo ? stateInfo[location].lat : 38.75,
       lng: location in stateInfo ? stateInfo[location].lng : -96.5,
-      number: location
-      }
+      number: location,
+      };
   } else { // Have to manually find which state the location is in
     locationInfo = await findStateOfLocation(locationInput);
     locationInput = locationInfo.name;
@@ -76,7 +78,8 @@ async function passQuery() {
       ).set(
         'moved', 'New inhabitants',
       );
-  const description = `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+  const description =
+      `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';

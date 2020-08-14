@@ -83,12 +83,12 @@ async function getUserState() {
   }
 }
 
-// Given a text location (e.g 'New York City'), use the Places API and geoCoding API to
-// find out what state the location is in
+// Given a text location (e.g 'New York City'), use the Places API and
+// geoCoding API to find out what state the location is in
 async function findStateOfLocation(location) {
   const fetchUrl =
-      corsApiUrl + placesUrl + apiKey 
-      + '&input=' + location + '&inputtype=textquery&fields=geometry';
+      corsApiUrl + placesUrl + apiKey +
+      '&input=' + location + '&inputtype=textquery&fields=geometry';
   const response = await fetch(fetchUrl);
   if (!response.ok) {
     displayError(
@@ -100,21 +100,23 @@ async function findStateOfLocation(location) {
   const place = geoInfo.candidates[0];
   // TODO: change name of getUserState function to be more generic
   return getUserState(place.geometry.location.lat, place.geometry.location.lng)
-    .then(state => {
-      if (state === 'each U.S. state') { // TODO: have gUS() throw an error in this case
+    .then((state) => {
+      if (state === 'each U.S. state') { 
+        // TODO: have gUS() throw an error in this case instead
         displayError(
-            400, 
+            400,
             'Either this location is not in one of the 50 U.S. states, or we \
             are not able to find it (try being more specific or adding the \
             state code).');
         return;
-      }
-      else {
+      } else {
         return {name: state,
             lat: place.geometry.location.lat,
             lng: place.geometry.location.lng,
             number: document
-                .querySelector('#location option[value=\'' + state + '\']').dataset.value};
+                .querySelector(
+                    '#location option[value=\'' + 
+                    state + '\']').dataset.value};
       }
     });
 }
