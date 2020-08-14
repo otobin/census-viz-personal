@@ -193,13 +193,7 @@ function getSortedStateInfoArray() {
 
 // Append all locations to the location dropdown element.
 async function createStateDropdownList() {
-  const locationSetting = localStorage.getItem('locationSettings');
-  let defaultLocation;
-  if (locationSetting === 'on') {
-    defaultLocation = await getDefaultValue();
-  } else {
-    defaultLocation = 'each U.S. state';
-  }
+  const defaultLocation = await getUserState();
   document.getElementById('location-list').value = defaultLocation;
   const datalist = document.getElementById('location');
   let optionElem = document.createElement('option');
@@ -215,31 +209,33 @@ async function createStateDropdownList() {
   });
 }
 
-// On page load, show appropriate icon based on the localStorage
-function loadAppropriateIcon() {
+// loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed
+// is true, the location settings are set to the opposite of the current
+// location settings and the opposite icon is shown. When buttonPressed is
+// false, the location settings are not changed and the current icon is shown.
+function loadAppropriateIcon(buttonPressed) {
   const locationSettings = localStorage.getItem('locationSettings');
-  if (typeof locationSettings === 'undefined' || locationSettings === 'off') {
+  const locationOffString = 'Your location settings are currently set to off.' +
+    ' Click here to change your location settings.';
+  const locationOnString = 'Your location settings are currently on.' +
+    ' Click here to change your location settings.';
+  if (((locationSettings === null || locationSettings === 'off') &&
+    (buttonPressed === false)) || (locationSettings === 'on' &&
+    buttonPressed === true)) {
+    // The user is turning their location off or it was already off and
+    //  needs to be reloaded on page refresh
     localStorage.setItem('locationSettings', 'off');
     document.getElementById('location-on-icon').style.display = 'none';
     document.getElementById('location-off-icon').style.display = 'inline';
-  } else {
+    document.getElementById('location-id-text').innerText = locationOffString;
+  } else if (((locationSettings === null || locationSettings === 'off') &&
+    (buttonPressed === true)) || (locationSettings === 'on' &&
+    buttonPressed === false)) {
+    // The user is turning their location on or it was already on and needs to
+    // be reloaded on page refresh
     localStorage.setItem('locationSettings', 'on');
     document.getElementById('location-off-icon').style.display = 'none';
     document.getElementById('location-on-icon').style.display = 'inline';
-  }
-}
-
-// When the icon is clicked, change the location settings to the opposite
-// and show the opposite icon
-function changeLocationSettings(icon) {
-  const iconId = icon.id;
-  if (iconId === 'location-on-icon') {
-    localStorage.setItem('locationSettings', 'off');
-    document.getElementById('location-on-icon').style.display = 'none';
-    document.getElementById('location-off-icon').style.display = 'inline';
-  } else {
-    localStorage.setItem('locationSettings', 'on');
-    document.getElementById('location-off-icon').style.display = 'none';
-    document.getElementById('location-on-icon').style.display = 'inline';
+    document.getElementById('location-id-text').innerText = locationOnString;
   }
 }

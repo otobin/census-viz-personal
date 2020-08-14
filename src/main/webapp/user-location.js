@@ -11,7 +11,7 @@ const corsApiUrl = 'https://cors-anywhere.herokuapp.com/';
 // Given the user's lat and lng from the geoLocation API,
 // getUserState calls to the geoCoding API to reverse geoCode
 // the coordinates and get the user's current state.
-async function getUserState(lat, lng) {
+async function getStateFromLocation(lat, lng) {
   const geoCodingFetch = geoCodingUrl + lat + ',' + lng + '&key=' + apiKey;
   return fetch(geoCodingFetch).then((response) => response.json())
     .then(function(jsonResponse) {
@@ -49,22 +49,38 @@ async function getUserState(lat, lng) {
 async function getUserLocation() {
   const geoLocationFetchUrl = geoLocationUrl + apiKey;
   return fetch(geoLocationFetchUrl, {
-    method: 'POST',
-    body: JSON.stringify(fetchJson),
-  }).then((response) => response.json())
+      method: 'POST',
+      body: JSON.stringify(fetchJson),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Unable to calculate location');
+      }
+      return response.json();
+    })
     .then(function(jsonResponse) {
-    return jsonResponse.location;
-  });
+      return jsonResponse.location;
+    });
 }
 
-// Returns the state to set as the default value for
-// location field.
-async function getDefaultValue() {
-  const location = await getUserLocation();
-  const lat = location.lat;
-  const lng = location.lng;
-  const state = await getUserState(lat, lng);
-  return state;
+// Returns the string to set as the default value for
+// location field based on location preferences and
+// the API's ability to fetch the location.
+async function getUserState() {
+  const locationSetting = localStorage.getItem('locationSettings');
+  let location;
+  if (locationSetting === null || locationSetting === 'off') {
+    return 'each U.S. state';
+  } else {
+    try {
+      location = await getUserLocation();
+    } catch (err) {
+      return 'each U.S. state';
+    }
+    const lat = location.lat;
+    const lng = location.lng;
+    const state = await getStateFromLocation(lat, lng);
+    return state;
+  }
 }
 
 // Given a text location (e.g 'New York City'), use the Places API and geoCoding API to
