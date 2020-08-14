@@ -11,6 +11,8 @@ import java.io.InvalidObjectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -143,6 +145,8 @@ public class QueryServlet extends HttpServlet {
     int year = Integer.parseInt(yearStr);
 
     String query = personType + action + location + yearStr;
+    ArrayList<String> queryList = new ArrayList<String>(
+      Arrays.asList(personType, action, location, yearStr));
     CensusData cachedData = ofy().load().type(CensusData.class).id(query).now();
     if (cachedData != null) {
       JsonObject jsonResponse = new JsonObject();
@@ -266,7 +270,7 @@ public class QueryServlet extends HttpServlet {
       }
 
       // Save this response to cache
-      ofy().save().entity(new CensusData(query, formattedData, censusTableLink)).now();
+      ofy().save().entity(new CensusData(query, queryList, formattedData, censusTableLink)).now();
 
       JsonObject jsonResponse = new JsonObject();
       jsonResponse.addProperty("censusData", formattedData);
