@@ -47,10 +47,6 @@ select:focus {
   line-height: .5;
 }
 
-#feedback {
-  color: black;
-}
-
 .tooltip {
   display: inline;
 }

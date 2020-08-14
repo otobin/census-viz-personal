@@ -15,6 +15,8 @@ public class ObjectifyInit implements ServletContextListener {
                 .setProjectId("censusviz")
                 .build()
                 .getService()));
+    // To deploy, everything above this must be commented out
+    // and replaced with only ObjectifyService.init();
     ObjectifyService.register(CensusData.class);
   }
 
