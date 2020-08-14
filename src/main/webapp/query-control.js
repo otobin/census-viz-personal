@@ -92,11 +92,18 @@ function passQuery() {
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         displayVisualization(data, description, location, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
+        getHistory();
         document.getElementById('more-info').innerText = '';
       } else {
         displayError(response.status, response.data.errorMessage);
       }
     });
+}
+
+function getHistory() {
+  fetch('/history').then((response) => response.json().then(function (jsonResponse) {
+    console.log(jsonResponse);
+  }));
 }
 
 // Remove incorrect data returned by the census API
