@@ -93,6 +93,7 @@ function passQuery() {
         displayVisualization(data, description, location, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
+        window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
       } else {
         displayError(response.status, response.data.errorMessage);
       }
@@ -193,3 +194,28 @@ function createStateDropdownList() {
     datalist.appendChild(optionElem);
   });
 }
+
+// Set dropdown for datalistId to value
+function setDropdownValue(datalistId, value) {
+  const inputList = document.getElementById(datalistId + '-list');
+  inputList.value = document.querySelector(
+    '#' + datalistId + ' option[data-value=\'' + value + '\']').value;
+}
+
+// Called on load. Check for query params in url
+// and call passQuery() if found.
+function submitHashQuery() {
+  const urlHash = window.location.hash;
+  if (urlHash) {
+    let params = new URLSearchParams(urlHash.slice(1));
+    for (const [param, value] of params) {
+      setDropdownValue(param, value);
+    }
+    passQuery();
+  }
+}
+
+// Listen for if user clicks back
+window.addEventListener('hashchange', function(){
+  submitHashQuery();
+})

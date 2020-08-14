@@ -19,7 +19,7 @@
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
-<body onload="registerServiceWorker(); createStateDropdownList();">
+<body onload="registerServiceWorker(); createStateDropdownList(); submitHashQuery();">
   <main>
     <div id="header">
       <h1><a href="/">Census Viz</a>
@@ -94,15 +94,15 @@
               onfocusout="replaceValueIfEmpty('year')"
               value="2018" pattern="201[0-8]">
             <datalist id="year">
-              <option value="2010"></option>
-              <option value="2011"></option>
-              <option value="2012"></option>
-              <option value="2013"></option>
-              <option value="2014"></option>
-              <option value="2015"></option>
-              <option value="2016"></option>
-              <option value="2017"></option>
-              <option value="2018"></option>
+              <option data-value="2010" value="2010"></option>
+              <option data-value="2011" value="2011"></option>
+              <option data-value="2012" value="2012"></option>
+              <option data-value="2013" value="2013"></option>
+              <option data-value="2014" value="2014"></option>
+              <option data-value="2015" value="2015"></option>
+              <option data-value="2016" value="2016"></option>
+              <option data-value="2017" value="2017"></option>
+              <option data-value="2018" value="2018"></option>
             </datalist>
           </input>
           ?
