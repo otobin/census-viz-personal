@@ -251,3 +251,11 @@ input[type="color"] {
   width: 32px;
   border-radius: 25px;
 }
+
+#location-off-icon {
+  display: inline;
+}
+
+#location-on-icon {
+  display: none;
+}

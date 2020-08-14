@@ -15,11 +15,12 @@
   <script src="state-info.js"></script>
   <script src="data-visualization.js"></script>
   <script src="query-control.js"></script>
+  <script src="user-location.js"></script>
   <link rel="stylesheet" href="style.css">
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
-<body onload="registerServiceWorker(); createStateDropdownList();">
+<body onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false);">
   <main>
     <div id="header">
       <h1>Census Viz
@@ -28,7 +29,7 @@
             <i class="material-icons" id="feedback" href="cnn.com">feedback</i>
           </a>
           <p class="tooltiptext">Click here to provide feedback - thank you!</p>
-      </div>
+        </div>
         <div class="tooltip">
           <i class="material-icons" id="faq">help_outline</i>
           <p class="tooltiptext">Census Viz makes it easy to explore U.S.
@@ -46,6 +47,12 @@
             information available. Most of our data come from the annual
             American Community Survey; if you ask about a year ending
             in 0, you'll get information from the larger Decennial Survey instead.
+          </p>
+        </div>
+        <div class="tooltip">
+          <i class="material-icons" id="location-off-icon" onclick="loadAppropriateIcon(true)">location_off</i>
+          <i class="material-icons" id="location-on-icon" onclick="loadAppropriateIcon(true)">location_on</i>
+          <p class="tooltiptext" id="location-id-text">
           </p>
         </div>
       </h1>
