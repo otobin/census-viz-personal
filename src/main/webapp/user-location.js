@@ -6,7 +6,7 @@ const geoCodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='
 const geoLocationUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=';
 const placesUrl =
     'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=';
-const cors_api_url = 'https://cors-anywhere.herokuapp.com/';
+const corsApiUrl = 'https://cors-anywhere.herokuapp.com/';
 
 // Given the user's lat and lng from the geoLocation API,
 // getUserState calls to the geoCoding API to reverse geoCode
@@ -65,4 +65,38 @@ async function getDefaultValue() {
   const lng = location.lng;
   const state = await getUserState(lat, lng);
   return state;
+}
+
+// Given a text location (e.g New York City), use the Places API and geoCoding API to
+// find out what state the location is in
+async function findStateOfLocation(location) {
+  const fetchUrl =
+      corsApiUrl + placesUrl + apiKey 
+      + '&input=' + location + '&inputtype=textquery&fields=geometry';
+  const response = await fetch(fetchUrl);
+  const geoInfo = await response.json();
+  /*if (!response.ok) { //TODO: would like to use this
+    displayError(
+        response.status,
+        'There was an error trying to find the location you entered.');
+    return;
+  }*/
+  const place = geoInfo.candidates[0];
+  // TODO: change name of getUserState function
+  return getUserState(place.geometry.location.lat, place.geometry.location.lng)
+    .then(state => {
+      if (state === 'each U.S. state') { // TODO: change what gUS() returns when it fails
+        displayError(
+            400, 
+            'This location is not in one of the 50 U.S. states, or we are not able to find it.');
+        return;
+      }
+      else {
+        return {name: state,
+            lat: place.geometry.location.lat,
+            lng: place.geometry.location.lng,
+            number: document
+                .querySelector('#location option[value=\'' + state + '\']').dataset.value};
+      }
+    });
 }

@@ -44,22 +44,28 @@ async function passQuery() {
   const query = new FormData(document.getElementById('query-form'));
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
-  const locationInput = query.get('location');
   const year = query.get('year');
-
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
     '#action option[value=\'' + actionInput + '\']').dataset.value;
 
+  let locationInput = query.get('location');
   const locationSelector = document.querySelector('#location option[value=\'' + locationInput + '\']');
   let location;
+  let locationInfol
   if (locationSelector !== null) { // User picked a location from the dropdown
     location = locationSelector.dataset.value;
+    locationInfo = {name: locationInput,
+      // either the center of the state, or the (slightly shifted for UX) center of the US
+      lat: location in stateInfo ? stateInfo[location].lat : 38.75,
+      lng: location in stateInfo ? stateInfo[location].lng : -96.5,
+      number: location
+      }
   } else { // Have to manually find which state the location is in
-    console.log("Did not find location: " + locationInput);
-    location = await findStateOfLocation(locationInput);
-    console.log("in real function and location is " + location);
+    locationInfo = await findStateOfLocation(locationInput);
+    locationInput = locationInfo.name;
+    location = locationInfo.number;
   }
 
   const actionToPerson = new Map();
@@ -70,8 +76,7 @@ async function passQuery() {
       ).set(
         'moved', 'New inhabitants',
       );
-  const description = `${actionToPerson.get(action)} 
-    (${personType.replace('-', ' ')})`;
+  const description = `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
@@ -98,7 +103,7 @@ async function passQuery() {
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
         const data = removeErroneousData(JSON.parse(response.data.censusData));
-        displayVisualization(data, description, location, isCountyQuery);
+        displayVisualization(data, description, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
@@ -119,34 +124,6 @@ function removeErroneousData(dataArray) {
     });
   });
   return dataArray;
-}
-
-async function findStateOfLocation(location) {
-  const fetchUrl =
-      cors_api_url + placesUrl + apiKey 
-      + '&input=' + location + '&inputtype=textquery&fields=geometry';
-  const response = await fetch(fetchUrl);
-  const geoInfo = await response.json();
-  /*if (!response.ok) { //TODO: would like to use this
-    displayError(
-        response.status,
-        'There was an error trying to find the location you entered.');
-    return;
-  }*/
-  console.log(geoInfo);
-  const place = geoInfo.candidates[0];
-  // TODO: change name of getUserState function
-  return getUserState(place.geometry.location.lat, place.geometry.location.lng)
-    .then(state => {
-      console.log("state is " + state);
-      if (state === 'each U.S. state') { // TODO: change what gUS() returns when it fails
-        displayError(400, 'This location is not in one of the 50 U.S. states, or we are not able to find it.');
-        return;
-      }
-      else {
-        return document.querySelector('#location option[value=\'' + state + '\']').dataset.value;
-      }
-    });
 }
 
 // Check that the input being written to a datalist can match one of its options

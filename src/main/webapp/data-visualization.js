@@ -1,9 +1,9 @@
 // Return geoJson for a given location. Load the geodata file if not already
 // loaded for the location.
-async function getGeoData(location, isCountyQuery) {
+async function getGeoData(locationInfo, isCountyQuery) {
   if (isCountyQuery) {
-    const abbrev = stateInfo[location].ISO.replace(/US-/, '').toLowerCase();
-    if (!stateInfo[location].geoJsonLoaded) {
+    const abbrev = stateInfo[locationInfo.number].ISO.replace(/US-/, '').toLowerCase();
+    if (!stateInfo[locationInfo.number].geoJsonLoaded) {
       await new Promise((resolve, reject) => {
         const script = document.createElement('script');
         document.body.appendChild(script);
@@ -13,7 +13,7 @@ async function getGeoData(location, isCountyQuery) {
         script.src =
         `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
       });
-      stateInfo[location].geoJsonLoaded = true;
+      stateInfo[locationInfo.number].geoJsonLoaded = true;
     }
     return window['am4geodata_region_usa_' + abbrev + 'Low'];
   } else {
@@ -23,13 +23,13 @@ async function getGeoData(location, isCountyQuery) {
 
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description,
-  location, isCountyQuery) {
+  locationInfo, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
   const color = getColor();
-  const geoData = await getGeoData(location, isCountyQuery);
+  const geoData = await getGeoData(locationInfo, isCountyQuery);
   // Put all necessary data in the cache
   localStorage.setItem('geoData', JSON.stringify(geoData));
-  localStorage.setItem('location', location);
+  localStorage.setItem('location', locationInfo);
   localStorage.setItem('description', description);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
@@ -38,19 +38,23 @@ async function displayVisualization(censusDataArray, description,
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
       localStorage.setItem('mapsData', JSON.stringify(mapsData));
-      displayAmChartsMap(amChartsData, description, geoData, color);
-      displayCountyGeoJson(mapsData, description, location, geoData, color);
+      displayAmChartsMap(amChartsData, locationInfo, description, geoData, color);
+      displayCountyGeoJson(mapsData, description, locationInfo, geoData, color);
   } else {
-      displayAmChartsMap(amChartsData, description, geoData, color);
+      displayAmChartsMap(amChartsData, locationInfo, description, geoData, color);
   }
   document.getElementById('more-info').innerText = '';
 }
 
 // Create and display amcharts map using data and geoData.
-function displayAmChartsMap(data, description, geoData, color) {
+function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
+  chart.homeGeoPoint = {
+    latitude: locationInfo.lat,
+    longitude: locationInfo.lng
+  };
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons
   chart.mouseWheelBehavior = 'none';
@@ -218,10 +222,10 @@ function getMinAndMaxPopulation(populationArray) {
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
 async function displayCountyGeoJson(mapsData, description,
-    stateNumber, geoData, color) {
+    locationInfo, geoData, color) {
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: stateInfo[stateNumber].zoomLevel,
-    center: {lat: stateInfo[stateNumber].lat, lng: stateInfo[stateNumber].lng},
+    zoom: stateInfo[locationInfo.number].zoomLevel,
+    center: {lat: locationInfo.lat, lng: locationInfo.lng},
   });
 
   const countyToPopMap = mapsData.map;
