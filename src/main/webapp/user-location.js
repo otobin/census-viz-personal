@@ -6,6 +6,7 @@ const geoCodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='
 const geoLocationUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=';
 const placesUrl =
     'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=';
+const cors_api_url = 'https://cors-anywhere.herokuapp.com/';
 
 // Given the user's lat and lng from the geoLocation API,
 // getUserState calls to the geoCoding API to reverse geoCode

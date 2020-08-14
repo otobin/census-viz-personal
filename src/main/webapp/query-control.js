@@ -39,7 +39,7 @@ function clearPreviousResult() {
 // Breaks down the query and passes it to the backend to be analyzed;
 // the backend returns the appropriate data, which is then passed off
 // to be reformatted and visualized.
-function passQuery() {
+async function passQuery() {
   clearPreviousResult();
   const query = new FormData(document.getElementById('query-form'));
   const personTypeInput = query.get('person-type');
@@ -51,10 +51,15 @@ function passQuery() {
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
     '#action option[value=\'' + actionInput + '\']').dataset.value;
-  let location;
+
   const locationSelector = document.querySelector('#location option[value=\'' + locationInput + '\']');
-  if (locationSelector !== null) {
+  let location;
+  if (locationSelector !== null) { // User picked a location from the dropdown
     location = locationSelector.dataset.value;
+  } else { // Have to manually find which state the location is in
+    console.log("Did not find location: " + locationInput);
+    location = await findStateOfLocation(locationInput);
+    console.log("in real function and location is " + location);
   }
 
   const actionToPerson = new Map();
@@ -68,38 +73,6 @@ function passQuery() {
   const description = `${actionToPerson.get(action)} 
     (${personType.replace('-', ' ')})`;
 
-  //TODO: might make sense to rearrange the order some of this is happening in 
-
-  if (locationSelector === null) {
-    console.log("Did not find location: " + locationInput);
-    // Have to manually find which state the location is in
-    const fetchUrl =
-        placesUrl + apiKey + '&input=' + locationInput + '&inputtype=textquery';
-    fetch(fetchUrl).then(response => response.json())
-        .then(geoInfo => {
-          if (!response.ok) {
-            displayError(
-                response.status,
-                'There was an error trying to find the location you entered.');
-            return;
-          }
-          console.log(geoInfo);
-          // TODO: change name of getUserState function
-          getUserState(result.geometry.location.lat, result.geometry.location.lng)
-              .then(state => {
-                if (state === 'each U.S. state') { // TODO: change what gUS() returns when it fails
-                  displayError(
-                      400, 
-                      'This location is not in one of the 50 U.S. states, or we are not able to find it.');
-                  return;
-                } else {
-                  location = document.querySelector(
-                    '#location option[value=\'' + state + '\']').dataset.value;
-                }
-            });
-        });
-  }
-  
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
   const title = 'Population who ' + actionInput +
@@ -146,6 +119,34 @@ function removeErroneousData(dataArray) {
     });
   });
   return dataArray;
+}
+
+async function findStateOfLocation(location) {
+  const fetchUrl =
+      cors_api_url + placesUrl + apiKey 
+      + '&input=' + location + '&inputtype=textquery&fields=geometry';
+  const response = await fetch(fetchUrl);
+  const geoInfo = await response.json();
+  /*if (!response.ok) { //TODO: would like to use this
+    displayError(
+        response.status,
+        'There was an error trying to find the location you entered.');
+    return;
+  }*/
+  console.log(geoInfo);
+  const place = geoInfo.candidates[0];
+  // TODO: change name of getUserState function
+  return getUserState(place.geometry.location.lat, place.geometry.location.lng)
+    .then(state => {
+      console.log("state is " + state);
+      if (state === 'each U.S. state') { // TODO: change what gUS() returns when it fails
+        displayError(400, 'This location is not in one of the 50 U.S. states, or we are not able to find it.');
+        return;
+      }
+      else {
+        return document.querySelector('#location option[value=\'' + state + '\']').dataset.value;
+      }
+    });
 }
 
 // Check that the input being written to a datalist can match one of its options
