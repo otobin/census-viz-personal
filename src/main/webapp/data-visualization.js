@@ -272,14 +272,14 @@ async function displayCountyGeoJson(mapsData, description,
     infoWindow.setPosition(event.latLng);
     infoWindow.open(map);
     openInfoWindows.push(infoWindow);
-  });
+  }, {passive: true});
   map.data.addListener('mouseout', function(event) {
     map.data.revertStyle();
     let i;
     for (i = 0; i < openInfoWindows.length; i++) {
       openInfoWindows[i].close();
     }
-  });
+  }, {passive: true});
 }
 
 // Toggle between amcharts and maps.
