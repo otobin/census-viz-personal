@@ -46,18 +46,21 @@ async function getUserState(lat, lng) {
 async function getUserLocation() {
   const geoLocationFetchUrl = geoLocationUrl + apiKey;
   return fetch(geoLocationFetchUrl, {
-    method: 'POST',
-    body: JSON.stringify(fetchJson),
-  }).then((response) => {
-    if (!response.ok) { throw "Unable to calculate location";}
-    return response.json()})
+      method: 'POST',
+      body: JSON.stringify(fetchJson),
+    }).then((response) => {
+      if (!response.ok) {
+        throw 'Unable to calculate location';
+      }
+      return response.json();
+    })
     .then(function(jsonResponse) {
       return jsonResponse.location;
-  });
+    });
 }
 
 // Returns the string to set as the default value for
-// location field based on location preferences and 
+// location field based on location preferences and
 // the API's ability to fetch the location.
 async function getLocationFromState() {
   const locationSetting = localStorage.getItem('locationSettings');
@@ -67,8 +70,7 @@ async function getLocationFromState() {
   } else {
     try {
       location = await getUserLocation();
-    }
-    catch (err) {
+    } catch (err) {
       return 'each U.S. state';
     }
     const lat = location.lat;
@@ -77,3 +79,4 @@ async function getLocationFromState() {
     return state;
   }
 }
+

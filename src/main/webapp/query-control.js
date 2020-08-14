@@ -207,17 +207,18 @@ function loadAppropriateIcon(buttonPressed) {
   const locationOnString = 'Your location settings are currently on.' +
     ' Click here to change your location settings.';
   if (((locationSettings === null || locationSettings === 'off') &&
-    (buttonPressed === false)) || (locationSettings === 'on' 
-      && buttonPressed === true)) {
-    // The user is turning their location off or it was already off and needs to 
-    // be reloaded on page refresh
+    (buttonPressed === false)) || (locationSettings === 'on' && 
+    buttonPressed === true)) {
+    // The user is turning their location off or it was already off and
+    //  needs to be reloaded on page refresh
     localStorage.setItem('locationSettings', 'off');
     document.getElementById('location-on-icon').style.display = 'none';
     document.getElementById('location-off-icon').style.display = 'inline';
     document.getElementById('location-id-text').innerText = locationOffString;
   } else if (((locationSettings === null || locationSettings === 'off') &&
-  (buttonPressed === true)) || (locationSettings === 'on' && buttonPressed === false)) {
-    // The user is turning their location on or it was already on and needs to 
+    (buttonPressed === true)) || (locationSettings === 'on' && 
+    buttonPressed === false)) {
+    // The user is turning their location on or it was already on and needs to
     // be reloaded on page refresh
     localStorage.setItem('locationSettings', 'on');
     document.getElementById('location-off-icon').style.display = 'none';
