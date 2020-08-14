@@ -16,11 +16,13 @@
   <script src="data-visualization.js"></script>
   <script src="query-control.js"></script>
   <script src="login-status.js"></script>
+  <script src="user-location.js"></script>
   <link rel="stylesheet" href="style.css">
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
-<body onload="registerServiceWorker(); createStateDropdownList(); submitHashQuery(); getAndDisplayLoginStatus();">
+<body
+  onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false); submitHashQuery(); getAndDisplayLoginStatus();">
   <main>
     <div id="header">
       <h1><a href="/">Census Viz</a></h1>
@@ -51,6 +53,11 @@
           </p>
         </div>
         <div id="login-status"></div>
+      </div>
+      <div class="tooltip">
+        <i class="material-icons" id="location-off-icon" onclick="loadAppropriateIcon(true)">location_off</i>
+        <i class="material-icons" id="location-on-icon" onclick="loadAppropriateIcon(true)">location_on</i>
+        <p class="tooltiptext" id="location-id-text"></p>
       </div>
     </div>
     <div id="query">
