@@ -59,7 +59,7 @@ async function getUserLocation() {
 // Returns the string to set as the default value for
 // location field based on location preferences and 
 // the API's ability to fetch the location.
-async function getDefaultLocation() {
+async function getLocationFromState() {
   const locationSetting = localStorage.getItem('locationSettings');
   let location;
   if (locationSetting === null || locationSetting === 'off') {
