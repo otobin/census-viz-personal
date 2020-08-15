@@ -35,6 +35,16 @@ function clearPreviousResult() {
   document.getElementById('result').style.display = 'block';
 }
 
+function getTitle(personType, location, year, locationInput, actionInput) {
+  const isCountyQuery = location !== 'state';
+  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
+  const title = 'Population who ' + actionInput +
+    ' each ' + region + ' (' +
+    personType.replace('-', ' ') + ')' +
+    ' in ' + year;
+  return title;
+}
+
 // Get the query the user entered and display the result.
 // Breaks down the query and passes it to the backend to be analyzed;
 // the backend returns the appropriate data, which is then passed off
@@ -53,7 +63,7 @@ function passQuery() {
     '#action option[value=\'' + actionInput + '\']').dataset.value;
   const location = document.querySelector(
     '#location option[value=\'' + locationInput + '\']').dataset.value;
-
+  const isCountyQuery = location !== 'state';
   const actionToPerson = new Map();
   actionToPerson.set(
         'live', 'Population',
@@ -64,13 +74,7 @@ function passQuery() {
       );
   const description = `${actionToPerson.get(action)} 
     (${personType.replace('-', ' ')})`;
-
-  const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
-  const title = 'Population who ' + actionInput +
-    ' each ' + region + ' (' +
-    personType.replace('-', ' ') + ')' +
-    ' in ' + year;
+  const title = getTitle(personType, location, year, locationInput, actionInput);
   document.getElementById('map-title').innerText = title;
 
   const fetchUrl = '/query?person-type=' + personType +
@@ -78,6 +82,10 @@ function passQuery() {
     '&location=' + location +
     '&year=' + year;
 
+  fetchCensusData(fetchUrl, description, location, isCountyQuery);
+}
+
+function fetchCensusData(fetchUrl, description, location, isCountyQuery) {
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
       data: jsonResponse,
@@ -101,8 +109,32 @@ function passQuery() {
 }
 
 function getHistory() {
-  fetch('/history').then((response) => response.json().then(function (jsonResponse) {
-    console.log(jsonResponse);
+  const historyContainer = document.getElementById('history');
+  historyContainer.innertext = "";
+  const gramaticallyCorrectAction = new Map();
+  gramaticallyCorrectAction.set(
+        'live', 'lived in',
+      ).set(
+        'work', 'worked in',
+      ).set(
+        'moved', 'moved to',
+      );
+  fetch('/history').then((response) => response.json().then((historyElements) => {
+    historyElements.forEach((historyElement) => {
+      if (historyElement !== null) {
+        const historyDiv = document.createElement('div');
+        
+        historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
+          historyElement[3], stateInfo[historyElement[2]].name, 
+          gramaticallyCorrectAction.get(historyElement[1]));
+        historyContainer.appendChild(historyDiv);
+        const fetchUrl = '/query?person-type=' + historyElement[0] +
+        '&action=' + historyElement[1] +
+        '&location=' + historyElement[2] +
+        '&year=' + historyElement[3];
+        historyDiv.setAttribute('href', fetchCensusData(fetchUrl));
+      }
+    })
   }));
 }
 
