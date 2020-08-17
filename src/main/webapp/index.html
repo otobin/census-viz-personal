@@ -15,15 +15,18 @@
   <script src="state-info.js"></script>
   <script src="data-visualization.js"></script>
   <script src="query-control.js"></script>
+  <script src="login-status.js"></script>
   <script src="user-location.js"></script>
   <link rel="stylesheet" href="style.css">
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
-<body onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false);">
+<body
+  onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false); getAndDisplayLoginStatus();">
   <main>
     <div id="header">
-      <h1><a href="/">Census Viz</a>
+      <h1><a href="/">Census Viz</a></h1>
+      <div id="header-buttons">
         <div class="tooltip">
           <a target="_blank" rel="noopener" href="http://go/censusviz-feedback">
             <i class="material-icons" id="feedback" href="cnn.com">feedback</i>
@@ -52,65 +55,57 @@
         <div class="tooltip">
           <i class="material-icons" id="location-off-icon" onclick="loadAppropriateIcon(true)">location_off</i>
           <i class="material-icons" id="location-on-icon" onclick="loadAppropriateIcon(true)">location_on</i>
-          <p class="tooltiptext" id="location-id-text">
-          </p>
+          <p class="tooltiptext" id="location-id-text"></p>
         </div>
-      </h1>
+        <div id="login-status"></div>
+      </div>
     </div>
     <div id="query">
       <form id="query-form" onsubmit="passQuery(); return false;">
         <p>
           How many
-          <input type="list" list="person-type" name="person-type" id="person-type-list"
-              autocomplete="off" required onkeyup="validateInput('person-type')"
-              onfocus="storeValueAndEmpty('person-type')"
-              onfocusout="replaceValueIfEmpty('person-type')"
-              value="people" pattern="children|adults|people|men|women">
-            <datalist id="person-type">
-              <option data-value="under-18" value="children"></option>
-              <option data-value="over-18" value="adults"></option>
-              <option data-value="all-ages" value="people"></option>
-              <option data-value="male" value="men"></option>
-              <option data-value="female" value="women"></option>
-            </datalist>
+          <input type="list" list="person-type" name="person-type" id="person-type-list" autocomplete="off" required
+            onkeyup="validateInput('person-type')" onfocus="storeValueAndEmpty('person-type')"
+            onfocusout="replaceValueIfEmpty('person-type')" value="people" pattern="children|adults|people|men|women">
+          <datalist id="person-type">
+            <option data-value="under-18" value="children"></option>
+            <option data-value="over-18" value="adults"></option>
+            <option data-value="all-ages" value="people"></option>
+            <option data-value="male" value="men"></option>
+            <option data-value="female" value="women"></option>
+          </datalist>
           </input>
 
-          <input type="list" list="action" name="action" id="action-list"
-              autocomplete="off" required onkeyup="validateInput('action')"
-              onfocus="storeValueAndEmpty('action')"
-              onfocusout="replaceValueIfEmpty('action')"
-              value="lived in" pattern="lived in|worked in|moved to" >
-            <datalist id="action">
-              <option data-value="live" value="lived in"></option>
-              <option data-value="work" value="worked in"></option>
-              <option data-value="moved" value="moved to"></option>
-            </datalist>
+          <input type="list" list="action" name="action" id="action-list" autocomplete="off" required
+            onkeyup="validateInput('action')" onfocus="storeValueAndEmpty('action')"
+            onfocusout="replaceValueIfEmpty('action')" value="lived in" pattern="lived in|worked in|moved to">
+          <datalist id="action">
+            <option data-value="live" value="lived in"></option>
+            <option data-value="work" value="worked in"></option>
+            <option data-value="moved" value="moved to"></option>
+          </datalist>
           </input>
 
-          <input type="list" list="location" name="location" id="location-list"
-              autocomplete="off" required onkeyup="validateInput('location')"
-              onfocus="storeValueAndEmpty('location')"
-              onfocusout="replaceValueIfEmpty('location')"
-              value="each U.S. state">
-            <datalist id="location"></datalist>
+          <input type="list" list="location" name="location" id="location-list" autocomplete="off" required
+            onkeyup="validateInput('location')" onfocus="storeValueAndEmpty('location')"
+            onfocusout="replaceValueIfEmpty('location')" value="each U.S. state">
+          <datalist id="location"></datalist>
           </input>
           in
-          <input type="list" list="year" name="year" id="year-list"
-              autocomplete="off" required onkeyup="validateInput('year')"
-              onfocus="storeValueAndEmpty('year')"
-              onfocusout="replaceValueIfEmpty('year')"
-              value="2018" pattern="201[0-8]">
-            <datalist id="year">
-              <option value="2010"></option>
-              <option value="2011"></option>
-              <option value="2012"></option>
-              <option value="2013"></option>
-              <option value="2014"></option>
-              <option value="2015"></option>
-              <option value="2016"></option>
-              <option value="2017"></option>
-              <option value="2018"></option>
-            </datalist>
+          <input type="list" list="year" name="year" id="year-list" autocomplete="off" required
+            onkeyup="validateInput('year')" onfocus="storeValueAndEmpty('year')"
+            onfocusout="replaceValueIfEmpty('year')" value="2018" pattern="201[0-8]">
+          <datalist id="year">
+            <option data-value="2010" value="2010"></option>
+            <option data-value="2011" value="2011"></option>
+            <option data-value="2012" value="2012"></option>
+            <option data-value="2013" value="2013"></option>
+            <option data-value="2014" value="2014"></option>
+            <option data-value="2015" value="2015"></option>
+            <option data-value="2016" value="2016"></option>
+            <option data-value="2017" value="2017"></option>
+            <option data-value="2018" value="2018"></option>
+          </datalist>
           </input>
           ?
         </p>
@@ -149,4 +144,5 @@
     </footer>
   </main>
 </body>
+
 </html>

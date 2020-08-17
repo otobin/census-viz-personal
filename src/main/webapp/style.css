@@ -32,7 +32,8 @@ select:focus {
 
 #header {
   border-bottom: 1px solid #e7e7e9;
-  line-height: 1em;
+  display: flex;
+  justify-content: space-between;
   padding-left: 30px;
 }
 
@@ -41,18 +42,24 @@ select:focus {
   text-decoration: none;
 }
 
+#header-buttons {
+  align-self: center;
+  display: flex;
+  font-size: 20px;
+  justify-content: space-between;
+  margin-right: 20px;
+  width: 15%;
+}
+
 .material-icons {
   float: right;
   font-size: 125%;
   line-height: .5;
 }
 
-#feedback {
-  color: black;
-}
-
 .tooltip {
   display: inline;
+  font-size: 32px;
 }
 
 .tooltip .tooltiptext {

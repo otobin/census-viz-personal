@@ -5,16 +5,16 @@
         <servlet-class>QueryServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>HistoryServlet</servlet-name>
-        <servlet-class>HistoryServlet</servlet-class>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>LoginServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>QueryServlet</servlet-name>
         <url-pattern>/query</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>HistoryServlet</servlet-name>
-        <url-pattern>/history</url-pattern>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
     <filter>
         <filter-name>ObjectifyFilter</filter-name>

@@ -102,6 +102,7 @@ function fetchCensusData(fetchUrl, description, location, isCountyQuery) {
         displayLinkToCensusTable(response.data.tableLink);
         getHistory();
         document.getElementById('more-info').innerText = '';
+        window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
       } else {
         displayError(response.status, response.data.errorMessage);
       }
@@ -233,7 +234,35 @@ async function createStateDropdownList() {
     optionElem.setAttribute('data-value', value.number);
     datalist.appendChild(optionElem);
   });
+  // This would be called in HTML onload
+  // but will not work until createStateDropdownList is done
+  submitHashQuery();
 }
+
+// Set dropdown for datalistId to value
+function setDropdownValue(datalistId, value) {
+  const inputList = document.getElementById(datalistId + '-list');
+  inputList.value = document.querySelector(
+    '#' + datalistId + ' option[data-value=\'' + value + '\']').value;
+}
+
+// Called on load. Check for query params in url
+// and call passQuery() if found.
+function submitHashQuery() {
+  const urlHash = window.location.hash;
+  if (urlHash) {
+    const params = new URLSearchParams(urlHash.slice(1));
+    for (const [param, value] of params) {
+      setDropdownValue(param, value);
+    }
+    passQuery();
+  }
+}
+
+// Listen for if user clicks back
+window.addEventListener('hashchange', function() {
+  submitHashQuery();
+});
 
 // loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed
 // is true, the location settings are set to the opposite of the current
