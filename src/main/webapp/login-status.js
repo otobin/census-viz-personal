@@ -11,10 +11,10 @@ function displayLoginStatus(loginStatus) {
 
   if (loginStatus.loggedIn) {
     loginStatusElement.innerHTML =
-    `<a href=${loginStatus.logoutUrl}>Log out</a>`;
+        `<a href=${loginStatus.logoutUrl}>Log out</a>`;
   } else {
-    const loginLink = `<a href=${loginStatus.loginUrl}>Log in</a>`;
-    loginStatusElement.innerHTML = loginLink;
+    loginStatusElement.innerHTML =
+        `<a href=${loginStatus.loginUrl}>Log in</a>`;
   }
 }
 

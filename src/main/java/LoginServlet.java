@@ -17,7 +17,6 @@ public class LoginServlet extends HttpServlet {
 
     if (!userService.isUserLoggedIn()) {
       jsonResponse.addProperty("loggedIn", false);
-      // After login redirect user to nickname-input page
       String loginUrl = userService.createLoginURL("/");
       jsonResponse.addProperty("loginUrl", loginUrl);
     } else {
