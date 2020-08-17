@@ -17,12 +17,14 @@
   <script src="query-control.js"></script>
   <script src="login-status.js"></script>
   <script src="user-location.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta name="google-signin-client_id" content="156213329836-pnoe2errhb8gr29aplgo0klfkjrfeknf.apps.googleusercontent.com">
   <link rel="stylesheet" href="style.css">
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
 <body
-  onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false); getAndDisplayLoginStatus();">
+  onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false);">
   <main>
     <div id="header">
       <h1><a href="/">Census Viz</a></h1>
@@ -57,11 +59,11 @@
           <i class="material-icons" id="location-on-icon" onclick="loadAppropriateIcon(true)">location_on</i>
           <p class="tooltiptext" id="location-id-text"></p>
         </div>
-        <div id="login-status"></div>
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
       </div>
     </div>
     <div id="query">
-      <form id="query-form" onsubmit="passQuery(); return false;">
+      <form id="query-form" onsubmit="submitQuery(); return false;">
         <p>
           How many
           <input type="list" list="person-type" name="person-type" id="person-type-list" autocomplete="off" required

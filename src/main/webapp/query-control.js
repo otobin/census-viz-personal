@@ -2,9 +2,9 @@
 // so the service worker script can run in background.
 // We're using this service worker to intercept fetch requests.
 function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js');
-  }
+//   if ('serviceWorker' in navigator) {
+//     navigator.serviceWorker.register('/service-worker.js');
+//   }
 }
 
 // Returns the color to set the value to based on whether
@@ -35,25 +35,39 @@ function clearPreviousResult() {
   document.getElementById('result').style.display = 'block';
 }
 
-// Get the query the user entered and display the result.
-// Breaks down the query and passes it to the backend to be analyzed;
-// the backend returns the appropriate data, which is then passed off
-// to be reformatted and visualized.
-function passQuery() {
-  clearPreviousResult();
+function getFetchUrl(personType, action, location, year) {
+  return '/query?person-type=' + personType +
+  '&action=' + action +
+  '&location=' + location +
+  '&year=' + year;
+}
+
+function submitQuery() {
   const query = new FormData(document.getElementById('query-form'));
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
   const locationInput = query.get('location');
-  const year = query.get('year');
-
+  const year = query.get('year'); 
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
     '#action option[value=\'' + actionInput + '\']').dataset.value;
   const location = document.querySelector(
     '#location option[value=\'' + locationInput + '\']').dataset.value;
+  const fetchUrl = getFetchUrl(personType, action, location, year);
+  window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
+}
 
+// Get the query the user entered and display the result.
+// Breaks down the query and passes it to the backend to be analyzed;
+// the backend returns the appropriate data, which is then passed off
+// to be reformatted and visualized.
+function passQuery(personType, action, location, year) {
+  clearPreviousResult();
+  const locationInput = document.querySelector(
+    '#location option[data-value=\'' + location + '\']').value;
+  const actionInput = document.querySelector(
+    '#action option[data-value=\'' + action + '\']').value;
   const actionToPerson = new Map();
   actionToPerson.set(
         'live', 'Population',
@@ -72,12 +86,8 @@ function passQuery() {
     personType.replace('-', ' ') + ')' +
     ' in ' + year;
   document.getElementById('map-title').innerText = title;
-
-  const fetchUrl = '/query?person-type=' + personType +
-    '&action=' + action +
-    '&location=' + location +
-    '&year=' + year;
-
+  
+  const fetchUrl = getFetchUrl(personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
       data: jsonResponse,
@@ -93,7 +103,6 @@ function passQuery() {
         displayVisualization(data, description, location, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
-        window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
       } else {
         displayError(response.status, response.data.errorMessage);
       }
@@ -207,8 +216,8 @@ function setDropdownValue(datalistId, value) {
     '#' + datalistId + ' option[data-value=\'' + value + '\']').value;
 }
 
-// Called on load. Check for query params in url
-// and call passQuery() if found.
+// Called on load and on hash change. Check for
+// query params in url and call passQuery() if found.
 function submitHashQuery() {
   const urlHash = window.location.hash;
   if (urlHash) {
@@ -216,7 +225,11 @@ function submitHashQuery() {
     for (const [param, value] of params) {
       setDropdownValue(param, value);
     }
-    passQuery();
+    const personType = params.get('person-type');
+    const action = params.get('action');
+    const location = params.get('location');
+    const year = params.get('year');
+    passQuery(personType, action, location, year);
   }
 }
 
