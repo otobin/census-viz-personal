@@ -97,7 +97,7 @@ function fetchCensusData(fetchUrl, description, location, isCountyQuery) {
         // data is a 2D array, where the first row is a
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
-        const data = removeErroneousData(JSON.parse(response.data.censusData));
+        const data = removeErroneousData(JSON.parse(response.data.data));
         displayVisualization(data, description, location, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         getHistory();
