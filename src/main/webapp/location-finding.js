@@ -4,6 +4,9 @@ const fetchJson = {
 };
 const geoCodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
 const geoLocationUrl = 'https://www.googleapis.com/geolocation/v1/geolocate?key=';
+const placesUrl =
+    'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=';
+const corsApiUrl = 'https://cors-anywhere.herokuapp.com/';
 
 // Given the user's lat and lng from the geoLocation API,
 // getUserState calls to the geoCoding API to reverse geoCode
@@ -33,7 +36,9 @@ async function getStateFromLocation(lat, lng) {
         });
       });
       // Check to see that the state is valid
-      if (country !== 'United States' || typeof state === 'undefined') {
+      if (country !== 'United States') {
+        throw new Error('Location not in the 50 U.S. states');
+      } else if (typeof state === 'undefined') {
         return 'each U.S. state';
       } else {
         return state;
@@ -70,13 +75,49 @@ async function getUserState() {
   } else {
     try {
       location = await getUserLocation();
+      const lat = location.lat;
+      const lng = location.lng;
+      const state = await getStateFromLocation(lat, lng);
+      return state;
     } catch (err) {
       return 'each U.S. state';
     }
-    const lat = location.lat;
-    const lng = location.lng;
-    const state = await getStateFromLocation(lat, lng);
-    return state;
   }
 }
 
+// Given a text location (e.g 'New York City'), use the Places API and
+// geoCoding API to find out what state the location is in
+async function findStateOfLocation(location) {
+  const fetchUrl =
+      corsApiUrl + placesUrl + apiKey +
+      '&input=' + location + '&inputtype=textquery&fields=geometry';
+  const response = await fetch(fetchUrl);
+  if (!response.ok) {
+    displayError(
+        response.status,
+        'There was an error while trying to find the location you entered.');
+    return;
+  }
+
+  const geoInfo = await response.json();
+  const place = geoInfo.candidates[0];
+
+  return getStateFromLocation(
+      place.geometry.location.lat, place.geometry.location.lng)
+      .then((state) => {
+        return {name: state,
+            lat: place.geometry.location.lat,
+            lng: place.geometry.location.lng,
+            number: document
+                .querySelector(
+                    '#location option[value=\'' + state + '\']').dataset.value};
+      })
+      .catch((err) => { 
+        displayError(
+            400,
+            'Either this location is not in one of the 50 U.S. states, or we \
+            are not able to find it (try being more specific or adding the \
+            state code).');
+        return;
+      });
+}

@@ -42,6 +42,7 @@ function getFetchUrl(personType, action, location, year) {
     '&year=' + year;
 }
 
+
 // Change hash to match dropdown inputs. Triggers onhashchange listener
 // that calls passQuery()
 function submitQuery() {
@@ -54,8 +55,14 @@ function submitQuery() {
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
     '#action option[value=\'' + actionInput + '\']').dataset.value;
-  const location = document.querySelector(
-    '#location option[value=\'' + locationInput + '\']').dataset.value;
+  const locationDropdown = document.querySelector(
+    '#location option[value=\'' + locationInput + '\']');
+  let location;
+  if (locationDropdown !== null) {
+    location = locationDropdown.dataset.value;
+  } else {
+    location = locationInput;
+  }
   const fetchUrl = getFetchUrl(personType, action, location, year);
   window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
 }
@@ -64,25 +71,44 @@ function submitQuery() {
 // Breaks down the query and passes it to the backend to be analyzed;
 // the backend returns the appropriate data, which is then passed off
 // to be reformatted and visualized.
-function passQuery(personType, action, location, year) {
+async function passQuery(personType, action, location, year) {
   clearPreviousResult();
-  const locationInput = document.querySelector(
-    '#location option[data-value=\'' + location + '\']').value;
+  const locationDropdown = document.querySelector(
+    '#location option[data-value=\'' + location + '\']');
+  let locationInfo;
+  let locationName;
+  if (locationDropdown !== null) { // User picked a location from the dropdown
+    locationName = locationDropdown.value;
+    locationInfo = {name: locationName,
+      // Either the center of the state,
+      // or the (slightly shifted for UX) center of the US
+      lat: location in stateInfo ? stateInfo[location].lat : 38.75,
+      lng: location in stateInfo ? stateInfo[location].lng : -96.5,
+      number: location,
+      };
+  } else { // Have to manually find which state the location is in
+    locationInfo = await findStateOfLocation(location);
+    if (locationInfo === undefined) {
+      return; // error was thrown inside findStateOfLocation()
+    }
+    locationName = locationInfo.name;
+    location = locationInfo.number;
+  }
   const actionInput = document.querySelector(
     '#action option[data-value=\'' + action + '\']').value;
   const actionToPerson = new Map();
   actionToPerson.set(
-    'live', 'Population',
-  ).set(
-    'work', 'Workers',
-  ).set(
-    'moved', 'New inhabitants',
-  );
-  const description = `${actionToPerson.get(action)} 
-    (${personType.replace('-', ' ')})`;
+        'live', 'Population',
+      ).set(
+        'work', 'Workers',
+      ).set(
+        'moved', 'New inhabitants',
+      );
+  const description =
+      `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
+  const region = isCountyQuery ? locationName + ' county' : 'U.S. state';
   const title = 'Population who ' + actionInput +
     ' each ' + region + ' (' +
     personType.replace('-', ' ') + ')' +
@@ -102,7 +128,7 @@ function passQuery(personType, action, location, year) {
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
         const data = removeErroneousData(JSON.parse(response.data.censusData));
-        displayVisualization(data, description, location, isCountyQuery);
+        displayVisualization(data, description, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
@@ -217,8 +243,13 @@ async function createStateDropdownList() {
 // Set dropdown for datalistId to value
 function setDropdownValue(datalistId, value) {
   const inputList = document.getElementById(datalistId + '-list');
-  inputList.value = document.querySelector(
-    '#' + datalistId + ' option[data-value=\'' + value + '\']').value;
+  const locationDropdown = document.querySelector(
+    '#' + datalistId + ' option[data-value=\'' + value + '\']');
+  if (locationDropdown !== null ) { // Location is from dropdown
+    inputList.value = locationDropdown.value;
+  } else {
+    inputList.value = value;
+  }
 }
 
 // Called on load and on hash change. Check for
