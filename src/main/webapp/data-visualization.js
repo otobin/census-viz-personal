@@ -30,7 +30,7 @@ async function displayVisualization(censusDataArray, description,
   const geoData = await getGeoData(locationInfo, isCountyQuery);
   // Put all necessary data in the cache
   localStorage.setItem('geoData', JSON.stringify(geoData));
-  localStorage.setItem('location', locationInfo);
+  localStorage.setItem('location', JSON.stringify(locationInfo));
   localStorage.setItem('description', description);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
@@ -331,7 +331,7 @@ function changeColor(colorParam) {
   const cacheMapsData = JSON.parse(localStorage.getItem('mapsData'));
   const cacheGeoData = JSON.parse(localStorage.getItem('geoData'));
   const cacheAmCharts = JSON.parse(localStorage.getItem('amChartsData'));
-  const cacheLocation = localStorage.getItem('location');
+  const cacheLocation = JSON.parse(localStorage.getItem('location'));
   const cacheDescription = localStorage.getItem('description');
   // map is undefined on a state query, so check to be sure that
   // it is undefined before calling displayCountyGeoJson.
