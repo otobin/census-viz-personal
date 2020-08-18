@@ -49,7 +49,7 @@ function submitQuery() {
   const query = new FormData(document.getElementById('query-form'));
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
-  const locationInput = query.get('location');
+  const locationInput = query.get('location').replace(/'/g, '');
   const year = query.get('year');
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
@@ -58,7 +58,7 @@ function submitQuery() {
   const locationDropdown = document.querySelector(
     '#location option[value=\'' + locationInput + '\']');
   let location;
-  if (locationDropdown !== null) {
+  if (locationDropdown != null) {
     location = locationDropdown.dataset.value;
   } else {
     location = locationInput;
