@@ -267,3 +267,7 @@ input[type="color"] {
 #location-on-icon {
   display: none;
 }
+
+#sign-out-btn {
+  padding: 20px;
+}

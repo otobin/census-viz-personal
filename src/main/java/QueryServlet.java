@@ -142,13 +142,14 @@ public class QueryServlet extends HttpServlet {
     String yearStr = request.getParameter("year");
     int year = Integer.parseInt(yearStr);
 
+    response.setContentType("application/json;");
+
     String query = personType + action + location + yearStr;
     CensusData cachedData = ofy().load().type(CensusData.class).id(query).now();
     if (cachedData != null) {
       JsonObject jsonResponse = new JsonObject();
       jsonResponse.addProperty("censusData", cachedData.getData());
       jsonResponse.addProperty("tableLink", cachedData.getTableLink());
-      response.setContentType("application/json;");
       response.getWriter().println(jsonResponse.toString());
       return;
     }
@@ -156,14 +157,12 @@ public class QueryServlet extends HttpServlet {
     if (!queryToDataRowGeneric.containsKey(action)) {
       // We don't have information on this action
       response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-      response.setContentType("application/json;");
       response.getWriter().println(sendError("We do not support this visualization yet."));
       return;
     } else if (!queryToDataRowGeneric.get(action).containsKey(personType)) {
       // This action doesn't make sense with this type of person,
       // or the census doesn't keep data on it that we could find
       response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-      response.setContentType("application/json;");
       response
           .getWriter()
           .println(
@@ -202,7 +201,6 @@ public class QueryServlet extends HttpServlet {
       dataTablePrefix = getDataTableString(dataRow);
     } catch (NoSuchFieldException e) {
       response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-      response.setContentType("application/json;");
       response.getWriter().println(sendError("We do not support this visualization yet."));
       return;
     }
@@ -226,12 +224,10 @@ public class QueryServlet extends HttpServlet {
     if (connection.getResponseCode() > 299) {
       // An error occurred
       response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
-      response.setContentType("application/json;");
       response
           .getWriter()
           .println(sendError("An error occurred while trying to retrieve census data."));
     } else {
-      response.setStatus(HttpServletResponse.SC_OK);
       String data = "";
       BufferedReader reader =
           new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -244,7 +240,6 @@ public class QueryServlet extends HttpServlet {
       reader.close();
       if (data.isEmpty()) {
         response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-        response.setContentType("application/json;");
         response
             .getWriter()
             .println(
@@ -258,7 +253,6 @@ public class QueryServlet extends HttpServlet {
         formattedData = DataFormatter.reformatDataArray(data, dataRow, !location.equals("state"));
       } catch (InvalidObjectException e) {
         response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
-        response.setContentType("application/json;");
         response
             .getWriter()
             .println(sendError("An error occurred while trying to retrieve census data."));
@@ -267,11 +261,10 @@ public class QueryServlet extends HttpServlet {
 
       // Save this response to cache
       ofy().save().entity(new CensusData(query, formattedData, censusTableLink)).now();
-
+      response.setStatus(HttpServletResponse.SC_OK);
       JsonObject jsonResponse = new JsonObject();
       jsonResponse.addProperty("censusData", formattedData);
       jsonResponse.addProperty("tableLink", censusTableLink);
-      response.setContentType("application/json;");
       response.getWriter().println(jsonResponse.toString());
     }
   }

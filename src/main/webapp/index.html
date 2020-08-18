@@ -30,12 +30,6 @@
       <h1><a href="/">Census Viz</a></h1>
       <div id="header-buttons">
         <div class="tooltip">
-          <a target="_blank" rel="noopener" href="http://go/censusviz-feedback">
-            <i class="material-icons" id="feedback" href="cnn.com">feedback</i>
-          </a>
-          <p class="tooltiptext">Click here to provide feedback - thank you!</p>
-        </div>
-        <div class="tooltip">
           <i class="material-icons" id="faq">help_outline</i>
           <p class="tooltiptext">Census Viz makes it easy to explore U.S.
             Census data by creating custom visualizations to answer your
@@ -59,7 +53,13 @@
           <i class="material-icons" id="location-on-icon" onclick="loadAppropriateIcon(true)">location_on</i>
           <p class="tooltiptext" id="location-id-text"></p>
         </div>
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+        <div class="tooltip">
+          <a target="_blank" rel="noopener" href="http://go/censusviz-feedback">
+            <i class="material-icons" id="feedback">feedback</i>
+          </a>
+          <p class="tooltiptext">Click here to provide feedback - thank you!</p>
+        </div>
+        <div class="g-signin2" id="sign-in-btn" data-onsuccess="onSignIn"></div>
       </div>
     </div>
     <div id="query">
@@ -141,7 +141,8 @@
       <div id="data-table"></div>
     </div>
     <footer>
-      Made by Kyra Acquah, Shuli Jones, and Olivia Tobin.
+      <div>Made by Kyra Acquah, Shuli Jones, and Olivia Tobin.</div>
+      <div id="sign-out-btn"><a href="/" onclick="signOut();">Sign out</a></div>
     </footer>
   </main>
 </body>

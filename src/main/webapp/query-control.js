@@ -2,9 +2,9 @@
 // so the service worker script can run in background.
 // We're using this service worker to intercept fetch requests.
 function registerServiceWorker() {
-//   if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('/service-worker.js');
-//   }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js');
+  }
 }
 
 // Returns the color to set the value to based on whether
@@ -37,17 +37,19 @@ function clearPreviousResult() {
 
 function getFetchUrl(personType, action, location, year) {
   return '/query?person-type=' + personType +
-  '&action=' + action +
-  '&location=' + location +
-  '&year=' + year;
+    '&action=' + action +
+    '&location=' + location +
+    '&year=' + year;
 }
 
+// Change hash to match dropdown inputs. Triggers onhashchange listener
+// that calls passQuery()
 function submitQuery() {
   const query = new FormData(document.getElementById('query-form'));
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
   const locationInput = query.get('location');
-  const year = query.get('year'); 
+  const year = query.get('year');
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
@@ -70,12 +72,12 @@ function passQuery(personType, action, location, year) {
     '#action option[data-value=\'' + action + '\']').value;
   const actionToPerson = new Map();
   actionToPerson.set(
-        'live', 'Population',
-      ).set(
-        'work', 'Workers',
-      ).set(
-        'moved', 'New inhabitants',
-      );
+    'live', 'Population',
+  ).set(
+    'work', 'Workers',
+  ).set(
+    'moved', 'New inhabitants',
+  );
   const description = `${actionToPerson.get(action)} 
     (${personType.replace('-', ' ')})`;
 
@@ -86,7 +88,7 @@ function passQuery(personType, action, location, year) {
     personType.replace('-', ' ') + ')' +
     ' in ' + year;
   document.getElementById('map-title').innerText = title;
-  
+
   const fetchUrl = getFetchUrl(personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
@@ -106,6 +108,9 @@ function passQuery(personType, action, location, year) {
       } else {
         displayError(response.status, response.data.errorMessage);
       }
+    })
+    .catch((error) => {
+      console.log(error);
     });
 }
 
@@ -250,7 +255,7 @@ function loadAppropriateIcon(buttonPressed) {
     ' Click here to change your location settings.';
   if (((locationSettings === null || locationSettings === 'off') &&
     (buttonPressed === false)) || (locationSettings === 'on' &&
-    buttonPressed === true)) {
+      buttonPressed === true)) {
     // The user is turning their location off or it was already off and
     //  needs to be reloaded on page refresh
     localStorage.setItem('locationSettings', 'off');
@@ -259,7 +264,7 @@ function loadAppropriateIcon(buttonPressed) {
     document.getElementById('location-id-text').innerText = locationOffString;
   } else if (((locationSettings === null || locationSettings === 'off') &&
     (buttonPressed === true)) || (locationSettings === 'on' &&
-    buttonPressed === false)) {
+      buttonPressed === false)) {
     // The user is turning their location on or it was already on and needs to
     // be reloaded on page refresh
     localStorage.setItem('locationSettings', 'on');
