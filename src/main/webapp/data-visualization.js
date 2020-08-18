@@ -339,7 +339,8 @@ function changeColor(colorParam) {
     displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation,
       cacheGeoData, color);
   }
-  displayAmChartsMap(cacheAmCharts, cacheLocation, cacheDescription, cacheGeoData, color);
+  displayAmChartsMap(cacheAmCharts, cacheLocation, cacheDescription,
+      cacheGeoData, color);
 }
 
 // Draw data table using Visualization API
