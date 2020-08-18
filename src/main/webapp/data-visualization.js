@@ -137,6 +137,21 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   });
 }
 
+function exportPng() {
+  let chart = document.getElementById('am-charts').innerHTML;
+
+  // Add title to image before exporting
+  let title = chart.titles.create();
+  title.text = document.getElementById('map-title').innerText;
+  title.fontSize = 25;
+  title.marginBottom = 30;
+
+  chart.exporting.export('png');
+
+  // Remove title so it's not redundant with the already-present HTML title
+  title.text = ''
+}
+
 // Add tooltip used for amCharts map to data
 function addTooltipText(data, geoDataFeatures, description) {
   geoDataFeatures.forEach((location) => {
