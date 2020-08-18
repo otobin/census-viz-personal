@@ -63,7 +63,7 @@ function passQuery() {
     '#action option[value=\'' + actionInput + '\']').dataset.value;
   const location = document.querySelector(
     '#location option[value=\'' + locationInput + '\']').dataset.value;
-  const isCountyQuery = location !== 'state';
+
   const actionToPerson = new Map();
   actionToPerson.set(
         'live', 'Population',
@@ -74,6 +74,9 @@ function passQuery() {
       );
   const description = `${actionToPerson.get(action)} 
     (${personType.replace('-', ' ')})`;
+
+  const isCountyQuery = location !== 'state';
+  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
   const title = getTitle(personType, location, year, locationInput, actionInput);
   document.getElementById('map-title').innerText = title;
 
@@ -82,10 +85,6 @@ function passQuery() {
     '&location=' + location +
     '&year=' + year;
 
-  fetchCensusData(fetchUrl, description, location, isCountyQuery);
-}
-
-function fetchCensusData(fetchUrl, description, location, isCountyQuery) {
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
       data: jsonResponse,
@@ -97,12 +96,12 @@ function fetchCensusData(fetchUrl, description, location, isCountyQuery) {
         // data is a 2D array, where the first row is a
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
+        putHistory(personType, action, location, year);
         const data = removeErroneousData(JSON.parse(response.data.data));
         displayVisualization(data, description, location, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
-        getHistory();
         document.getElementById('more-info').innerText = '';
-        window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
+        getHistory();
       } else {
         displayError(response.status, response.data.errorMessage);
       }
@@ -111,7 +110,7 @@ function fetchCensusData(fetchUrl, description, location, isCountyQuery) {
 
 function getHistory() {
   const historyContainer = document.getElementById('history');
-  historyContainer.innertext = "";
+  historyContainer.innertext = "Pages You've Viewed";
   const gramaticallyCorrectAction = new Map();
   gramaticallyCorrectAction.set(
         'live', 'lived in',
@@ -121,22 +120,31 @@ function getHistory() {
         'moved', 'moved to',
       );
   fetch('/history').then((response) => response.json().then((historyElements) => {
+    console.log(historyElements);
     historyElements.forEach((historyElement) => {
       if (historyElement !== null) {
         const historyDiv = document.createElement('div');
-        
-        historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
-          historyElement[3], stateInfo[historyElement[2]].name, 
-          gramaticallyCorrectAction.get(historyElement[1]));
+        if (historyElement[2] !== 'state') {
+          historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
+            historyElement[3], stateInfo[historyElement[2]].name, 
+            gramaticallyCorrectAction.get(historyElement[1]));
+        } else {
+          historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
+            historyElement[3], 'Each U.S. state', 
+            gramaticallyCorrectAction.get(historyElement[1]));
+        }
         historyContainer.appendChild(historyDiv);
-        const fetchUrl = '/query?person-type=' + historyElement[0] +
-        '&action=' + historyElement[1] +
-        '&location=' + historyElement[2] +
-        '&year=' + historyElement[3];
-        historyDiv.setAttribute('href', fetchCensusData(fetchUrl));
       }
     })
   }));
+}
+
+function putHistory(personType, action, location, year) {
+  fetch('/history', {
+    method: 'POST',
+  }).then( function(response) {
+    console.log(response);
+  });
 }
 
 // Remove incorrect data returned by the census API
