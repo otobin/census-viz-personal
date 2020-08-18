@@ -243,11 +243,13 @@ async function createStateDropdownList() {
 // Set dropdown for datalistId to value
 function setDropdownValue(datalistId, value) {
   const inputList = document.getElementById(datalistId + '-list');
-  const locationDropdown = document.querySelector(
+  const dropdown = document.querySelector(
     '#' + datalistId + ' option[data-value=\'' + value + '\']');
-  if (locationDropdown !== null ) { // Location is from dropdown
-    inputList.value = locationDropdown.value;
+  if (dropdown !== null ) {
+    inputList.value = dropdown.value;
   } else {
+    // Value is not in dropdown
+    // passQuery maps value a value in dropdown
     inputList.value = value;
   }
 }
