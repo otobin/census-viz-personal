@@ -249,7 +249,7 @@ function setDropdownValue(datalistId, value) {
     inputList.value = dropdown.value;
   } else {
     // Value is not in dropdown
-    // passQuery maps value a value in dropdown
+    // passQuery maps value to a value in dropdown
     inputList.value = value;
   }
 }
