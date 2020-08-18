@@ -96,19 +96,22 @@ function passQuery() {
         // data is a 2D array, where the first row is a
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
-        putHistory(personType, action, location, year);
         const data = removeErroneousData(JSON.parse(response.data.data));
         displayVisualization(data, description, location, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
-        getHistory();
+        getHistory(personType, action, location, year);
       } else {
         displayError(response.status, response.data.errorMessage);
       }
     });
 }
 
-function getHistory() {
+function getHistory(personType, action, location, year) {
+  const fetchUrl = '/history?person-type=' + personType +
+    '&action=' + action +
+    '&location=' + location +
+    '&year=' + year;
   const historyContainer = document.getElementById('history');
   historyContainer.innertext = "Pages You've Viewed";
   const gramaticallyCorrectAction = new Map();
@@ -119,7 +122,7 @@ function getHistory() {
       ).set(
         'moved', 'moved to',
       );
-  fetch('/history').then((response) => response.json().then((historyElements) => {
+  fetch(fetchUrl).then((response) => response.json().then((historyElements) => {
     console.log(historyElements);
     historyElements.forEach((historyElement) => {
       if (historyElement !== null) {
@@ -137,14 +140,6 @@ function getHistory() {
       }
     })
   }));
-}
-
-function putHistory(personType, action, location, year) {
-  fetch('/history', {
-    method: 'POST',
-  }).then( function(response) {
-    console.log(response);
-  });
 }
 
 // Remove incorrect data returned by the census API
