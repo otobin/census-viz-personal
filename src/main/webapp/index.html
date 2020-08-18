@@ -14,8 +14,8 @@
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="state-info.js"></script>
   <script src="data-visualization.js"></script>
+  <script src="location-finding.js"></script>
   <script src="query-control.js"></script>
-  <script src="user-location.js"></script>
   <link rel="stylesheet" href="style.css">
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
@@ -36,17 +36,21 @@
             Census data by creating custom visualizations to answer your
             questions about America.
             <br><br>
-            To use Census Viz, select an option
-            from each dropdown list and click the green Go button. You can
-            also start typing in any dropdown box to filter the options you'll
-            see. You can mix and match between the lists to get answers to
-            many different questions.
+            To use Census Viz, select an option from each dropdown list and
+            click the green Go button. You can also start typing in any
+            dropdown box to filter the options you'll see. You can mix and
+            match between the lists to get answers to many different questions.
+            New: try typing any location, not just a state, into the location
+            box! Hovering over each area will show you its data.
             <br><br>
             The data you see comes from several sources within the census.
             Depending on your question, we choose the census data with the most
             information available. Most of our data come from the annual
             American Community Survey; if you ask about a year ending
-            in 0, you'll get information from the larger Decennial Survey instead.
+            in 0, you'll get information from the larger Decennial Survey
+            instead. Both surveys provide estimates based on a sample
+            population; if you don't see any data for a county, it's because
+            the sample size was too small for an accurate estimate.
           </p>
         </div>
         <div class="tooltip">
@@ -88,7 +92,7 @@
           </input>
 
           <input type="list" list="location" name="location" id="location-list"
-              autocomplete="off" required onkeyup="validateInput('location')"
+              autocomplete="off" required
               onfocus="storeValueAndEmpty('location')"
               onfocusout="replaceValueIfEmpty('location')"
               value="each U.S. state">
