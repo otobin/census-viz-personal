@@ -399,11 +399,6 @@ function toggleDataTable() {
     dataTable.style.display = 'none';
     document.getElementById('toggle-data-btn').innerText = 'Display raw data';
   }
-
-  const chartsDiv = document.getElementById('am-charts');
-  chartsDiv.style.display = 'block';
-  const mapsDiv = document.getElementById('map');
-  mapsDiv.style.display = 'none';
 }
 
 // Display link to data.census.gov table for the table the displayed
