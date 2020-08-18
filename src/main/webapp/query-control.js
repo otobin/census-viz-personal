@@ -35,8 +35,8 @@ function clearPreviousResult() {
   document.getElementById('result').style.display = 'block';
 }
 
-function getFetchUrl(personType, action, location, year) {
-  return '/query?person-type=' + personType +
+function getFetchUrl(servlet, personType, action, location, year) {
+  return '/' + servlet + '?person-type=' + personType +
     '&action=' + action +
     '&location=' + location +
     '&year=' + year;
@@ -53,7 +53,7 @@ function getTitle(personType, location, year, locationInput, actionInput) {
 }
 
 function getHistory(personType, action, location, year) {
-  const fetchUrl = getFetchUrl(personType, action, location, year);
+  const fetchUrl = getFetchUrl('history', personType, action, location, year);
   const historyContainer = document.getElementById('history');
   historyContainer.innertext = "Pages You've Viewed";
   const gramaticallyCorrectAction = new Map();
@@ -64,8 +64,10 @@ function getHistory(personType, action, location, year) {
       ).set(
         'moved', 'moved to',
       );
-  fetch(fetchUrl).then((response) => response.json().then((historyElements) => {
-    console.log(historyElements);
+  fetch('/history').then(function (response) {
+    console.log(response);
+  });
+    /*
     historyElements.forEach((historyElement) => {
       if (historyElement !== null) {
         const historyDiv = document.createElement('div');
@@ -82,6 +84,7 @@ function getHistory(personType, action, location, year) {
       }
     })
   }));
+  */
 }
 
 // Change hash to match dropdown inputs. Triggers onhashchange listener
@@ -104,7 +107,7 @@ function submitQuery() {
   } else {
     location = locationInput;
   }
-  const fetchUrl = getFetchUrl(personType, action, location, year);
+  const fetchUrl = getFetchUrl('query', personType, action, location, year);
   window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
 }
 
@@ -156,7 +159,7 @@ async function passQuery(personType, action, location, year) {
     ' in ' + year;
   document.getElementById('map-title').innerText = title;
 
-  const fetchUrl = getFetchUrl(personType, action, location, year);
+  const fetchUrl = getFetchUrl('query', personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
       data: jsonResponse,
@@ -172,6 +175,7 @@ async function passQuery(personType, action, location, year) {
         displayVisualization(data, description, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
+        getHistory(personType, action, location, year);
       } else {
         displayError(response.status, response.data.errorMessage);
       }
