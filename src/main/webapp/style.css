@@ -271,17 +271,17 @@ input[type="color"] {
 #sign-out-btn {
   background-color: white;
   border-radius: 1px;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .25);
   color: #757575;
   padding: 8px;
   font-size: 13px;
   height: 36px;
   line-height: 1em;
-  font-family: 'Roboto',arial,sans-serif;
+  font-family: 'Roboto', arial, sans-serif;
   font-weight: 500;
   letter-spacing: .21px;
   text-transform: none;
-  transition: background-color .218s,border-color .218s,box-shadow .218s;
+  transition: background-color .218s, border-color .218s, box-shadow .218s;
   width: 120px;
 }
 
