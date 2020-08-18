@@ -11,13 +11,11 @@ public class CensusData {
   @Id String query;
   String data;
   String tableLink;
-  List<String> queryList;
 
   private CensusData() {}
 
-  public CensusData(String query, List<String> queryList, String data, String tableLink) {
+  public CensusData(String query, String data, String tableLink) {
     this.query = query;
-    this.queryList = queryList;
     this.data = data;
     this.tableLink = tableLink;
   }
@@ -29,8 +27,5 @@ public class CensusData {
   public String getTableLink() {
     return tableLink;
   }
-
-  public List<String> getQueryList() {
-    return this.queryList;
-  }
+  
 }

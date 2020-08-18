@@ -35,6 +35,13 @@ function clearPreviousResult() {
   document.getElementById('result').style.display = 'block';
 }
 
+function getFetchUrl(personType, action, location, year) {
+  return '/query?person-type=' + personType +
+    '&action=' + action +
+    '&location=' + location +
+    '&year=' + year;
+}
+
 function getTitle(personType, location, year, locationInput, actionInput) {
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
@@ -45,73 +52,8 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   return title;
 }
 
-// Get the query the user entered and display the result.
-// Breaks down the query and passes it to the backend to be analyzed;
-// the backend returns the appropriate data, which is then passed off
-// to be reformatted and visualized.
-function passQuery() {
-  clearPreviousResult();
-  const query = new FormData(document.getElementById('query-form'));
-  const personTypeInput = query.get('person-type');
-  const actionInput = query.get('action');
-  const locationInput = query.get('location');
-  const year = query.get('year');
-
-  const personType = document.querySelector(
-    '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
-  const action = document.querySelector(
-    '#action option[value=\'' + actionInput + '\']').dataset.value;
-  const location = document.querySelector(
-    '#location option[value=\'' + locationInput + '\']').dataset.value;
-
-  const actionToPerson = new Map();
-  actionToPerson.set(
-        'live', 'Population',
-      ).set(
-        'work', 'Workers',
-      ).set(
-        'moved', 'New inhabitants',
-      );
-  const description = `${actionToPerson.get(action)} 
-    (${personType.replace('-', ' ')})`;
-
-  const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
-  const title = getTitle(personType, location, year, locationInput, actionInput);
-  document.getElementById('map-title').innerText = title;
-
-  const fetchUrl = '/query?person-type=' + personType +
-    '&action=' + action +
-    '&location=' + location +
-    '&year=' + year;
-
-  fetch(fetchUrl)
-    .then((response) => response.json().then((jsonResponse) => ({
-      data: jsonResponse,
-      success: response.ok,
-      status: response.status,
-    })))
-    .then((response) => {
-      if (response.success) {
-        // data is a 2D array, where the first row is a
-        // header row and all subsequent rows are one piece of
-        // data (e.g. for a state or county)
-        const data = removeErroneousData(JSON.parse(response.data.data));
-        displayVisualization(data, description, location, isCountyQuery);
-        displayLinkToCensusTable(response.data.tableLink);
-        document.getElementById('more-info').innerText = '';
-        getHistory(personType, action, location, year);
-      } else {
-        displayError(response.status, response.data.errorMessage);
-      }
-    });
-}
-
 function getHistory(personType, action, location, year) {
-  const fetchUrl = '/history?person-type=' + personType +
-    '&action=' + action +
-    '&location=' + location +
-    '&year=' + year;
+  const fetchUrl = getFetchUrl(personType, action, location, year);
   const historyContainer = document.getElementById('history');
   historyContainer.innertext = "Pages You've Viewed";
   const gramaticallyCorrectAction = new Map();
@@ -140,6 +82,103 @@ function getHistory(personType, action, location, year) {
       }
     })
   }));
+}
+
+// Change hash to match dropdown inputs. Triggers onhashchange listener
+// that calls passQuery()
+function submitQuery() {
+  const query = new FormData(document.getElementById('query-form'));
+  const personTypeInput = query.get('person-type');
+  const actionInput = query.get('action');
+  const locationInput = query.get('location').replace(/'/g, '');
+  const year = query.get('year');
+  const personType = document.querySelector(
+    '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
+  const action = document.querySelector(
+    '#action option[value=\'' + actionInput + '\']').dataset.value;
+  const locationDropdown = document.querySelector(
+    '#location option[value=\'' + locationInput + '\']');
+  let location;
+  if (locationDropdown != null) {
+    location = locationDropdown.dataset.value;
+  } else {
+    location = locationInput;
+  }
+  const fetchUrl = getFetchUrl(personType, action, location, year);
+  window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
+}
+
+// Get the query the user entered and display the result.
+// Breaks down the query and passes it to the backend to be analyzed;
+// the backend returns the appropriate data, which is then passed off
+// to be reformatted and visualized.
+async function passQuery(personType, action, location, year) {
+  clearPreviousResult();
+  const locationDropdown = document.querySelector(
+    '#location option[data-value=\'' + location + '\']');
+  let locationInfo;
+  let locationName;
+  if (locationDropdown !== null) { // User picked a location from the dropdown
+    locationName = locationDropdown.value;
+    locationInfo = {name: locationName,
+      // Either the center of the state,
+      // or the (slightly shifted for UX) center of the US
+      lat: location in stateInfo ? stateInfo[location].lat : 38.75,
+      lng: location in stateInfo ? stateInfo[location].lng : -96.5,
+      number: location,
+      };
+  } else { // Have to manually find which state the location is in
+    locationInfo = await findStateOfLocation(location);
+    if (locationInfo === undefined) {
+      return; // error was thrown inside findStateOfLocation()
+    }
+    locationName = locationInfo.name;
+    location = locationInfo.number;
+  }
+  const actionInput = document.querySelector(
+    '#action option[data-value=\'' + action + '\']').value;
+  const actionToPerson = new Map();
+  actionToPerson.set(
+        'live', 'Population',
+      ).set(
+        'work', 'Workers',
+      ).set(
+        'moved', 'New inhabitants',
+      );
+  const description =
+      `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+
+  const isCountyQuery = location !== 'state';
+  const region = isCountyQuery ? locationName + ' county' : 'U.S. state';
+  const title = 'Population who ' + actionInput +
+    ' each ' + region + ' (' +
+    personType.replace('-', ' ') + ')' +
+    ' in ' + year;
+  document.getElementById('map-title').innerText = title;
+
+  const fetchUrl = getFetchUrl(personType, action, location, year);
+  fetch(fetchUrl)
+    .then((response) => response.json().then((jsonResponse) => ({
+      data: jsonResponse,
+      success: response.ok,
+      status: response.status,
+    })))
+    .then((response) => {
+      if (response.success) {
+        // data is a 2D array, where the first row is a
+        // header row and all subsequent rows are one piece of
+        // data (e.g. for a state or county)
+        const data = removeErroneousData(JSON.parse(response.data.censusData));
+        displayVisualization(data, description, locationInfo, isCountyQuery);
+        displayLinkToCensusTable(response.data.tableLink);
+        document.getElementById('more-info').innerText = '';
+      } else {
+        displayError(response.status, response.data.errorMessage);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 // Remove incorrect data returned by the census API
@@ -245,12 +284,19 @@ async function createStateDropdownList() {
 // Set dropdown for datalistId to value
 function setDropdownValue(datalistId, value) {
   const inputList = document.getElementById(datalistId + '-list');
-  inputList.value = document.querySelector(
-    '#' + datalistId + ' option[data-value=\'' + value + '\']').value;
+  const dropdown = document.querySelector(
+    '#' + datalistId + ' option[data-value=\'' + value + '\']');
+  if (dropdown !== null ) {
+    inputList.value = dropdown.value;
+  } else {
+    // Value is not in dropdown
+    // passQuery maps value to a value in dropdown
+    inputList.value = value;
+  }
 }
 
-// Called on load. Check for query params in url
-// and call passQuery() if found.
+// Called on load and on hash change. Check for
+// query params in url and call passQuery() if found.
 function submitHashQuery() {
   const urlHash = window.location.hash;
   if (urlHash) {
@@ -258,7 +304,11 @@ function submitHashQuery() {
     for (const [param, value] of params) {
       setDropdownValue(param, value);
     }
-    passQuery();
+    const personType = params.get('person-type');
+    const action = params.get('action');
+    const location = params.get('location');
+    const year = params.get('year');
+    passQuery(personType, action, location, year);
   }
 }
 
@@ -279,7 +329,7 @@ function loadAppropriateIcon(buttonPressed) {
     ' Click here to change your location settings.';
   if (((locationSettings === null || locationSettings === 'off') &&
     (buttonPressed === false)) || (locationSettings === 'on' &&
-    buttonPressed === true)) {
+      buttonPressed === true)) {
     // The user is turning their location off or it was already off and
     //  needs to be reloaded on page refresh
     localStorage.setItem('locationSettings', 'off');
@@ -288,7 +338,7 @@ function loadAppropriateIcon(buttonPressed) {
     document.getElementById('location-id-text').innerText = locationOffString;
   } else if (((locationSettings === null || locationSettings === 'off') &&
     (buttonPressed === true)) || (locationSettings === 'on' &&
-    buttonPressed === false)) {
+      buttonPressed === false)) {
     // The user is turning their location on or it was already on and needs to
     // be reloaded on page refresh
     localStorage.setItem('locationSettings', 'on');

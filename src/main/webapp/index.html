@@ -14,42 +14,42 @@
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="state-info.js"></script>
   <script src="data-visualization.js"></script>
+  <script src="location-finding.js"></script>
   <script src="query-control.js"></script>
   <script src="login-status.js"></script>
-  <script src="user-location.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta name="google-signin-client_id" content="156213329836-pnoe2errhb8gr29aplgo0klfkjrfeknf.apps.googleusercontent.com">
   <link rel="stylesheet" href="style.css">
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
 <body
-  onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false); getAndDisplayLoginStatus();">
+  onload="registerServiceWorker(); createStateDropdownList(); loadAppropriateIcon(false);">
   <main>
     <div id="header">
       <h1><a href="/">Census Viz</a></h1>
       <div id="header-buttons">
-        <div class="tooltip">
-          <a target="_blank" rel="noopener" href="http://go/censusviz-feedback">
-            <i class="material-icons" id="feedback" href="cnn.com">feedback</i>
-          </a>
-          <p class="tooltiptext">Click here to provide feedback - thank you!</p>
-        </div>
         <div class="tooltip">
           <i class="material-icons" id="faq">help_outline</i>
           <p class="tooltiptext">Census Viz makes it easy to explore U.S.
             Census data by creating custom visualizations to answer your
             questions about America.
             <br><br>
-            To use Census Viz, select an option
-            from each dropdown list and click the green Go button. You can
-            also start typing in any dropdown box to filter the options you'll
-            see. You can mix and match between the lists to get answers to
-            many different questions.
+            To use Census Viz, select an option from each dropdown list and
+            click the green Go button. You can also start typing in any
+            dropdown box to filter the options you'll see. You can mix and
+            match between the lists to get answers to many different questions.
+            New: try typing any location, not just a state, into the location
+            box! Hovering over each area will show you its data.
             <br><br>
             The data you see comes from several sources within the census.
             Depending on your question, we choose the census data with the most
             information available. Most of our data come from the annual
             American Community Survey; if you ask about a year ending
-            in 0, you'll get information from the larger Decennial Survey instead.
+            in 0, you'll get information from the larger Decennial Survey
+            instead. Both surveys provide estimates based on a sample
+            population; if you don't see any data for a county, it's because
+            the sample size was too small for an accurate estimate.
           </p>
         </div>
         <div class="tooltip">
@@ -57,11 +57,17 @@
           <i class="material-icons" id="location-on-icon" onclick="loadAppropriateIcon(true)">location_on</i>
           <p class="tooltiptext" id="location-id-text"></p>
         </div>
-        <div id="login-status"></div>
+        <div class="tooltip">
+          <a target="_blank" rel="noopener" href="http://go/censusviz-feedback">
+            <i class="material-icons" id="feedback">feedback</i>
+          </a>
+          <p class="tooltiptext">Click here to provide feedback - thank you!</p>
+        </div>
+        <div class="g-signin2" id="sign-in-btn" data-onsuccess="onSignIn"></div>
       </div>
     </div>
     <div id="query">
-      <form id="query-form" onsubmit="passQuery(); return false;">
+      <form id="query-form" onsubmit="submitQuery(); return false;">
         <p>
           How many
           <input type="list" list="person-type" name="person-type" id="person-type-list" autocomplete="off" required
@@ -86,10 +92,12 @@
           </datalist>
           </input>
 
-          <input type="list" list="location" name="location" id="location-list" autocomplete="off" required
-            onkeyup="validateInput('location')" onfocus="storeValueAndEmpty('location')"
-            onfocusout="replaceValueIfEmpty('location')" value="each U.S. state">
-          <datalist id="location"></datalist>
+          <input type="list" list="location" name="location" id="location-list"
+              autocomplete="off" required
+              onfocus="storeValueAndEmpty('location')"
+              onfocusout="replaceValueIfEmpty('location')"
+              value="each U.S. state">
+            <datalist id="location"></datalist>
           </input>
           in
           <input type="list" list="year" name="year" id="year-list" autocomplete="off" required
@@ -140,7 +148,8 @@
     </div>
     <div id="history"></div>
     <footer>
-      Made by Kyra Acquah, Shuli Jones, and Olivia Tobin.
+      <div>Made by Kyra Acquah, Shuli Jones, and Olivia Tobin.</div>
+      <div id="sign-out-btn"><a href="/" onclick="signOut();">Sign out</a></div>
     </footer>
   </main>
 </body>

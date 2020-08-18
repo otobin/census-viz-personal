@@ -2,6 +2,10 @@
   font-family: 'Roboto', sans-serif;
 }
 
+body {
+  margin: 0;
+}
+
 input[type=list],
 select {
   background-color: transparent;
@@ -34,10 +38,10 @@ select:focus {
   border-bottom: 1px solid #e7e7e9;
   display: flex;
   justify-content: space-between;
-  padding-left: 30px;
+  padding: 0 30px 0 30px;
 }
 
-#header a:-webkit-any-link {
+#header a {
   color: black;
   text-decoration: none;
 }
@@ -45,35 +49,27 @@ select:focus {
 #header-buttons {
   align-self: center;
   display: flex;
-  font-size: 20px;
   justify-content: space-between;
-  margin-right: 20px;
-  width: 15%;
+  width: 300px;
 }
 
 .material-icons {
-  float: right;
-  font-size: 125%;
-  line-height: .5;
+  font-size: 32px;
 }
 
 .tooltip {
-  display: inline;
-  font-size: 32px;
+  align-self: center;
 }
 
 .tooltip .tooltiptext {
   background-color: rgba(255, 255, 255, .9);
-  border: solid black 2px;
+  border: solid black 1px;
   border-radius: 5px;
   display: none;
-  font-size: 50%;
-  font-weight: normal;
-  left: 77%;
-  line-height: 1.15;
+  right: 150px;
   padding: 8px;
   position: absolute;
-  top: 7%;
+  top: 40px;
   text-align: center;
   width: 20%;
   z-index: 1;
@@ -270,4 +266,8 @@ input[type="color"] {
 
 #location-on-icon {
   display: none;
+}
+
+#sign-out-btn {
+  padding: 20px;
 }
