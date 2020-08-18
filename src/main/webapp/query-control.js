@@ -42,7 +42,6 @@ function getFetchUrl(personType, action, location, year) {
     '&year=' + year;
 }
 
-
 // Change hash to match dropdown inputs. Triggers onhashchange listener
 // that calls passQuery()
 function submitQuery() {

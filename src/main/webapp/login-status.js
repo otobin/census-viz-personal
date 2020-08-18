@@ -1,10 +1,6 @@
 // Get signed in user info
 function onSignIn(googleUser) {
-  const profile = googleUser.getBasicProfile();
   const idToken = googleUser.getAuthResponse().id_token;
-  console.log('Name: ' + profile.getName());
-  console.log('Image URL: ' + profile.getImageUrl());
-  console.log('Email: ' + profile.getEmail());
 }
 
 // Sign user out

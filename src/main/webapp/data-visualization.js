@@ -75,10 +75,10 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   const isCountyQuery = data[0].id.indexOf('US') === -1;
 
   // Albers projection for state level, Mercator for county level
-  if (!isCountyQuery) {
-    chart.projection = new am4maps.projections.AlbersUsa();
-  } else {
+  if (isCountyQuery) {
     chart.projection = new am4maps.projections.Mercator();
+  } else {
+    chart.projection = new am4maps.projections.AlbersUsa();
   }
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
 
