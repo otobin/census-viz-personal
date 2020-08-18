@@ -119,6 +119,7 @@ async function passQuery() {
     });
 }
 
+
 // Remove incorrect data returned by the census API
 // such as Puerto Rico data and negative numbers
 function removeErroneousData(dataArray) {
@@ -198,6 +199,11 @@ function getSortedStateInfoArray() {
   return stateInfoArray;
 }
 
+function setupLocationDropdown() {
+  createStateDropdownList();
+  createAutocompleteLocation();
+}
+
 // Append all locations to the location dropdown element.
 async function createStateDropdownList() {
   const defaultLocation = await getUserState();
@@ -213,6 +219,28 @@ async function createStateDropdownList() {
     optionElem.value = value.name;
     optionElem.setAttribute('data-value', value.number);
     datalist.appendChild(optionElem);
+  });
+}
+
+// Set up an autocomplete dropdown to suggest places to users
+function createAutocompleteLocation() {
+  const input = document.getElementById('location-list');
+  const autocomplete = new google.maps.places.Autocomplete(input);
+  autocomplete.setFields(
+    ['address_components', 'geometry', 'icon', 'name']);
+
+  autocomplete.addListener('place_changed', function() {
+    //infowindow.close();
+    //marker.setVisible(false);
+    const place = autocomplete.getPlace();
+    if (!place.geometry) {
+      // User entered the name of a Place that was not suggested and
+      // pressed the Enter key, or the Place Details request failed.
+      window.alert("No details available for input: '" + place.name + "'");
+      return;
+    }
+    const input = document.getElementById('location-list');
+    input.value = place.name;
   });
 }
 
