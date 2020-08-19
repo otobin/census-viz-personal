@@ -56,7 +56,9 @@ async function passQuery() {
           '#location option[value=\'' + locationInput + '\']');
   let location;
   let locationInfo;
-  if (locationSelector !== null) { // User picked a location from the dropdown
+  if (locationSelector !== null && 
+      !locationSelector.classList.contains('autocomplete-item')) { 
+    // User picked a location from the dropdown
     location = locationSelector.dataset.value;
     locationInfo = {name: locationInput,
       // Either the center of the state,
@@ -199,9 +201,9 @@ function getSortedStateInfoArray() {
   return stateInfoArray;
 }
 
-function setupLocationDropdown() {
-  createStateDropdownList();
-  createAutocompleteLocation();
+async function setupLocationDropdown() {
+  await createStateDropdownList();
+  setupAutocompleteLocation();
 }
 
 // Append all locations to the location dropdown element.
@@ -222,26 +224,67 @@ async function createStateDropdownList() {
   });
 }
 
-// Set up an autocomplete dropdown to suggest places to users
-function createAutocompleteLocation() {
-  const input = document.getElementById('location-list');
-  const autocomplete = new google.maps.places.Autocomplete(input);
-  autocomplete.setFields(
-    ['address_components', 'geometry', 'icon', 'name']);
+// Set up an autocomplete dropdown, attached to the main location input
+// and states dropdown, to suggest places to users as they type
+function setupAutocompleteLocation() {
+  const autocompleteInput = document.getElementById('location-list');
+  const autocompleteResults = document.getElementById('location');
+  const service = new google.maps.places.AutocompleteService();
+  const defaultLocationOptions = autocompleteResults.innerHTML; // all states
 
-  autocomplete.addListener('place_changed', function() {
-    //infowindow.close();
-    //marker.setVisible(false);
-    const place = autocomplete.getPlace();
-    if (!place.geometry) {
-      // User entered the name of a Place that was not suggested and
-      // pressed the Enter key, or the Place Details request failed.
-      window.alert("No details available for input: '" + place.name + "'");
+  function displaySuggestions(predictions, status) {
+    if (status != google.maps.places.PlacesServiceStatus.OK) {
+      alert('There was an error while trying to generate location options: ' + status);
       return;
     }
-    const input = document.getElementById('location-list');
-    input.value = place.name;
-  });
+    if (predictions === null) { // No predictions generated for this location
+      return;
+    }
+
+    predictions.splice(5); // just show top 5 predictions
+    // each time we display suggestions, show only the top 5, and then the state dropdown
+    let resultsHtml = [];
+    predictions.forEach(function(prediction) {
+      resultsHtml.push(
+          `<option class="autocomplete-item" value="${prediction.description}"></option>`);
+    });
+    autocompleteResults.innerHTML = resultsHtml.join("") + defaultLocationOptions;
+  };
+
+  // When the input box changes (due to typing), get what has been typed and
+  // send it to the autocomplete service, which then calls displaySuggestions
+  // on the predictions it generated
+  autocompleteInput.addEventListener('input', debounce(function() {
+    let value = this.value;
+    value.replace('"', '\\"').replace(/^\s+|\s+$/g, ''); // Trim whitespace
+    service.getPlacePredictions({
+      'input': value,
+      'types': ['(regions)'], // no businesses, just cities counties etc.
+      'componentRestrictions': {'country': 'us'}, // USA only
+    }, displaySuggestions);
+  }, 250)); // wait 250 ms before sending the request so they don't overload
+}
+
+// Takes in a function and returns the same function, but with a slowdown on
+// execution: it will only run at most once every waitTime milliseconds.
+function debounce(func, waitTime) {
+  let timeout;
+
+  return function executedFunction() {
+    const context = this; 
+    const args = arguments;
+    const later = () => {
+      clearTimeout(timeout);
+      // give the function access to all the variables in this context
+      func.apply(context, args); 
+    };
+
+    // set and clearTimeout are built-in methods; set executes a function after a
+    // certain amount of time, and clear "deletes" the set timer so that the
+    // function will not be executed
+    clearTimeout(timeout);
+    timeout = setTimeout(later, waitTime);
+  };
 }
 
 // loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed
