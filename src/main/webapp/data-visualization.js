@@ -206,7 +206,7 @@ function getMapsData(censusDataArray) {
     // and we need to get them like this "Contra Costa"
     const countyAndStateArray = county[0].split(',');
     // ^^ ["Contra Costa County", "California"]
-    // Alaska has suffixes other than county
+    // Trim space and region suffix
     const countyRegex = new RegExp('( County| City and Borough|' +
         ' Borough| Municipality| Census Area)$');
     let countyString = countyAndStateArray[0].replace(countyRegex, '');
