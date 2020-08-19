@@ -24,7 +24,6 @@ function getColor() {
 }
 
 function clearPreviousResult() {
-  document.getElementById('map-title').innerText = '';
   document.getElementById('data-table').innerHTML = '';
   document.getElementById('colors').style.display = 'none';
   document.getElementById('census-link').style.display = 'none';
@@ -61,7 +60,7 @@ async function passQuery() {
     locationInfo = {name: locationInput,
       // Either the center of the state,
       // or the (slightly shifted for UX) center of the US
-      lat: location in stateInfo ? stateInfo[location].lat : 38.75,
+      lat: location in stateInfo ? stateInfo[location].lat : 40.5,
       lng: location in stateInfo ? stateInfo[location].lng : -96.5,
       number: location,
       };
@@ -91,7 +90,6 @@ async function passQuery() {
     ' each ' + region + ' (' +
     personType.replace('-', ' ') + ')' +
     ' in ' + year;
-  document.getElementById('map-title').innerText = title;
 
   const fetchUrl = '/query?person-type=' + personType +
     '&action=' + action +
@@ -110,7 +108,7 @@ async function passQuery() {
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
         const data = removeErroneousData(JSON.parse(response.data.censusData));
-        displayVisualization(data, description, locationInfo, isCountyQuery);
+        displayVisualization(data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
