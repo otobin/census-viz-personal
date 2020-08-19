@@ -72,11 +72,13 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
     chart.goHome();
   });
 
+  const isCountyQuery = data[0].id.indexOf('US') === -1;
+
   // Albers projection for state level, Mercator for county level
-  if (data[0].id.indexOf('US') !== -1) {
-    chart.projection = new am4maps.projections.AlbersUsa();
-  } else {
+  if (isCountyQuery) {
     chart.projection = new am4maps.projections.Mercator();
+  } else {
+    chart.projection = new am4maps.projections.AlbersUsa();
   }
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
 
@@ -122,9 +124,23 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   polygonSeries.mapPolygons.template.events.on('over', function(event) {
     handleHover(event.target);
   });
-  polygonTemplate.events.on('hit', function(event) {
+
+  const allStatesMapOnHit = (event) => {
     chart.zoomToMapObject(event.target);
-  });
+    const locationName = event.target.dataItem.dataContext.locationName;
+    const locationNumber = document.querySelector(
+        '#location option[value=\'' + locationName + '\']').dataset.value;
+    setDropdownValue('location', locationNumber);
+    submitQuery();
+  };
+
+  const countyMapOnHit = (event) => {
+    chart.zoomToMapObject(event.target);
+  };
+
+  polygonTemplate.events.on('hit',
+      isCountyQuery ? countyMapOnHit : allStatesMapOnHit);
+
   function handleHover(column) {
     if (!isNaN(column.dataItem.value)) {
       heatLegend.valueAxis.showTooltipAt(column.dataItem.value);
