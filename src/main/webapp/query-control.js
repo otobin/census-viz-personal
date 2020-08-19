@@ -121,7 +121,6 @@ async function passQuery() {
     });
 }
 
-
 // Remove incorrect data returned by the census API
 // such as Puerto Rico data and negative numbers
 function removeErroneousData(dataArray) {
@@ -233,16 +232,9 @@ function setupAutocompleteLocation() {
   const defaultLocationOptions = autocompleteResults.innerHTML; // all states
 
   function displaySuggestions(predictions, status) {
-    if (status != google.maps.places.PlacesServiceStatus.OK) {
-      alert(
-          'There was an error while trying to generate location options: ' +
-          status);
-      return;
-    }
     if (predictions === null) { // No predictions generated for this location
       return;
     }
-
     // Each time we display suggestions, show only the top 5, and then the
     // normal state dropdown afterwards
     predictions.splice(5);
@@ -268,7 +260,7 @@ function setupAutocompleteLocation() {
       'types': ['(regions)'], // no businesses, just cities counties etc.
       'componentRestrictions': {'country': 'us'}, // USA only
     }, displaySuggestions);
-  }, 250)); // wait 250 ms before sending the request so they don't overload
+  }, 175)); // wait this many ms to send request so they don't overload
 }
 
 // Takes in a function and returns the same function, but with a slowdown on
