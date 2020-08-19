@@ -273,12 +273,13 @@ input[type="color"] {
   border-radius: 1px;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .25);
   color: #757575;
-  padding: 8px;
+  display: flex;
   font-size: 13px;
   height: 36px;
-  line-height: 1em;
   font-family: 'Roboto', arial, sans-serif;
   font-weight: 500;
+  margin: 0;
+  padding: 0;
   letter-spacing: .21px;
   text-transform: none;
   transition: background-color .218s, border-color .218s, box-shadow .218s;
@@ -294,4 +295,15 @@ input[type="color"] {
 #sign-out-btn:active {
   background-color: #eee;
   color: #6d6d6d;
+}
+
+#sign-out-btn-text {
+  width: 100%;
+  line-height: 34px;
+}
+
+#google-icon {
+  width: 18px;
+  padding: 8px;
+  height: 18px;
 }
