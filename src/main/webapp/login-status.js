@@ -39,7 +39,8 @@ function displayLoginStatus() {
 function loginInit() {
   gapi.load('auth2', () => {
     gapi.auth2.init({
-      client_id: '156213329836-pnoe2errhb8gr29aplgo0klfkjrfeknf.apps.googleusercontent.com',
+      client_id: '156213329836-pnoe2errhb8gr29aplgo0klfkjrfeknf' + 
+          '.apps.googleusercontent.com',
     }).then(() => {
       gapi.signin2.render('sign-in-btn', {
         'onsuccess': onSignIn,

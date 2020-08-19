@@ -301,3 +301,9 @@ input[type="color"] {
   width: 100%;
   line-height: 34px;
 }
+
+#google-icon {
+  width: 18px;
+  padding: 8px;
+  height: 18px;
+}
