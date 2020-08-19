@@ -56,8 +56,8 @@ async function passQuery() {
           '#location option[value=\'' + locationInput + '\']');
   let location;
   let locationInfo;
-  if (locationSelector !== null && 
-      !locationSelector.classList.contains('autocomplete-item')) { 
+  if (locationSelector !== null &&
+      !locationSelector.classList.contains('autocomplete-item')) {
     // User picked a location from the dropdown
     location = locationSelector.dataset.value;
     locationInfo = {name: locationInput,
@@ -234,7 +234,9 @@ function setupAutocompleteLocation() {
 
   function displaySuggestions(predictions, status) {
     if (status != google.maps.places.PlacesServiceStatus.OK) {
-      alert('There was an error while trying to generate location options: ' + status);
+      alert(
+          'There was an error while trying to generate location options: ' +
+          status);
       return;
     }
     if (predictions === null) { // No predictions generated for this location
@@ -244,19 +246,22 @@ function setupAutocompleteLocation() {
     // Each time we display suggestions, show only the top 5, and then the
     // normal state dropdown afterwards
     predictions.splice(5);
-    let resultsHtml = [];
+    const resultsHtml = [];
     predictions.forEach(function(prediction) {
       resultsHtml.push(
-          `<option class="autocomplete-item" value="${prediction.description}"></option>`);
+          '<option class="autocomplete-item" value="' +
+          prediction.description +
+          '"></option>');
     });
-    autocompleteResults.innerHTML = resultsHtml.join("") + defaultLocationOptions;
+    autocompleteResults.innerHTML =
+        resultsHtml.join('') + defaultLocationOptions;
   };
 
   // When the input box changes (due to typing), get what has been typed and
   // send it to the autocomplete service, which then calls displaySuggestions
   // on the predictions it generated
   autocompleteInput.addEventListener('input', debounce(function() {
-    let value = this.value;
+    const value = this.value;
     value.replace('"', '\\"').replace(/^\s+|\s+$/g, ''); // Trim whitespace
     service.getPlacePredictions({
       'input': value,
@@ -272,16 +277,16 @@ function debounce(func, waitTime) {
   let timeout;
 
   return function executedFunction() {
-    const context = this; 
+    const context = this;
     const args = arguments;
     const later = () => {
       clearTimeout(timeout);
       // give the function access to all the variables in this context
-      func.apply(context, args); 
+      func.apply(context, ...args);
     };
 
-    // set and clearTimeout are built-in methods; set executes a function after a
-    // certain amount of time, and clear "deletes" the set timer so that the
+    // set and clearTimeout are built-in methods; set executes a function after
+    // a certain amount of time, and clear "deletes" the set timer so that the
     // function will not be executed
     clearTimeout(timeout);
     timeout = setTimeout(later, waitTime);
