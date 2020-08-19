@@ -58,7 +58,7 @@ function displayAmChartsMap(data, locationInfo, description, title, geoData, col
   const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
   chart.homeGeoPoint = {
-    latitude: locationInfo.lat,
+    latitude: locationInfo.lat + 0.5, // move down a bit to make room for title
     longitude: locationInfo.lng,
   };
   chart.zoomControl = new am4maps.ZoomControl();
