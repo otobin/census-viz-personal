@@ -200,22 +200,18 @@ function getMapsData(censusDataArray) {
   const populationsList = [];
   // Get rid of the header
   const censusArray = censusDataArray.slice(1);
-  censusArray.forEach( (county) => {
+  censusArray.forEach((county) => {
     // The current county strings are in a layout like this:
     // "Contra Costa County, California"
     // and we need to get them like this "Contra Costa"
     const countyAndStateArray = county[0].split(',');
     // ^^ ["Contra Costa County", "California"]
-    const countyArray = countyAndStateArray[0].split(' ');
-    // ^^ ["Contra", "Costa", "County"]
-    let countyString = '';
-    let i;
-    // Get all strings except for the last one
-    for (i = 0; i < countyArray.length - 1; i++) {
-      countyString += countyArray[i];
-      if (i !== countyArray.length - 2) {
-        countyString += ' ';
-      }
+    // Alaska has suffixes other than county
+    const countyRegex = new RegExp('( County| City and Borough|' +
+        ' Borough| Municipality| Census Area)$');
+    let countyString = countyAndStateArray[0].replace(countyRegex, '');
+    if (countyString === 'District of Columbia') { // Handle D.C. name mismatch
+      countyString = 'Washington, District of Columbia';
     }
     // Map the population to the county
     countyToPopMap[countyString] = county[1];
