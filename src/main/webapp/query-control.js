@@ -241,8 +241,9 @@ function setupAutocompleteLocation() {
       return;
     }
 
-    predictions.splice(5); // just show top 5 predictions
-    // each time we display suggestions, show only the top 5, and then the state dropdown
+    // Each time we display suggestions, show only the top 5, and then the
+    // normal state dropdown afterwards
+    predictions.splice(5);
     let resultsHtml = [];
     predictions.forEach(function(prediction) {
       resultsHtml.push(
