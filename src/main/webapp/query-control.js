@@ -64,27 +64,23 @@ function getHistory(personType, action, location, year) {
       ).set(
         'moved', 'moved to',
       );
-  fetch('/history').then(function (response) {
-    console.log(response);
-  });
-    /*
-    historyElements.forEach((historyElement) => {
-      if (historyElement !== null) {
-        const historyDiv = document.createElement('div');
-        if (historyElement[2] !== 'state') {
-          historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
-            historyElement[3], stateInfo[historyElement[2]].name, 
-            gramaticallyCorrectAction.get(historyElement[1]));
-        } else {
-          historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
-            historyElement[3], 'Each U.S. state', 
-            gramaticallyCorrectAction.get(historyElement[1]));
+  fetch(fetchUrl).then((response) => response.json()).then(
+    function (jsonResponse) {
+      jsonResponse.forEach((historyElement) => {
+        if (historyElement !== null) {
+          const historyDiv = document.createElement('div');
+          if (historyElement[2] !== 'state') {
+            historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
+              historyElement[3], stateInfo[historyElement[2]].name, 
+              gramaticallyCorrectAction.get(historyElement[1]));
+          } else {
+            historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
+              historyElement[3], 'Each U.S. state', 
+              gramaticallyCorrectAction.get(historyElement[1]));
+          }
+          historyContainer.appendChild(historyDiv);
         }
-        historyContainer.appendChild(historyDiv);
-      }
-    })
-  }));
-  */
+      })});
 }
 
 // Change hash to match dropdown inputs. Triggers onhashchange listener

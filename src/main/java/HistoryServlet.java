@@ -1,4 +1,3 @@
-package com.google.sps.servlets;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
@@ -24,15 +23,7 @@ public class HistoryServlet extends HttpServlet {
   
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String test = "Test";
-    String json = new Gson().toJson(test);
-    response.getWriter().write(json);
-  }
-}
-
-
-/*
-String personType = request.getParameter("person-type");
+    String personType = request.getParameter("person-type");
     String action = request.getParameter("action");
     String location = request.getParameter("location");
     String year = request.getParameter("year");
@@ -59,4 +50,5 @@ String personType = request.getParameter("person-type");
     }
     String json = new Gson().toJson(queryList);
     response.getWriter().write(json);
-*/
+  }
+}
