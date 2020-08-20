@@ -1,16 +1,11 @@
-import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import com.google.sps.data.HistoryElement;
-import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.lang.*;
+import java.lang.String;
 
 @WebServlet("/history")
 public class HistoryServlet extends HttpServlet {

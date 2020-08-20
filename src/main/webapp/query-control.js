@@ -71,9 +71,6 @@ function getHistory(personType, action, location, year, userId) {
       );
   fetch(fetchUrl).then((response) => response.json()).then(
     function (jsonResponse) {
-      console.log(jsonResponse);
-      console.log(window.location);
-      console.log(window.location.hash);
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
           let historyTextNode;
