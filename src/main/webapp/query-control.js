@@ -77,7 +77,7 @@ async function passQuery(personType, action, location, year) {
   let locationInfo;
   let locationName;
   if (locationDropdown !== null &&
-      !locationDropdown.classList.contains('autocomplete-item')) { 
+      !locationDropdown.classList.contains('autocomplete-item')) {
     // User picked a location from the dropdown
     locationName = locationDropdown.value;
     locationInfo = {name: locationName,
@@ -88,7 +88,6 @@ async function passQuery(personType, action, location, year) {
       number: location,
       };
   } else { // Have to manually find which state the location is in
-    console.log("location is " + location);
     locationInfo = await findStateOfLocation(location);
     if (locationInfo === undefined) {
       return; // error was thrown inside findStateOfLocation()
@@ -250,7 +249,6 @@ async function createStateDropdownList() {
 // Set up an autocomplete dropdown, attached to the main location input
 // and states dropdown, to suggest places to users as they type
 function setupAutocompleteLocation() {
-  console.log('running')
   const autocompleteInput = document.getElementById('location-list');
   const autocompleteResults = document.getElementById('location');
   const service = new google.maps.places.AutocompleteService();
