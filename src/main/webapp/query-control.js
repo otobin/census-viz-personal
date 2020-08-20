@@ -59,6 +59,7 @@ function getHistory(personType, action, location, year, userId) {
   historyContainer.innerHTML = '';
   const header = document.createElement('p');
   header.innerText = "Pages you've Viewed";
+  historyContainer.appendChild(header);
   console.log("start");
   const gramaticallyCorrectAction = new Map();
   gramaticallyCorrectAction.set(
@@ -85,8 +86,6 @@ function getHistory(personType, action, location, year, userId) {
           }
           const linkElement = document.createElement('a');
           historyContainer.appendChild(historyText);
-
-
         }
       })});
 }
