@@ -35,14 +35,16 @@ public class HistoryElement {
     return year;
   }
 
-  public boolean equals(HistoryElement otherElement) {
+  @Override
+  public boolean equals(Object other) {
+    HistoryElement otherElement = (HistoryElement)other;
     String otherPersonType = otherElement.getPersonType();
     String otherAction = otherElement.getAction();
     String otherLocation = otherElement.getLocation();
     String otherYear = otherElement.getYear();
-    return ((getPersonType().equals(otherPersonType)) && 
-        (getAction().equals(action)) && 
-        (getLocation().equals(otherLocation)) &&
-        (getYear().equals(otherYear)));
+    return ((this.personType.equals(otherPersonType)) && 
+        (this.action.equals(action)) && 
+        (this.location.equals(otherLocation)) &&
+        (this.year.equals(otherYear)));
   }
 }
