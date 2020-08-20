@@ -56,10 +56,6 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
-  chart.homeGeoPoint = {
-    latitude: locationInfo.lat,
-    longitude: locationInfo.lng,
-  };
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons
   chart.mouseWheelBehavior = 'none';
@@ -271,7 +267,8 @@ async function displayCountyGeoJson(mapsData, description,
     locationInfo, geoData, color) {
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: stateInfo[locationInfo.number].zoomLevel,
-    center: {lat: locationInfo.lat, lng: locationInfo.lng},
+    center: {lat: stateInfo[locationInfo.number].lat,
+        lng: stateInfo[locationInfo.number].lng},
   });
 
   if (locationInfo.lat !== stateInfo[locationInfo.number].lat || 
