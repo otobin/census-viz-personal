@@ -75,10 +75,10 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   const isCountyQuery = data[0].id.indexOf('US') === -1;
 
   // Albers projection for state level, Mercator for county level
-  if (!isCountyQuery) {
-    chart.projection = new am4maps.projections.AlbersUsa();
-  } else {
+  if (isCountyQuery) {
     chart.projection = new am4maps.projections.Mercator();
+  } else {
+    chart.projection = new am4maps.projections.AlbersUsa();
   }
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
 
@@ -200,22 +200,18 @@ function getMapsData(censusDataArray) {
   const populationsList = [];
   // Get rid of the header
   const censusArray = censusDataArray.slice(1);
-  censusArray.forEach( (county) => {
+  censusArray.forEach((county) => {
     // The current county strings are in a layout like this:
     // "Contra Costa County, California"
     // and we need to get them like this "Contra Costa"
     const countyAndStateArray = county[0].split(',');
     // ^^ ["Contra Costa County", "California"]
-    const countyArray = countyAndStateArray[0].split(' ');
-    // ^^ ["Contra", "Costa", "County"]
-    let countyString = '';
-    let i;
-    // Get all strings except for the last one
-    for (i = 0; i < countyArray.length - 1; i++) {
-      countyString += countyArray[i];
-      if (i !== countyArray.length - 2) {
-        countyString += ' ';
-      }
+    // Trim space and region suffix
+    const countyRegex = new RegExp('( County| City and Borough|' +
+        ' Borough| Municipality| Census Area| city| City)$');
+    let countyString = countyAndStateArray[0].replace(countyRegex, '');
+    if (countyString === 'District of Columbia') { // Handle D.C. name mismatch
+      countyString = 'Washington, District of Columbia';
     }
     // Map the population to the county
     countyToPopMap[countyString] = county[1];
@@ -399,11 +395,6 @@ function toggleDataTable() {
     dataTable.style.display = 'none';
     document.getElementById('toggle-data-btn').innerText = 'Display raw data';
   }
-
-  const chartsDiv = document.getElementById('am-charts');
-  chartsDiv.style.display = 'block';
-  const mapsDiv = document.getElementById('map');
-  mapsDiv.style.display = 'none';
 }
 
 // Display link to data.census.gov table for the table the displayed

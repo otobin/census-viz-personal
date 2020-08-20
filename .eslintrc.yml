@@ -11,5 +11,5 @@ rules:
   indent: off
   camelcase:
     - 2
-    - allow: ['^am4geodata']
+    - allow: ['^(am4geodata|client_id)']
 
