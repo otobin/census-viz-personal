@@ -3,8 +3,9 @@
 async function getGeoData(locationInfo, isCountyQuery) {
   if (isCountyQuery) {
     const abbrev =
-        stateInfo[locationInfo.number].ISO.replace(/US-/, '').toLowerCase();
-    if (!stateInfo[locationInfo.number].geoJsonLoaded) {
+        stateInfo[locationInfo.stateNumber]
+        .ISO.replace(/US-/, '').toLowerCase();
+    if (!stateInfo[locationInfo.stateNumber].geoJsonLoaded) {
       await new Promise((resolve, reject) => {
         const script = document.createElement('script');
         document.body.appendChild(script);
@@ -14,7 +15,7 @@ async function getGeoData(locationInfo, isCountyQuery) {
         script.src =
         `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
       });
-      stateInfo[locationInfo.number].geoJsonLoaded = true;
+      stateInfo[locationInfo.stateNumber].geoJsonLoaded = true;
     }
     return window['am4geodata_region_usa_' + abbrev + 'Low'];
   } else {
@@ -58,10 +59,6 @@ function displayAmChartsMap(
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
-  chart.homeGeoPoint = {
-    latitude: locationInfo.lat + 0.5, // move down a bit to make room for title
-    longitude: locationInfo.lng,
-  };
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons
   chart.mouseWheelBehavior = 'none';
@@ -95,6 +92,8 @@ function displayAmChartsMap(
     chart.projection = new am4maps.projections.AlbersUsa();
   }
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+  const moveDown = 50;
+  polygonSeries.dy = moveDown; // shift map down to make room for title
 
   // Set min/max fill color for each area
   polygonSeries.heatRules.push({
@@ -108,6 +107,40 @@ function displayAmChartsMap(
   addTooltipText(data, geoData.features, description);
   polygonSeries.useGeodata = true;
   polygonSeries.data = data;
+
+  if (isCountyQuery &&
+      stateInfo[locationInfo.stateNumber].name !== locationInfo.originalName) {
+    // User searched for a specific point; put a marker there
+    // Add an image layer to the map
+    const imageSeries = chart.series.push(new am4maps.MapImageSeries());
+    const imageTemplate = imageSeries.mapImages.template;
+    imageTemplate.propertyFields.longitude = 'longitude';
+    imageTemplate.propertyFields.latitude = 'latitude';
+    imageTemplate.nonScaling = true;
+
+    // Add a marker to the image layer
+    const marker = imageTemplate.createChild(am4plugins_bullets.PointedCircle);
+    marker.fill = am4core.color('#ea4335');
+    marker.pointerLength = 23;
+    marker.pointerBaseWidth = 12;
+    marker.stroke = am4core.color('black');
+    marker.strokeWidth = 2;
+    marker.radius = 14;
+    marker.dy = moveDown;
+    marker.tooltipText = locationInfo.originalName;
+
+    // Add shadow to the marker (for appearance)
+    const shadow = imageTemplate.createChild(am4core.Circle);
+    shadow.radius = 5;
+    shadow.fill = am4core.color('#811411');
+    shadow.zIndex = 1;
+    shadow.dy = -36 + moveDown;
+
+    // One location listing for the marker, one for the shadow (same location)
+    imageSeries.data =
+        [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng},
+        {'latitude': locationInfo.lat, 'longitude': locationInfo.lng}];
+  }
 
   // Set up heat legend
   const heatLegend = chart.createChild(am4maps.HeatLegend);
@@ -259,10 +292,25 @@ function getMinAndMaxPopulation(populationArray) {
 // Initializes the geoJson and adds multiple event listeners.
 async function displayCountyGeoJson(mapsData, description,
     locationInfo, geoData, color) {
+  const state = stateInfo[locationInfo.stateNumber];
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: stateInfo[locationInfo.number].zoomLevel,
-    center: {lat: locationInfo.lat, lng: locationInfo.lng},
+    zoom: state.zoomLevel, center: {lat: state.lat, lng: state.lng},
   });
+
+  if (state.name !== locationInfo.originalName) {
+    // user searched for a specific point; put a marker there
+    const marker = new google.maps.Marker({map: map,
+        position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map});
+    const infowindow = new google.maps.InfoWindow({
+      content: `<p>${locationInfo.originalName}<p>`,
+    });
+    marker.addListener('mouseover', () => {
+      infowindow.open(map, marker);
+    });
+    marker.addListener('mouseout', () => {
+      infowindow.close();
+    });
+  }
 
   const countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
