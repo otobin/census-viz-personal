@@ -92,7 +92,8 @@ function displayAmChartsMap(
     chart.projection = new am4maps.projections.AlbersUsa();
   }
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
-  polygonSeries.dy = 50; // move down to make room for title
+  const moveDown = 50;
+  polygonSeries.dy = moveDown; // shift map down to make room for title
 
   // Set min/max fill color for each area
   polygonSeries.heatRules.push({
@@ -125,6 +126,7 @@ function displayAmChartsMap(
     marker.stroke = am4core.color('black');
     marker.strokeWidth = 2;
     marker.radius = 14;
+    marker.dy = moveDown;
     marker.tooltipText = locationInfo.originalName;
 
     // Add shadow to the marker (for appearance)
@@ -132,7 +134,7 @@ function displayAmChartsMap(
     shadow.radius = 5;
     shadow.fill = am4core.color('#811411');
     shadow.zIndex = 1;
-    shadow.dy = -36;
+    shadow.dy = -36 + moveDown;
 
     // One location listing for the marker, one for the shadow (same location)
     imageSeries.data =
