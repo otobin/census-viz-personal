@@ -53,7 +53,8 @@ async function displayVisualization(censusDataArray, description, title,
 }
 
 // Create and display amcharts map using data and geoData.
-function displayAmChartsMap(data, locationInfo, description, title, geoData, color) {
+function displayAmChartsMap(
+    data, locationInfo, description, title, geoData, color) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
@@ -80,11 +81,11 @@ function displayAmChartsMap(data, locationInfo, description, title, geoData, col
   mapTitle.marginBottom = 60;
   mapTitle.paddingBottom = 60;
 
-  // Allow export 
+  // Allow export
   chart.exporting.menu = new am4core.ExportMenu();
-  chart.exporting.menu.align = "left";
-  chart.exporting.menu.verticalAlign = "top";
-  chart.exporting.filePrefix = "CensusViz";
+  chart.exporting.menu.align = 'left';
+  chart.exporting.menu.verticalAlign = 'top';
+  chart.exporting.filePrefix = 'CensusViz';
 
   const isCountyQuery = data[0].id.indexOf('US') === -1;
   // Albers projection for state level, Mercator for county level

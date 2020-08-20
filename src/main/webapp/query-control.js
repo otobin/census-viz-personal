@@ -125,7 +125,8 @@ async function passQuery(personType, action, location, year) {
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
         const data = removeErroneousData(JSON.parse(response.data.censusData));
-        displayVisualization(data, description, title, locationInfo, isCountyQuery);
+        displayVisualization(
+            data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
