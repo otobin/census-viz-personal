@@ -1,6 +1,4 @@
-import com.google.cloud.datastore.DatastoreOptions;
 import com.google.sps.data.CensusData;
-import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
