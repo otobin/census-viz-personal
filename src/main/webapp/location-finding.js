@@ -112,7 +112,7 @@ async function findStateOfLocation(location) {
                 .querySelector(
                     '#location option[value=\'' + state + '\']').dataset.value};
       })
-      .catch((err) => { 
+      .catch((err) => {
         displayError(
             400,
             'Either this location is not in one of the 50 U.S. states, or we \

@@ -98,9 +98,8 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
     // Add an image layer to the map
     const imageSeries = chart.series.push(new am4maps.MapImageSeries());
     const imageTemplate = imageSeries.mapImages.template;
-    imageTemplate.propertyFields.longitude = "longitude";
-    imageTemplate.propertyFields.latitude = "latitude";
-    imageTemplate.propertyFields.radius = "radius";
+    imageTemplate.propertyFields.longitude = 'longitude';
+    imageTemplate.propertyFields.latitude = 'latitude';
     imageTemplate.nonScaling = true;
 
     // Add a marker to the image layer
@@ -122,10 +121,8 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
 
     // One location listing for the marker, one for the shadow (same location)
     imageSeries.data =
-        [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng,
-            'radius' : 20},
-        {'latitude': locationInfo.lat, 'longitude': locationInfo.lng,
-            'radius' : 20}];
+        [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng,},
+        {'latitude': locationInfo.lat, 'longitude': locationInfo.lng,}];
   }
 
   // Set up heat legend
@@ -285,8 +282,8 @@ async function displayCountyGeoJson(mapsData, description,
 
   if (state.name !== locationInfo.originalName) {
     // user searched for a specific point; put a marker there
-    const marker = new google.maps.Marker({map: map, 
-        position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map});
+    const marker = new google.maps.Marker({map: map,
+        position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map,});
     const infowindow = new google.maps.InfoWindow({
       content: `<p>${locationInfo.originalName}<p>`
     });
