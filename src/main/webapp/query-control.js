@@ -52,10 +52,14 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   return title;
 }
 
-function getHistory(personType, action, location, year) {
-  const fetchUrl = getFetchUrl('history', personType, action, location, year);
+function getHistory(personType, action, location, year, userId) {
+  let fetchUrl = getFetchUrl('history', personType, action, location, year);
+  fetchUrl = fetchUrl + '&user-id=' + userId;
   const historyContainer = document.getElementById('history');
-  historyContainer.innertext = "Pages You've Viewed";
+  historyContainer.innerHTML = '';
+  const header = document.createElement('p');
+  header.innerText = "Pages you've Viewed";
+  console.log("start");
   const gramaticallyCorrectAction = new Map();
   gramaticallyCorrectAction.set(
         'live', 'lived in',
@@ -66,19 +70,23 @@ function getHistory(personType, action, location, year) {
       );
   fetch(fetchUrl).then((response) => response.json()).then(
     function (jsonResponse) {
+      console.log(jsonResponse);
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
-          const historyDiv = document.createElement('div');
-          if (historyElement[2] !== 'state') {
-            historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
-              historyElement[3], stateInfo[historyElement[2]].name, 
-              gramaticallyCorrectAction.get(historyElement[1]));
+          const historyText = document.createElement('p');
+          if (historyElement.location !== 'state') {
+            historyText.innerText = getTitle(historyElement.personType, historyElement.location, 
+              historyElement.year, stateInfo[historyElement.location].name, 
+              gramaticallyCorrectAction.get(historyElement.action));
           } else {
-            historyDiv.innerText = getTitle(historyElement[0], historyElement[2], 
-              historyElement[3], 'Each U.S. state', 
-              gramaticallyCorrectAction.get(historyElement[1]));
+            historyText.innerText = getTitle(historyElement.personType, historyElement.location, 
+              historyElement.year, 'Each U.S. state', 
+              gramaticallyCorrectAction.get(historyElement.action));
           }
-          historyContainer.appendChild(historyDiv);
+          const linkElement = document.createElement('a');
+          historyContainer.appendChild(historyText);
+
+
         }
       })});
 }
@@ -171,7 +179,10 @@ async function passQuery(personType, action, location, year) {
         displayVisualization(data, description, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
-        getHistory(personType, action, location, year);
+        const userId = getUserId();
+        if (userId) {
+          getHistory(personType, action, location, year, userId);
+        }
       } else {
         displayError(response.status, response.data.errorMessage);
       }
