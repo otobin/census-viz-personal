@@ -27,7 +27,9 @@ public class RecommendationsServlet extends HttpServlet {
     Map<String, int> actionOccurances = new HashMap<String, integer>();
     Map<String, int> locationOccurances = new HashMap<String, integer>();
     Map<String, int> yearOccurances = new HashMap<String, integer>();
-    
+    String locationSetting = request.getParameter("location-settings");
+    String userId = request.getParameter("user-id");
+
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Query query = new Query("historyEntity");
     PreparedQuery results = datastore.prepare(query);
