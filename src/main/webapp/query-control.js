@@ -75,23 +75,24 @@ async function passQuery(personType, action, location, year) {
   const locationDropdown = document.querySelector(
     '#location option[data-value=\'' + location + '\']');
   let locationInfo;
-  let locationName;
+  let state;
   if (locationDropdown !== null) { // User picked a location from the dropdown
-    locationName = locationDropdown.value;
-    locationInfo = {name: locationName,
+    state = locationDropdown.value;
+    locationInfo = {stateName: state,
+      stateNumber: location,
+      originalName: state,
       // Either the center of the state,
       // or the (slightly shifted for UX) center of the US
       lat: location in stateInfo ? stateInfo[location].lat : 38.75,
       lng: location in stateInfo ? stateInfo[location].lng : -96.5,
-      number: location,
       };
   } else { // Have to manually find which state the location is in
     locationInfo = await findStateOfLocation(location);
     if (locationInfo === undefined) {
       return; // error was thrown inside findStateOfLocation()
     }
-    locationName = locationInfo.name;
-    location = locationInfo.number;
+    state = locationInfo.stateName;
+    location = locationInfo.stateNumber;
   }
   const actionInput = document.querySelector(
     '#action option[data-value=\'' + action + '\']').value;
@@ -107,7 +108,7 @@ async function passQuery(personType, action, location, year) {
       `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? locationName + ' county' : 'U.S. state';
+  const region = isCountyQuery ? state + ' county' : 'U.S. state';
   const title = 'Population who ' + actionInput +
     ' each ' + region + ' (' +
     personType.replace('-', ' ') + ')' +

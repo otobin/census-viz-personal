@@ -3,8 +3,9 @@
 async function getGeoData(locationInfo, isCountyQuery) {
   if (isCountyQuery) {
     const abbrev =
-        stateInfo[locationInfo.number].ISO.replace(/US-/, '').toLowerCase();
-    if (!stateInfo[locationInfo.number].geoJsonLoaded) {
+        stateInfo[locationInfo.stateNumber]
+        .ISO.replace(/US-/, '').toLowerCase();
+    if (!stateInfo[locationInfo.stateNumber].geoJsonLoaded) {
       await new Promise((resolve, reject) => {
         const script = document.createElement('script');
         document.body.appendChild(script);
@@ -14,7 +15,7 @@ async function getGeoData(locationInfo, isCountyQuery) {
         script.src =
         `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
       });
-      stateInfo[locationInfo.number].geoJsonLoaded = true;
+      stateInfo[locationInfo.stateNumber].geoJsonLoaded = true;
     }
     return window['am4geodata_region_usa_' + abbrev + 'Low'];
   } else {
@@ -91,9 +92,8 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   polygonSeries.useGeodata = true;
   polygonSeries.data = data;
 
-  if (isCountyQuery && 
-      (locationInfo.lat !== stateInfo[locationInfo.number].lat || 
-      locationInfo.lng !== stateInfo[locationInfo.number].lng)) {
+  if (isCountyQuery &&
+      stateInfo[locationInfo.stateNumber].name !== locationInfo.originalName) {
     // User searched for a specific point; put a marker there
     // Add an image layer to the map
     const imageSeries = chart.series.push(new am4maps.MapImageSeries());
@@ -105,14 +105,27 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
 
     // Add a marker to the image layer
     const marker = imageTemplate.createChild(am4plugins_bullets.PointedCircle);
-    imageSeries.data = [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng, 'radius' : 20}]
-    marker.fill = am4core.color('red').brighten(-0.1);
-    marker.pointerAngle = 120;
+    marker.fill = am4core.color('#ea4335');
     marker.pointerLength = 23;
     marker.pointerBaseWidth = 12;
     marker.stroke = am4core.color('black');
     marker.strokeWidth = 2;
-    marker.radius = 15;
+    marker.radius = 14;
+    marker.tooltipText = locationInfo.originalName;
+
+    // Add shadow to the marker (for appearance)
+    const shadow = imageTemplate.createChild(am4core.Circle);
+    shadow.radius = 5;
+    shadow.fill = am4core.color('#811411');
+    shadow.zIndex = 1;
+    shadow.dy = -36;
+
+    // One location listing for the marker, one for the shadow (same location)
+    imageSeries.data =
+        [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng,
+            'radius' : 20},
+        {'latitude': locationInfo.lat, 'longitude': locationInfo.lng,
+            'radius' : 20}];
   }
 
   // Set up heat legend
@@ -265,17 +278,24 @@ function getMinAndMaxPopulation(populationArray) {
 // Initializes the geoJson and adds multiple event listeners.
 async function displayCountyGeoJson(mapsData, description,
     locationInfo, geoData, color) {
+  const state = stateInfo[locationInfo.stateNumber];
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: stateInfo[locationInfo.number].zoomLevel,
-    center: {lat: stateInfo[locationInfo.number].lat,
-        lng: stateInfo[locationInfo.number].lng},
+    zoom: state.zoomLevel, center: {lat: state.lat, lng: state.lng},
   });
 
-  if (locationInfo.lat !== stateInfo[locationInfo.number].lat || 
-      locationInfo.lng !== stateInfo[locationInfo.number].lng) {
+  if (state.name !== locationInfo.originalName) {
     // user searched for a specific point; put a marker there
     const marker = new google.maps.Marker({map: map, 
         position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map});
+    const infowindow = new google.maps.InfoWindow({
+      content: `<p>${locationInfo.originalName}<p>`
+    });
+    marker.addListener('mouseover', () => {
+      infowindow.open(map, marker);
+    });
+    marker.addListener('mouseout', () => {
+      infowindow.close();
+    });
   }
 
   const countyToPopMap = mapsData.map;

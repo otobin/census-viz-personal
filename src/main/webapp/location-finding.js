@@ -90,7 +90,7 @@ async function getUserState() {
 async function findStateOfLocation(location) {
   const fetchUrl =
       corsApiUrl + placesUrl + apiKey +
-      '&input=' + location + '&inputtype=textquery&fields=geometry';
+      '&input=' + location + '&inputtype=textquery&fields=name,geometry';
   const response = await fetch(fetchUrl);
   if (!response.ok) {
     displayError(
@@ -101,14 +101,14 @@ async function findStateOfLocation(location) {
 
   const geoInfo = await response.json();
   const place = geoInfo.candidates[0];
-
   return getStateFromLocation(
       place.geometry.location.lat, place.geometry.location.lng)
       .then((state) => {
-        return {name: state,
+        return {stateName: state,
+            originalName: place.name,
             lat: place.geometry.location.lat,
             lng: place.geometry.location.lng,
-            number: document
+            stateNumber: document
                 .querySelector(
                     '#location option[value=\'' + state + '\']').dataset.value};
       })
