@@ -77,21 +77,6 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   // Albers projection for state level, Mercator for county level
   if (isCountyQuery) {
     chart.projection = new am4maps.projections.Mercator();
-    if (locationInfo.lat !== stateInfo[locationInfo.number].lat || 
-        locationInfo.lng !== stateInfo[locationInfo.number].lng) {
-      // user searched for a specific point; put a marker there
-      /*const marker = chart.bullets.push(new am4plugins_bullets.PointedBullet());
-      marker.latitude = locationInfo.lat;
-      marker.longitude = locationInfo.lng;*/
-      const imageSeries = chart.series.push(new am4maps.MapImageSeries());
-      const imageTemplate = imageSeries.mapImages.template;
-      imageTemplate.propertyFields.longitude = "longitude";
-      imageTemplate.propertyFields.latitude = "latitude";
-      imageTemplate.nonScaling = true;
-      const marker = imageTemplate.createChild(am4plugins_bullets.PinBullet);
-      marker.latitude = locationInfo.lat;
-      marker.longitude = locationInfo.lng;
-    }
   } else {
     chart.projection = new am4maps.projections.AlbersUsa();
   }
@@ -109,6 +94,30 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   addTooltipText(data, geoData.features, description);
   polygonSeries.useGeodata = true;
   polygonSeries.data = data;
+
+  if (isCountyQuery && 
+      (locationInfo.lat !== stateInfo[locationInfo.number].lat || 
+      locationInfo.lng !== stateInfo[locationInfo.number].lng)) {
+    // User searched for a specific point; put a marker there
+    // Add an image layer to the map
+    const imageSeries = chart.series.push(new am4maps.MapImageSeries());
+    const imageTemplate = imageSeries.mapImages.template;
+    imageTemplate.propertyFields.longitude = "longitude";
+    imageTemplate.propertyFields.latitude = "latitude";
+    imageTemplate.propertyFields.radius = "radius";
+    imageTemplate.nonScaling = true;
+
+    // Add a marker to the image layer
+    const marker = imageTemplate.createChild(am4plugins_bullets.PointedCircle);
+    imageSeries.data = [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng, 'radius' : 20}]
+    marker.fill = am4core.color('red').brighten(-0.1);
+    marker.pointerAngle = 120;
+    marker.pointerLength = 23;
+    marker.pointerBaseWidth = 12;
+    marker.stroke = am4core.color('black');
+    marker.strokeWidth = 2;
+    marker.radius = 15;
+  }
 
   // Set up heat legend
   const heatLegend = chart.createChild(am4maps.HeatLegend);
