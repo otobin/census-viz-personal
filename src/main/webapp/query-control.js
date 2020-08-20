@@ -88,6 +88,7 @@ async function passQuery(personType, action, location, year) {
       number: location,
       };
   } else { // Have to manually find which state the location is in
+    console.log("location is " + location);
     locationInfo = await findStateOfLocation(location);
     if (locationInfo === undefined) {
       return; // error was thrown inside findStateOfLocation()
@@ -249,6 +250,7 @@ async function createStateDropdownList() {
 // Set up an autocomplete dropdown, attached to the main location input
 // and states dropdown, to suggest places to users as they type
 function setupAutocompleteLocation() {
+  console.log('running')
   const autocompleteInput = document.getElementById('location-list');
   const autocompleteResults = document.getElementById('location');
   const service = new google.maps.places.AutocompleteService();
@@ -265,6 +267,7 @@ function setupAutocompleteLocation() {
     predictions.forEach(function(prediction) {
       resultsHtml.push(
           '<option class="autocomplete-item" value="' +
+          prediction.description + '" data-value="' +
           prediction.description +
           '"></option>');
     });
