@@ -92,6 +92,7 @@ function displayAmChartsMap(
     chart.projection = new am4maps.projections.AlbersUsa();
   }
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+  polygonSeries.dy = 50; // move down to make room for title
 
   // Set min/max fill color for each area
   polygonSeries.heatRules.push({
