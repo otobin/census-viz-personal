@@ -72,22 +72,39 @@ function getHistory(personType, action, location, year, userId) {
   fetch(fetchUrl).then((response) => response.json()).then(
     function (jsonResponse) {
       console.log(jsonResponse);
+      console.log(window.location);
+      console.log(window.location.hash);
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
-          const historyText = document.createElement('p');
+          let historyTextNode;
           if (historyElement.location !== 'state') {
-            historyText.innerText = getTitle(historyElement.personType, historyElement.location, 
+            const historyText = getTitle(historyElement.personType, historyElement.location, 
               historyElement.year, stateInfo[historyElement.location].name, 
               gramaticallyCorrectAction.get(historyElement.action));
+            historyTextNode = document.createTextNode(historyText);
           } else {
-            historyText.innerText = getTitle(historyElement.personType, historyElement.location, 
+            const historyText = getTitle(historyElement.personType, historyElement.location, 
               historyElement.year, 'Each U.S. state', 
               gramaticallyCorrectAction.get(historyElement.action));
+            historyTextNode = document.createTextNode(historyText);
           }
           const linkElement = document.createElement('a');
-          historyContainer.appendChild(historyText);
+          linkElement.href = getHistoryUrl(historyElement);
+          linkElement.appendChild(historyTextNode);
+          historyContainer.appendChild(linkElement);
+          const breakElement = document.createElement('br');
+          historyContainer.appendChild(breakElement);
         }
       })});
+}
+
+function getHistoryUrl(historyElement) {
+  const host = window.location.origin;
+  const hash = '/#person-type=' + historyElement.personType + 
+  '&action=' + historyElement.action + '&location=' + historyElement.location + 
+  '&year=' + historyElement.year;
+  const url = host + hash;
+  return url;
 }
 
 // Change hash to match dropdown inputs. Triggers onhashchange listener
