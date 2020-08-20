@@ -35,32 +35,52 @@ function clearPreviousResult() {
   document.getElementById('result').style.display = 'block';
 }
 
-// Get the query the user entered and display the result.
-// Breaks down the query and passes it to the backend to be analyzed;
-// the backend returns the appropriate data, which is then passed off
-// to be reformatted and visualized.
-async function passQuery() {
-  clearPreviousResult();
+function getFetchUrl(personType, action, location, year) {
+  return '/query?person-type=' + personType +
+    '&action=' + action +
+    '&location=' + location +
+    '&year=' + year;
+}
+
+// Change hash to match dropdown inputs. Triggers onhashchange listener
+// that calls passQuery()
+function submitQuery() {
   const query = new FormData(document.getElementById('query-form'));
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
+  const locationInput = query.get('location').replace(/'/g, '');
   const year = query.get('year');
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
     '#action option[value=\'' + actionInput + '\']').dataset.value;
-
-  let locationInput = query.get('location');
-  const locationSelector =
-      document.querySelector(
-          '#location option[value=\'' + locationInput + '\']');
+  const locationDropdown = document.querySelector(
+    '#location option[value=\'' + locationInput + '\']');
   let location;
+  if (locationDropdown != null) {
+    location = locationDropdown.dataset.value;
+  } else {
+    location = locationInput;
+  }
+  const fetchUrl = getFetchUrl(personType, action, location, year);
+  window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
+}
+
+// Get the query the user entered and display the result.
+// Breaks down the query and passes it to the backend to be analyzed;
+// the backend returns the appropriate data, which is then passed off
+// to be reformatted and visualized.
+async function passQuery(personType, action, location, year) {
+  clearPreviousResult();
+  const locationDropdown = document.querySelector(
+    '#location option[data-value=\'' + location + '\']');
   let locationInfo;
-  if (locationSelector !== null &&
-      !locationSelector.classList.contains('autocomplete-item')) {
+  let locationName;
+  if (locationDropdown !== null &&
+      !locationDropdown.classList.contains('autocomplete-item')) { 
     // User picked a location from the dropdown
-    location = locationSelector.dataset.value;
-    locationInfo = {name: locationInput,
+    locationName = locationDropdown.value;
+    locationInfo = {name: locationName,
       // Either the center of the state,
       // or the (slightly shifted for UX) center of the US
       lat: location in stateInfo ? stateInfo[location].lat : 38.75,
@@ -68,14 +88,15 @@ async function passQuery() {
       number: location,
       };
   } else { // Have to manually find which state the location is in
-    locationInfo = await findStateOfLocation(locationInput);
+    locationInfo = await findStateOfLocation(location);
     if (locationInfo === undefined) {
       return; // error was thrown inside findStateOfLocation()
     }
-    locationInput = locationInfo.name;
+    locationName = locationInfo.name;
     location = locationInfo.number;
   }
-
+  const actionInput = document.querySelector(
+    '#action option[data-value=\'' + action + '\']').value;
   const actionToPerson = new Map();
   actionToPerson.set(
         'live', 'Population',
@@ -88,18 +109,14 @@ async function passQuery() {
       `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
+  const region = isCountyQuery ? locationName + ' county' : 'U.S. state';
   const title = 'Population who ' + actionInput +
     ' each ' + region + ' (' +
     personType.replace('-', ' ') + ')' +
     ' in ' + year;
   document.getElementById('map-title').innerText = title;
 
-  const fetchUrl = '/query?person-type=' + personType +
-    '&action=' + action +
-    '&location=' + location +
-    '&year=' + year;
-
+  const fetchUrl = getFetchUrl(personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
       data: jsonResponse,
@@ -118,6 +135,9 @@ async function passQuery() {
       } else {
         displayError(response.status, response.data.errorMessage);
       }
+    })
+    .catch((error) => {
+      console.log(error);
     });
 }
 
@@ -221,6 +241,9 @@ async function createStateDropdownList() {
     optionElem.setAttribute('data-value', value.number);
     datalist.appendChild(optionElem);
   });
+  // This would be called in HTML onload
+  // but will not work until createStateDropdownList is done
+  submitHashQuery();
 }
 
 // Set up an autocomplete dropdown, attached to the main location input
@@ -285,6 +308,42 @@ function debounce(func, waitTime) {
   };
 }
 
+// Set dropdown for datalistId to value
+function setDropdownValue(datalistId, value) {
+  const inputList = document.getElementById(datalistId + '-list');
+  const dropdown = document.querySelector(
+    '#' + datalistId + ' option[data-value=\'' + value + '\']');
+  if (dropdown !== null ) {
+    inputList.value = dropdown.value;
+  } else {
+    // Value is not in dropdown
+    // passQuery maps value to a value in dropdown
+    inputList.value = value;
+  }
+}
+
+// Called on load and on hash change. Check for
+// query params in url and call passQuery() if found.
+function submitHashQuery() {
+  const urlHash = window.location.hash;
+  if (urlHash) {
+    const params = new URLSearchParams(urlHash.slice(1));
+    for (const [param, value] of params) {
+      setDropdownValue(param, value);
+    }
+    const personType = params.get('person-type');
+    const action = params.get('action');
+    const location = params.get('location');
+    const year = params.get('year');
+    passQuery(personType, action, location, year);
+  }
+}
+
+// Listen for if user clicks back
+window.addEventListener('hashchange', function() {
+  submitHashQuery();
+});
+
 // loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed
 // is true, the location settings are set to the opposite of the current
 // location settings and the opposite icon is shown. When buttonPressed is
@@ -297,7 +356,7 @@ function loadAppropriateIcon(buttonPressed) {
     ' Click here to change your location settings.';
   if (((locationSettings === null || locationSettings === 'off') &&
     (buttonPressed === false)) || (locationSettings === 'on' &&
-    buttonPressed === true)) {
+      buttonPressed === true)) {
     // The user is turning their location off or it was already off and
     //  needs to be reloaded on page refresh
     localStorage.setItem('locationSettings', 'off');
@@ -306,7 +365,7 @@ function loadAppropriateIcon(buttonPressed) {
     document.getElementById('location-id-text').innerText = locationOffString;
   } else if (((locationSettings === null || locationSettings === 'off') &&
     (buttonPressed === true)) || (locationSettings === 'on' &&
-    buttonPressed === false)) {
+      buttonPressed === false)) {
     // The user is turning their location on or it was already on and needs to
     // be reloaded on page refresh
     localStorage.setItem('locationSettings', 'on');

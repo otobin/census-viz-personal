@@ -2,6 +2,10 @@
   font-family: 'Roboto', sans-serif;
 }
 
+body {
+  margin: 0;
+}
+
 input[type=list],
 select {
   background-color: transparent;
@@ -32,37 +36,40 @@ select:focus {
 
 #header {
   border-bottom: 1px solid #e7e7e9;
-  line-height: 1em;
-  padding-left: 30px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30px 0 30px;
 }
 
-#header a:-webkit-any-link {
+#header a {
   color: black;
   text-decoration: none;
 }
 
+#header-buttons {
+  align-self: center;
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+}
+
 .material-icons {
-  float: right;
-  font-size: 125%;
-  line-height: .5;
+  font-size: 32px;
 }
 
 .tooltip {
-  display: inline;
+  align-self: center;
 }
 
 .tooltip .tooltiptext {
   background-color: rgba(255, 255, 255, .9);
-  border: solid black 2px;
+  border: solid black 1px;
   border-radius: 5px;
   display: none;
-  font-size: 50%;
-  font-weight: normal;
-  left: 77%;
-  line-height: 1.15;
+  right: 150px;
   padding: 8px;
   position: absolute;
-  top: 7%;
+  top: 40px;
   text-align: center;
   width: 20%;
   z-index: 1;
@@ -259,4 +266,44 @@ input[type="color"] {
 
 #location-on-icon {
   display: none;
+}
+
+#sign-out-btn {
+  background-color: white;
+  border-radius: 1px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .25);
+  color: #757575;
+  display: flex;
+  font-size: 13px;
+  height: 36px;
+  font-family: 'Roboto', arial, sans-serif;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  letter-spacing: .21px;
+  text-transform: none;
+  transition: background-color .218s, border-color .218s, box-shadow .218s;
+  width: 120px;
+}
+
+#sign-out-btn:hover {
+  background-color: white;
+  box-shadow: 0 0 3px 3px rgba(66, 133, 244, .3);
+  filter: none;
+}
+
+#sign-out-btn:active {
+  background-color: #eee;
+  color: #6d6d6d;
+}
+
+#sign-out-btn-text {
+  width: 100%;
+  line-height: 34px;
+}
+
+#google-icon {
+  width: 18px;
+  padding: 8px;
+  height: 18px;
 }
