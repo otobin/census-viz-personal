@@ -210,7 +210,6 @@ function getMapsData(censusDataArray) {
     const countyRegex = new RegExp('( County| City and Borough|' +
         ' Borough| Municipality| Census Area| city| City)$');
     let countyString = countyAndStateArray[0].replace(countyRegex, '');
-    console.log(countyString);
     if (countyString === 'District of Columbia') { // Handle D.C. name mismatch
       countyString = 'Washington, District of Columbia';
     }
