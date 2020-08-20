@@ -77,6 +77,21 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   // Albers projection for state level, Mercator for county level
   if (isCountyQuery) {
     chart.projection = new am4maps.projections.Mercator();
+    if (locationInfo.lat !== stateInfo[locationInfo.number].lat || 
+        locationInfo.lng !== stateInfo[locationInfo.number].lng) {
+      // user searched for a specific point; put a marker there
+      /*const marker = chart.bullets.push(new am4plugins_bullets.PointedBullet());
+      marker.latitude = locationInfo.lat;
+      marker.longitude = locationInfo.lng;*/
+      const imageSeries = chart.series.push(new am4maps.MapImageSeries());
+      const imageTemplate = imageSeries.mapImages.template;
+      imageTemplate.propertyFields.longitude = "longitude";
+      imageTemplate.propertyFields.latitude = "latitude";
+      imageTemplate.nonScaling = true;
+      const marker = imageTemplate.createChild(am4plugins_bullets.PinBullet);
+      marker.latitude = locationInfo.lat;
+      marker.longitude = locationInfo.lng;
+    }
   } else {
     chart.projection = new am4maps.projections.AlbersUsa();
   }
@@ -249,6 +264,13 @@ async function displayCountyGeoJson(mapsData, description,
     zoom: stateInfo[locationInfo.number].zoomLevel,
     center: {lat: locationInfo.lat, lng: locationInfo.lng},
   });
+
+  if (locationInfo.lat !== stateInfo[locationInfo.number].lat || 
+      locationInfo.lng !== stateInfo[locationInfo.number].lng) {
+    // user searched for a specific point; put a marker there
+    const marker = new google.maps.Marker({map: map, 
+        position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map});
+  }
 
   const countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
