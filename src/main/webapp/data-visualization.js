@@ -121,8 +121,8 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
 
     // One location listing for the marker, one for the shadow (same location)
     imageSeries.data =
-        [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng,},
-        {'latitude': locationInfo.lat, 'longitude': locationInfo.lng,}];
+        [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng},
+        {'latitude': locationInfo.lat, 'longitude': locationInfo.lng}];
   }
 
   // Set up heat legend
@@ -283,9 +283,9 @@ async function displayCountyGeoJson(mapsData, description,
   if (state.name !== locationInfo.originalName) {
     // user searched for a specific point; put a marker there
     const marker = new google.maps.Marker({map: map,
-        position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map,});
+        position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map});
     const infowindow = new google.maps.InfoWindow({
-      content: `<p>${locationInfo.originalName}<p>`
+      content: `<p>${locationInfo.originalName}<p>`,
     });
     marker.addListener('mouseover', () => {
       infowindow.open(map, marker);
