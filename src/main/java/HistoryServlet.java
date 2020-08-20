@@ -21,6 +21,7 @@ public class HistoryServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Put the current query from the user in datastore
     String personType = request.getParameter("person-type");
     String action = request.getParameter("action");
     String location = request.getParameter("location");
@@ -54,6 +55,7 @@ public class HistoryServlet extends HttpServlet {
             String entityYear = (String) entity.getProperty("year");
             HistoryElement dataHistoryElement = new HistoryElement(entityUserId, 
               entityPersonType,entityAction, entityLocation, entityYear);
+            // Check to see if it is already in the results to eliminate duplicates
             if (!queryList.contains(dataHistoryElement)) {
               queryList.add(dataHistoryElement);
             }

@@ -52,15 +52,20 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   return title;
 }
 
+// getHistory fetches to the History Servlet and returns a list of 
+// links of queries that the logged in user has visited before
 function getHistory(personType, action, location, year, userId) {
   let fetchUrl = getFetchUrl('history', personType, action, location, year);
   fetchUrl = fetchUrl + '&user-id=' + userId;
+  
+  // clear previous results
   const historyContainer = document.getElementById('history');
   historyContainer.innerHTML = '';
   const header = document.createElement('p');
   header.innerText = "Pages you've Viewed";
   historyContainer.appendChild(header);
-  console.log("start");
+
+  // change back the action to be gramatically correct in the title
   const gramaticallyCorrectAction = new Map();
   gramaticallyCorrectAction.set(
         'live', 'lived in',
@@ -85,6 +90,7 @@ function getHistory(personType, action, location, year, userId) {
               gramaticallyCorrectAction.get(historyElement.action));
             historyTextNode = document.createTextNode(historyText);
           }
+          // Link the titles to the query url
           const linkElement = document.createElement('a');
           linkElement.href = getHistoryUrl(historyElement);
           linkElement.appendChild(historyTextNode);
@@ -95,6 +101,7 @@ function getHistory(personType, action, location, year, userId) {
       })});
 }
 
+// Given a history element, return the appropriate url
 function getHistoryUrl(historyElement) {
   const host = window.location.origin;
   const hash = '/#person-type=' + historyElement.personType + 
