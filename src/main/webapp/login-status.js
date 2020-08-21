@@ -3,7 +3,7 @@ function onSignIn(googleUser) {
   const idToken = googleUser.getAuthResponse().id_token;
   setSignInButton(true);
   // Check if getHistory() has been called already in loginInit
-  // by checking if history div is empty. If the user signed in without 
+  // by checking if history div is empty. If the user signed in without
   // calling logininit, then call getHIstory
   if (document.getElementById('history').innerHTML === '') {
     getHistory(getUserId());
@@ -23,7 +23,7 @@ function signOut() {
 function getLoginStatus() {
   const auth2 = gapi.auth2;
   if (typeof auth2 === 'undefined') {
-    return false; 
+    return false;
   } else {
     const auth2 = gapi.auth2.getAuthInstance();
     return auth2.isSignedIn.get();

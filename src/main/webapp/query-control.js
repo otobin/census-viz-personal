@@ -111,8 +111,8 @@ function getHistory() {
           historyContainer.appendChild(linkElement);
           const breakElement = document.createElement('br');
           historyContainer.appendChild(breakElement);
-        }
-      })
+        };
+      });
     })
 }
 
