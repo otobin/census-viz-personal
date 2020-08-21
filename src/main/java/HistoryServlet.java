@@ -27,8 +27,7 @@ public class HistoryServlet extends HttpServlet {
     // Get queries with the user's id from the database
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     String userId = request.getParameter("user-id");
-    Filter propertyFilter =
-    new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+    Filter propertyFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query query = new Query("historyEntity").setFilter(propertyFilter);
     PreparedQuery results = datastore.prepare(query);
 
@@ -40,8 +39,9 @@ public class HistoryServlet extends HttpServlet {
           String entityAction = (String) entity.getProperty("action");
           String entityLocation = (String) entity.getProperty("location");
           String entityYear = (String) entity.getProperty("year");
-          HistoryElement dataHistoryElement = new HistoryElement(entityUserId, 
-            entityPersonType,entityAction, entityLocation, entityYear);
+          HistoryElement dataHistoryElement = 
+            new HistoryElement(
+              entityUserId, entityPersonType,entityAction, entityLocation, entityYear);
           // Check to see if it is already in the results to eliminate duplicates
           if (!queryList.contains(dataHistoryElement)) {
             queryList.add(dataHistoryElement);
