@@ -1,7 +1,6 @@
 // Get signed in user info
 function onSignIn(googleUser) {
   const idToken = googleUser.getAuthResponse().id_token;
-  console.log(idToken);
   setSignInButton(true);
   if (document.getElementById('history').innerHTML === '') {
     getHistory(getUserId());
@@ -64,9 +63,8 @@ function loginInit() {
 }
 
 function getUserId() {
-  const auth2 = gapi.auth2.getAuthInstance();
   if (getLoginStatus()) {
-    const profile = auth2.currentUser.get().getBasicProfile();
-    return profile.getId();
+    const auth2 = gapi.auth2.getAuthInstance();
+    return auth2.currentUser.le.wc.id_token
   }
 }
