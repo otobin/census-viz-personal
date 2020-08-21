@@ -69,22 +69,26 @@ function getTitle(personType, location, year, locationInput, actionInput) {
 
 // getHistory fetches to the History Servlet and returns a list of 
 // links of queries that the logged in user has visited before
-function getHistory(personType, action, location, year, userId) {
+function putHistory(personType, action, location, year, userId) {
   let fetchUrl = getFetchUrl('history', personType, action, location, year);
   fetchUrl = fetchUrl + '&user-id=' + userId;
+  fetch(fetchUrl, {
+    method: 'POST',
+  });
+}
 
+function getHistory() {
   // clear previous results
   const historyContainer = document.getElementById('history');
   historyContainer.innerHTML = '';
   const header = document.createElement('p');
   header.innerText = "Pages you've Viewed";
   historyContainer.appendChild(header);
-
+  const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then((response) => response.json()).then(
     function (jsonResponse) {
       // iterate through list of history elements returned by 
-      // json and create title elements using the attributes.
-      // Check to see that the 
+      // the history servlet and create title elements using the attributes.
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
           let historyTextNode;
@@ -205,14 +209,15 @@ async function passQuery(personType, action, location, year) {
         // data is a 2D array, where the first row is a
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
+        if (isUserSignedIn()) {
+          const userId = getUserId();
+          putHistory(personType, action, location, year, userId);
+          getHistory(userId);
+        }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         displayVisualization(data, description, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
-        const userId = getUserId();
-        if (userId) {
-          getHistory(personType, action, location, year, userId);
-        }
       } else {
         displayError(response.status, response.data.errorMessage);
       }

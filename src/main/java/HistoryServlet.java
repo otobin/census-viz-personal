@@ -24,24 +24,9 @@ public class HistoryServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Put the current query from the user in datastore
-    String personType = request.getParameter("person-type");
-    String action = request.getParameter("action");
-    String location = request.getParameter("location");
-    String year = request.getParameter("year");
-    String userId = request.getParameter("user-id");
-
-    Entity historyEntity = new Entity("historyEntity");
-    historyEntity.setProperty("personType", personType);
-    historyEntity.setProperty("action", action);
-    historyEntity.setProperty("location", location);
-    historyEntity.setProperty("year", year);
-    historyEntity.setProperty("userId", userId);
-    
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(historyEntity);
-
     // Get queries with the user's id from the database
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    String userId = request.getParameter("user-id");
     Filter propertyFilter =
     new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query query = new Query("historyEntity").setFilter(propertyFilter);
@@ -65,5 +50,25 @@ public class HistoryServlet extends HttpServlet {
     }
     String json = new Gson().toJson(queryList);
     response.getWriter().write(json);
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Put the current query from the user in datastore
+    String personType = request.getParameter("person-type");
+    String action = request.getParameter("action");
+    String location = request.getParameter("location");
+    String year = request.getParameter("year");
+    String userId = request.getParameter("user-id");
+
+    Entity historyEntity = new Entity("historyEntity");
+    historyEntity.setProperty("personType", personType);
+    historyEntity.setProperty("action", action);
+    historyEntity.setProperty("location", location);
+    historyEntity.setProperty("year", year);
+    historyEntity.setProperty("userId", userId);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(historyEntity);
   }
 }

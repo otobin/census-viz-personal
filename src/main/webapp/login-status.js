@@ -2,6 +2,7 @@
 function onSignIn(googleUser) {
   const idToken = googleUser.getAuthResponse().id_token;
   setSignInButton(true);
+  getHistory(getUserId());
 }
 
 // Sign user out
