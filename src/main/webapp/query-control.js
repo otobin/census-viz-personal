@@ -90,6 +90,9 @@ function getHistory() {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
+      if (!jsonResponse.ok) {
+        return;
+      }
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
           let historyTextNode;
