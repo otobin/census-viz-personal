@@ -37,14 +37,14 @@ public class HistoryElement {
 
   @Override
   public boolean equals(Object other) {
-    HistoryElement otherElement = (HistoryElement)other;
+    HistoryElement otherElement = (HistoryElement) other;
     String otherPersonType = otherElement.getPersonType();
     String otherAction = otherElement.getAction();
     String otherLocation = otherElement.getLocation();
     String otherYear = otherElement.getYear();
-    return ((this.personType.equals(otherPersonType)) && 
-        (this.action.equals(action)) && 
-        (this.location.equals(otherLocation)) &&
-        (this.year.equals(otherYear)));
+    return ((this.personType.equals(otherPersonType))
+            && (this.action.equals(otherAction)) 
+            && (this.location.equals(otherLocation)) 
+            && (this.year.equals(otherYear)));
   }
 }

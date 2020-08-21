@@ -2,6 +2,7 @@
 function onSignIn(googleUser) {
   const idToken = googleUser.getAuthResponse().id_token;
   setSignInButton(true);
+  getHistory(getUserId());
 }
 
 // Sign user out
@@ -50,17 +51,10 @@ function loginInit() {
   });
 }
 
-// Returns whether a user is currently signed in 
-function isUserSignedIn() {
-  const auth2 = gapi.auth2.getAuthInstance();
-  return auth2.isSignedIn.get();
-}
-
-
 function getUserId() {
   const auth2 = gapi.auth2.getAuthInstance();
-  if (isUserSignedIn()) {
-    var profile = auth2.currentUser.get().getBasicProfile();
+  if (getLoginStatus()) {
+    const profile = auth2.currentUser.get().getBasicProfile();
     return profile.getId();
   }
 }

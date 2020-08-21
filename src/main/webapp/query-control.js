@@ -43,29 +43,7 @@ function getFetchUrl(servlet, personType, action, location, year) {
 }
 
 function getTitle(personType, location, year, locationInput, actionInput) {
-  const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
-  const title = 'Population who ' + actionInput +
-    ' each ' + region + ' (' +
-    personType.replace('-', ' ') + ')' +
-    ' in ' + year;
-  return title;
-}
-
-// getHistory fetches to the History Servlet and returns a list of 
-// links of queries that the logged in user has visited before
-function getHistory(personType, action, location, year, userId) {
-  let fetchUrl = getFetchUrl('history', personType, action, location, year);
-  fetchUrl = fetchUrl + '&user-id=' + userId;
-  
-  // clear previous results
-  const historyContainer = document.getElementById('history');
-  historyContainer.innerHTML = '';
-  const header = document.createElement('p');
-  header.innerText = "Pages you've Viewed";
-  historyContainer.appendChild(header);
-
-  // change back the action to be gramatically correct in the title
+  // Change the actionInput to be gramatically correct
   const gramaticallyCorrectAction = new Map();
   gramaticallyCorrectAction.set(
         'live', 'lived in',
@@ -74,23 +52,59 @@ function getHistory(personType, action, location, year, userId) {
       ).set(
         'moved', 'moved to',
       );
-  fetch(fetchUrl).then((response) => response.json()).then(
-    function (jsonResponse) {
+  let action;
+  if (gramaticallyCorrectAction.has(actionInput)) {
+    action = gramaticallyCorrectAction.get(actionInput);
+  } else {
+    action = actionInput;
+  }
+  const isCountyQuery = location !== 'state';
+  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
+  const title = 'Population who ' + action +
+    ' each ' + region + ' (' +
+    personType.replace('-', ' ') + ')' +
+    ' in ' + year;
+  return title;
+}
+
+// getHistory fetches to the History Servlet and returns a list of
+// links of queries that the logged in user has visited before
+function putHistory(personType, action, location, year, userId) {
+  let fetchUrl = getFetchUrl('history', personType, action, location, year);
+  fetchUrl = fetchUrl + '&user-id=' + userId;
+  fetch(fetchUrl, {
+    method: 'POST',
+  });
+}
+
+function getHistory() {
+  // clear previous results
+  const historyContainer = document.getElementById('history');
+  historyContainer.innerHTML = '';
+  const header = document.createElement('p');
+  header.innerText = "Pages you've Viewed";
+  historyContainer.appendChild(header);
+  const fetchUrl = '/history?user-id=' + getUserId();
+  fetch(fetchUrl).then(function(response) {
+      if (!response.ok) {
+        return;
+      } else {
+        return response.json();
+      }
+    })
+    .then(function(jsonResponse) {
+      // iterate through list of history elements returned by
+      // the history servlet and create title elements using
+      // the attributes.
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
           let historyTextNode;
-          if (historyElement.location !== 'state') {
-            const historyText = getTitle(historyElement.personType, historyElement.location, 
-              historyElement.year, stateInfo[historyElement.location].name, 
-              gramaticallyCorrectAction.get(historyElement.action));
-            historyTextNode = document.createTextNode(historyText);
-          } else {
-            const historyText = getTitle(historyElement.personType, historyElement.location, 
-              historyElement.year, 'Each U.S. state', 
-              gramaticallyCorrectAction.get(historyElement.action));
-            historyTextNode = document.createTextNode(historyText);
-          }
-          // Link the titles to the query url
+          const location = historyElement.location === 'state' ? 'Each U.S. state' :
+            stateInfo[historyElement.location].name;
+          const historyText = getTitle(historyElement.personType, historyElement.location,
+            historyElement.year, location, historyElement.action);
+          // Create the text node and add link to it
+          historyTextNode = document.createTextNode(historyText);
           const linkElement = document.createElement('a');
           linkElement.href = getHistoryUrl(historyElement);
           linkElement.appendChild(historyTextNode);
@@ -98,16 +112,19 @@ function getHistory(personType, action, location, year, userId) {
           const breakElement = document.createElement('br');
           historyContainer.appendChild(breakElement);
         }
-      })});
+      })
+    })
 }
 
 // Given a history element, return the appropriate url
 function getHistoryUrl(historyElement) {
+  // get the fetchUrl for history and then replace the '/history?' with
+  // '/#/ in order to get the hash url
+  let fetchUrl = getFetchUrl('history', historyElement.personType, historyElement.action, 
+    historyElement.location, historyElement.year);
+  fetchUrl = fetchUrl.replace('/history?', '/#');
   const host = window.location.origin;
-  const hash = '/#person-type=' + historyElement.personType + 
-  '&action=' + historyElement.action + '&location=' + historyElement.location + 
-  '&year=' + historyElement.year;
-  const url = host + hash;
+  const url = host + fetchUrl;
   return url;
 }
 
@@ -195,14 +212,15 @@ async function passQuery(personType, action, location, year) {
         // data is a 2D array, where the first row is a
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
+        if (getLoginStatus()) {
+          const userId = getUserId();
+          putHistory(personType, action, location, year, userId);
+          getHistory(userId);
+        }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         displayVisualization(data, description, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
-        const userId = getUserId();
-        if (userId) {
-          getHistory(personType, action, location, year, userId);
-        }
       } else {
         displayError(response.status, response.data.errorMessage);
       }
