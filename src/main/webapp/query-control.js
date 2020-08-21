@@ -98,13 +98,13 @@ function getHistory() {
       // the attributes.
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
-          let historyTextNode;
-          const location = historyElement.location === 'state' ? 'Each U.S. state' :
+          const location = historyElement.location === 
+            'state' ? 'Each U.S. state' :
             stateInfo[historyElement.location].name;
           const historyText = getTitle(historyElement.personType, historyElement.location,
             historyElement.year, location, historyElement.action);
           // Create the text node and add link to it
-          historyTextNode = document.createTextNode(historyText);
+          const historyTextNode = document.createTextNode(historyText);
           const linkElement = document.createElement('a');
           linkElement.href = getHistoryUrl(historyElement);
           linkElement.appendChild(historyTextNode);
