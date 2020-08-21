@@ -98,11 +98,12 @@ function getHistory() {
       // the attributes.
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
-          const location = historyElement.location === 
+          const location = historyElement.location ===
             'state' ? 'Each U.S. state' :
             stateInfo[historyElement.location].name;
-          const historyText = getTitle(historyElement.personType, historyElement.location,
-            historyElement.year, location, historyElement.action);
+          const historyText = getTitle(historyElement.personType,
+            historyElement.location, historyElement.year, location,
+            historyElement.action);
           // Create the text node and add link to it
           const historyTextNode = document.createTextNode(historyText);
           const linkElement = document.createElement('a');
@@ -113,15 +114,15 @@ function getHistory() {
           historyContainer.appendChild(breakElement);
         };
       });
-    })
+    });
 }
 
 // Given a history element, return the appropriate url
 function getHistoryUrl(historyElement) {
   // get the fetchUrl for history and then replace the '/history?' with
   // '/#/ in order to get the hash url
-  let fetchUrl = getFetchUrl('history', historyElement.personType, historyElement.action, 
-    historyElement.location, historyElement.year);
+  let fetchUrl = getFetchUrl('history', historyElement.personType,
+    historyElement.action, historyElement.location, historyElement.year);
   fetchUrl = fetchUrl.replace('/history?', '/#');
   const host = window.location.origin;
   const url = host + fetchUrl;
