@@ -89,13 +89,11 @@ function createSlide(title, url) {
   // const titleDiv = document.createElement('a');
   // titleDiv.href = url;
   historyItem.innerText = title;
-  // historyItem.appendChild(titleDiv);
   return historyItem;
 }
 
 function getHistory() {
   // clear previous results
-  document.getElementById('history-list').innerHTML = '';
   const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then(function(response) {
       if (!response.ok) {
@@ -108,7 +106,6 @@ function getHistory() {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
-      renderCarousel(3);
       const historyList = document.getElementById('history-list');
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
@@ -116,10 +113,10 @@ function getHistory() {
             stateInfo[historyElement.location].name;
           const historyText = getTitle(historyElement.personType, historyElement.location,
             historyElement.year, location, historyElement.action);
-          // Create the text node and add link to it
           historyList.appendChild(createSlide(historyText, getHistoryUrl(historyElement)));
         }
       });
+      renderCarousel(3);
     })
 }
 
