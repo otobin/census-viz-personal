@@ -50,18 +50,16 @@ public class HistoryServlet extends HttpServlet {
     List<HistoryElement> queryList = new ArrayList<HistoryElement>();
     for (Entity entity : results.asIterable()) {
       String entityUserId = (String) entity.getProperty("userId");
-        if (entityUserId != null && userId != null) {
-          if (entityUserId.equals(userId)) {
-            String entityPersonType = (String) entity.getProperty("personType");
-            String entityAction = (String) entity.getProperty("action");
-            String entityLocation = (String) entity.getProperty("location");
-            String entityYear = (String) entity.getProperty("year");
-            HistoryElement dataHistoryElement = new HistoryElement(entityUserId, 
-              entityPersonType,entityAction, entityLocation, entityYear);
-            // Check to see if it is already in the results to eliminate duplicates
-            if (!queryList.contains(dataHistoryElement)) {
-              queryList.add(dataHistoryElement);
-            }
+      if (entityUserId != null && userId != null) {
+          String entityPersonType = (String) entity.getProperty("personType");
+          String entityAction = (String) entity.getProperty("action");
+          String entityLocation = (String) entity.getProperty("location");
+          String entityYear = (String) entity.getProperty("year");
+          HistoryElement dataHistoryElement = new HistoryElement(entityUserId, 
+            entityPersonType,entityAction, entityLocation, entityYear);
+          // Check to see if it is already in the results to eliminate duplicates
+          if (!queryList.contains(dataHistoryElement)) {
+            queryList.add(dataHistoryElement);
           }
       }
     }
