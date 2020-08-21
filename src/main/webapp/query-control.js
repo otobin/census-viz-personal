@@ -66,8 +66,8 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   return title;
 }
 
-// getHistory fetches to the History Servlet and returns a list of
-// links of queries that the logged in user has visited before
+// putHistory puts the fields of the current query into the 
+// 
 function putHistory(personType, action, location, year, userId) {
   let fetchUrl = getFetchUrl('history', personType, action, location, year);
   fetchUrl = fetchUrl + '&user-id=' + userId;
@@ -96,24 +96,27 @@ function getHistory() {
       // the history servlet and create title elements using
       // the attributes.
       jsonResponse.forEach((historyElement) => {
-        if (historyElement !== null) {
-          const location = historyElement.location ===
-            'state' ? 'Each U.S. state' :
-            stateInfo[historyElement.location].name;
-          const historyText = getTitle(historyElement.personType,
-            historyElement.location, historyElement.year, location,
-            historyElement.action);
-          // Create the text node and add link to it
-          const historyTextNode = document.createTextNode(historyText);
-          const linkElement = document.createElement('a');
-          linkElement.href = getHistoryUrl(historyElement);
-          linkElement.appendChild(historyTextNode);
-          historyContainer.appendChild(linkElement);
-          const breakElement = document.createElement('br');
-          historyContainer.appendChild(breakElement);
-        };
+        if (historyElement === null) return;
+        addHistoryToPage(historyElement, historyContainer);
+        });
       });
-    });
+  }
+
+function addHistoryToPage(historyElement, historyContainer) {
+  const location = historyElement.location ===
+          'state' ? 'Each U.S. state' :
+          stateInfo[historyElement.location].name;
+  const historyText = getTitle(historyElement.personType,
+    historyElement.location, historyElement.year, location,
+    historyElement.action);
+  // Create the text node and add link to it
+  const historyTextNode = document.createTextNode(historyText);
+  const linkElement = document.createElement('a');
+  linkElement.href = getHistoryUrl(historyElement);
+  linkElement.appendChild(historyTextNode);
+  historyContainer.appendChild(linkElement);
+  const breakElement = document.createElement('br');
+  historyContainer.appendChild(breakElement);
 }
 
 // Given a history element, return the appropriate url
