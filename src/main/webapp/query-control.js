@@ -147,7 +147,7 @@ function removeErroneousData(dataArray) {
   dataArray.forEach((elem, index) => {
     // Using splice, directly modifies array
     elem.forEach((item) => {
-      if (item === null || item < 0) {
+      if (item === null || item < 0 || item === 'Puerto Rico') {
         dataArray.splice(index, 1);
       }
     });
