@@ -118,7 +118,7 @@ function getHistory() {
 
 // Given a history element, return the appropriate url
 function getHistoryUrl(historyElement) {
-  // get the fetchUrl for history and then replace the '/history?' with 
+  // get the fetchUrl for history and then replace the '/history?' with
   // '/#/ in order to get the hash url
   let fetchUrl = getFetchUrl('history', historyElement.personType, historyElement.action, 
     historyElement.location, historyElement.year);
