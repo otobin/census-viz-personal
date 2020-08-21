@@ -43,8 +43,8 @@ public class HistoryElement {
     String otherLocation = otherElement.getLocation();
     String otherYear = otherElement.getYear();
     return ((this.personType.equals(otherPersonType))
-          && (this.action.equals(otherAction)) 
-          && (this.location.equals(otherLocation)) 
-          && (this.year.equals(otherYear)));
+            && (this.action.equals(otherAction)) 
+            && (this.location.equals(otherLocation)) 
+            && (this.year.equals(otherYear)));
   }
 }
