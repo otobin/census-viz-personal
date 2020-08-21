@@ -43,9 +43,24 @@ function getFetchUrl(servlet, personType, action, location, year) {
 }
 
 function getTitle(personType, location, year, locationInput, actionInput) {
+  // Change the actionInput to be gramatically correct
+  const gramaticallyCorrectAction = new Map();
+  gramaticallyCorrectAction.set(
+        'live', 'lived in',
+      ).set(
+        'work', 'worked in',
+      ).set(
+        'moved', 'moved to',
+      );
+  let action;
+  if (gramaticallyCorrectAction.has(actionInput)) {
+    action = gramaticallyCorrectAction.get(actionInput);
+  } else {
+    action = actionInput;
+  }
   const isCountyQuery = location !== 'state';
   const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
-  const title = 'Population who ' + actionInput +
+  const title = 'Population who ' + action +
     ' each ' + region + ' (' +
     personType.replace('-', ' ') + ')' +
     ' in ' + year;
@@ -57,7 +72,7 @@ function getTitle(personType, location, year, locationInput, actionInput) {
 function getHistory(personType, action, location, year, userId) {
   let fetchUrl = getFetchUrl('history', personType, action, location, year);
   fetchUrl = fetchUrl + '&user-id=' + userId;
-  
+
   // clear previous results
   const historyContainer = document.getElementById('history');
   historyContainer.innerHTML = '';
@@ -65,29 +80,22 @@ function getHistory(personType, action, location, year, userId) {
   header.innerText = "Pages you've Viewed";
   historyContainer.appendChild(header);
 
-  // change back the action to be gramatically correct in the title
-  const gramaticallyCorrectAction = new Map();
-  gramaticallyCorrectAction.set(
-        'live', 'lived in',
-      ).set(
-        'work', 'worked in',
-      ).set(
-        'moved', 'moved to',
-      );
   fetch(fetchUrl).then((response) => response.json()).then(
     function (jsonResponse) {
+      // iterate through list of history elements returned by 
+      // json and create title elements using the attributes.
+      // Check to see that the 
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
           let historyTextNode;
           if (historyElement.location !== 'state') {
             const historyText = getTitle(historyElement.personType, historyElement.location, 
               historyElement.year, stateInfo[historyElement.location].name, 
-              gramaticallyCorrectAction.get(historyElement.action));
+              historyElement.action);
             historyTextNode = document.createTextNode(historyText);
           } else {
             const historyText = getTitle(historyElement.personType, historyElement.location, 
-              historyElement.year, 'Each U.S. state', 
-              gramaticallyCorrectAction.get(historyElement.action));
+              historyElement.year, 'Each U.S. state', historyElement.action);
             historyTextNode = document.createTextNode(historyText);
           }
           // Link the titles to the query url
@@ -103,11 +111,13 @@ function getHistory(personType, action, location, year, userId) {
 
 // Given a history element, return the appropriate url
 function getHistoryUrl(historyElement) {
+  // get the fetchUrl for history and then replace the '/history?' with 
+  // '/#/ in order to get the hash url
+  let fetchUrl = getFetchUrl('history', historyElement.personType, historyElement.action, 
+    historyElement.location, historyElement.year);
+  fetchUrl = fetchUrl.replace('/history?', '/#');
   const host = window.location.origin;
-  const hash = '/#person-type=' + historyElement.personType + 
-  '&action=' + historyElement.action + '&location=' + historyElement.location + 
-  '&year=' + historyElement.year;
-  const url = host + hash;
+  const url = host + fetchUrl;
   return url;
 }
 

@@ -147,8 +147,6 @@ public class QueryServlet extends HttpServlet {
     response.setContentType("application/json;");
 
     String query = personType + action + location + yearStr;
-    ArrayList<String> queryList = new ArrayList<String>(
-      Arrays.asList(personType, action, location, yearStr));
     CensusData cachedData = ofy().load().type(CensusData.class).id(query).now();
     if (cachedData != null) {
       JsonObject jsonResponse = new JsonObject();

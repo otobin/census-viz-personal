@@ -3,7 +3,6 @@ package com.google.sps.data;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import java.util.List;
 
 @Entity
 @Cache
@@ -27,5 +26,4 @@ public class CensusData {
   public String getTableLink() {
     return tableLink;
   }
-  
 }

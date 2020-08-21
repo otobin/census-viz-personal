@@ -11,6 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,10 +41,10 @@ public class HistoryServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(historyEntity);
 
-    HistoryElement requestHistoryElement = new HistoryElement(userId, 
-      personType, action, location, year);
-
-    Query query = new Query("historyEntity");
+    // Get queries with the user's id from the database
+    Filter propertyFilter =
+    new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+    Query query = new Query("historyEntity").setFilter(propertyFilter);
     PreparedQuery results = datastore.prepare(query);
 
     List<HistoryElement> queryList = new ArrayList<HistoryElement>();
