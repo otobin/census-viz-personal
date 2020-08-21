@@ -307,3 +307,11 @@ input[type="color"] {
   padding: 8px;
   height: 18px;
 }
+
+#history-list li {
+  border: 1px solid #e7e7e9;
+  border-radius: 2px;
+  line-height: 100px;
+  margin: 0;
+  text-align: center;
+}

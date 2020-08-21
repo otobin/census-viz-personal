@@ -76,13 +76,26 @@ function putHistory(personType, action, location, year, userId) {
   });
 }
 
+function renderCarousel(perView) {
+  const carousel = new Glide('.carousel', {
+    type: 'carousel',
+    perView: perView
+  });
+  carousel.mount();
+}
+
+function createSlide(title, url) {
+  const historyItem = document.createElement('li');
+  // const titleDiv = document.createElement('a');
+  // titleDiv.href = url;
+  historyItem.innerText = title;
+  // historyItem.appendChild(titleDiv);
+  return historyItem;
+}
+
 function getHistory() {
   // clear previous results
-  const historyContainer = document.getElementById('history');
-  historyContainer.innerHTML = '';
-  const header = document.createElement('p');
-  header.innerText = "Pages you've Viewed";
-  historyContainer.appendChild(header);
+  document.getElementById('history-list').innerHTML = '';
   const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then(function(response) {
       if (!response.ok) {
@@ -95,23 +108,18 @@ function getHistory() {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
+      renderCarousel(3);
+      const historyList = document.getElementById('history-list');
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
-          let historyTextNode;
           const location = historyElement.location === 'state' ? 'Each U.S. state' :
             stateInfo[historyElement.location].name;
           const historyText = getTitle(historyElement.personType, historyElement.location,
             historyElement.year, location, historyElement.action);
           // Create the text node and add link to it
-          historyTextNode = document.createTextNode(historyText);
-          const linkElement = document.createElement('a');
-          linkElement.href = getHistoryUrl(historyElement);
-          linkElement.appendChild(historyTextNode);
-          historyContainer.appendChild(linkElement);
-          const breakElement = document.createElement('br');
-          historyContainer.appendChild(breakElement);
+          historyList.appendChild(createSlide(historyText, getHistoryUrl(historyElement)));
         }
-      })
+      });
     })
 }
 
