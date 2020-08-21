@@ -196,12 +196,7 @@ async function passQuery(personType, action, location, year) {
       `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? state + ' county' : 'U.S. state';
-  const title = 'Population who ' + actionInput +
-    ' each ' + region + ' (' +
-    personType.replace('-', ' ') + ')' +
-    ' in ' + year;
-
+  const title = getTitle(personType, location, year, state, actionInput);
   const fetchUrl = getFetchUrl('query', personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
