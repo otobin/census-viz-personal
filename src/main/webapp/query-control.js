@@ -67,7 +67,7 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   return title;
 }
 
-// getHistory fetches to the History Servlet and returns a list of 
+// getHistory fetches to the History Servlet and returns a list of
 // links of queries that the logged in user has visited before
 function putHistory(personType, action, location, year, userId) {
   let fetchUrl = getFetchUrl('history', personType, action, location, year);
@@ -87,8 +87,9 @@ function getHistory() {
   const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then((response) => response.json()).then(
     function (jsonResponse) {
-      // iterate through list of history elements returned by 
-      // the history servlet and create title elements using the attributes.
+      // iterate through list of history elements returned by
+      // the history servlet and create title elements using
+      // the attributes.
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
           let historyTextNode;

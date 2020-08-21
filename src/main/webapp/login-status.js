@@ -54,7 +54,7 @@ function loginInit() {
 function getUserId() {
   const auth2 = gapi.auth2.getAuthInstance();
   if (getLoginStatus()) {
-    var profile = auth2.currentUser.get().getBasicProfile();
+    const profile = auth2.currentUser.get().getBasicProfile();
     return profile.getId();
   }
 }

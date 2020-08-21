@@ -16,7 +16,6 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.lang.String;
 
 @WebServlet("/history")
