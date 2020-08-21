@@ -209,7 +209,7 @@ async function passQuery(personType, action, location, year) {
         // data is a 2D array, where the first row is a
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
-        if (isUserSignedIn()) {
+        if (getLoginStatus()) {
           const userId = getUserId();
           putHistory(personType, action, location, year, userId);
           getHistory(userId);

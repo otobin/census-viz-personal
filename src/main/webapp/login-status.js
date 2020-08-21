@@ -9,6 +9,7 @@ function onSignIn(googleUser) {
 function signOut() {
   const auth2 = gapi.auth2.getAuthInstance();
   auth2.signOut().then(() => {
+    console.log(auth2);
     setSignInButton(false);
     location.reload();
   });
@@ -51,16 +52,9 @@ function loginInit() {
   });
 }
 
-// Returns whether a user is currently signed in 
-function isUserSignedIn() {
-  const auth2 = gapi.auth2.getAuthInstance();
-  return auth2.isSignedIn.get();
-}
-
-
 function getUserId() {
   const auth2 = gapi.auth2.getAuthInstance();
-  if (isUserSignedIn()) {
+  if (getLoginStatus()) {
     var profile = auth2.currentUser.get().getBasicProfile();
     return profile.getId();
   }
