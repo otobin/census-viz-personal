@@ -63,8 +63,9 @@ function loginInit() {
 }
 
 function getUserId() {
+  const auth2 = gapi.auth2.getAuthInstance();
   if (getLoginStatus()) {
-    const auth2 = gapi.auth2.getAuthInstance();
-    return auth2.currentUser.le.wc.id_token
+    const profile = auth2.currentUser.get().getBasicProfile();
+    return profile.getId();
   }
 }
