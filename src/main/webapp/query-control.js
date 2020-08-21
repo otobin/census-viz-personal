@@ -85,20 +85,23 @@ function getHistory() {
   header.innerText = "Pages you've Viewed";
   historyContainer.appendChild(header);
   const fetchUrl = '/history?user-id=' + getUserId();
-  fetch(fetchUrl).then((response) => response.json()).then(
-    function (jsonResponse) {
+  fetch(fetchUrl).then(function(response) {
+      if (!response.ok) {
+        return;
+      } else {
+        return response.json();
+      }
+    })
+    .then(function(jsonResponse) {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
-      if (!jsonResponse.ok) {
-        return;
-      }
       jsonResponse.forEach((historyElement) => {
         if (historyElement !== null) {
           let historyTextNode;
-          const location = historyElement.location === 'state' ? 'Each U.S. state' : 
+          const location = historyElement.location === 'state' ? 'Each U.S. state' :
             stateInfo[historyElement.location].name;
-          const historyText = getTitle(historyElement.personType, historyElement.location, 
+          const historyText = getTitle(historyElement.personType, historyElement.location,
             historyElement.year, location, historyElement.action);
           // Create the text node and add link to it
           historyTextNode = document.createTextNode(historyText);
@@ -109,7 +112,8 @@ function getHistory() {
           const breakElement = document.createElement('br');
           historyContainer.appendChild(breakElement);
         }
-      })});
+      })
+    })
 }
 
 // Given a history element, return the appropriate url
