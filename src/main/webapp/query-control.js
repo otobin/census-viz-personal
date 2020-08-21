@@ -66,8 +66,8 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   return title;
 }
 
-// getHistory fetches to the History Servlet and returns a list of
-// links of queries that the logged in user has visited before
+// putHistory puts the fields of the current query into the 
+// 
 function putHistory(personType, action, location, year, userId) {
   let fetchUrl = getFetchUrl('history', personType, action, location, year);
   fetchUrl = fetchUrl + '&user-id=' + userId;
@@ -108,24 +108,29 @@ function getHistory() {
       // the attributes.
       const historyList = document.getElementById('history-list');
       jsonResponse.forEach((historyElement) => {
-        if (historyElement !== null) {
-          const location = historyElement.location === 'state' ? 'Each U.S. state' :
-            stateInfo[historyElement.location].name;
-          const historyText = getTitle(historyElement.personType, historyElement.location,
-            historyElement.year, location, historyElement.action);
-          historyList.appendChild(createSlide(historyText, getHistoryUrl(historyElement)));
-        }
+        if (historyElement === null) return;
+        addHistoryToPage(historyElement, historyList);
+        });
       });
       renderCarousel(3);
-    })
+  }
+
+function addHistoryToPage(historyElement, historyList) {
+  const location = historyElement.location ===
+          'state' ? 'Each U.S. state' :
+          stateInfo[historyElement.location].name;
+  const historyText = getTitle(historyElement.personType,
+    historyElement.location, historyElement.year, location,
+    historyElement.action);
+  historyList.appendChild(createSlide(historyText, getHistoryUrl(historyElement)));
 }
 
 // Given a history element, return the appropriate url
 function getHistoryUrl(historyElement) {
   // get the fetchUrl for history and then replace the '/history?' with
   // '/#/ in order to get the hash url
-  let fetchUrl = getFetchUrl('history', historyElement.personType, historyElement.action, 
-    historyElement.location, historyElement.year);
+  let fetchUrl = getFetchUrl('history', historyElement.personType,
+    historyElement.action, historyElement.location, historyElement.year);
   fetchUrl = fetchUrl.replace('/history?', '/#');
   const host = window.location.origin;
   const url = host + fetchUrl;
@@ -200,12 +205,7 @@ async function passQuery(personType, action, location, year) {
       `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? state + ' county' : 'U.S. state';
-  const title = 'Population who ' + actionInput +
-    ' each ' + region + ' (' +
-    personType.replace('-', ' ') + ')' +
-    ' in ' + year;
-
+  const title = getTitle(personType, location, year, state, actionInput);
   const fetchUrl = getFetchUrl('query', personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
