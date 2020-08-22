@@ -23,7 +23,7 @@
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
 
-<body onload="registerServiceWorker(); setupLocationDropdown(); loadAppropriateIcon(false); loginInit();">
+<body onload="registerServiceWorker(); setupQuery(); loadAppropriateIcon(false); loginInit();">
   <main>
     <div id="header">
       <h1><a href="/">Census Viz</a></h1>
@@ -152,7 +152,6 @@
         </div>
         <div class="map-option" id="map-toggle-msg">Enable map overlay</div>
       </div>
-      <div id="more-info"></div>
       <div id="colors">
         <p>Change the color of the visualization
           <label id="set-color-label" for="set-color">
@@ -160,6 +159,13 @@
           </label>
         </p>
       </div>
+      <div id="year-slider">
+        <p id="year-slider-text"></p>
+        <label id="set-year-label" for="set-year">
+          <input type="range" min="2010" max="2018" value="2018" id="set-year" onchange="changeYear(this)">
+        </label>
+      </div>
+      <div id="more-info"></div>
       <br>
       <div id="am-charts"></div>
       <div id="map"></div>

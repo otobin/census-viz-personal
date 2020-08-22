@@ -200,6 +200,13 @@ function replaceValueIfEmpty(dataListId) {
   }
 }
 
+// Change the year of data being visualized
+function changeYear(yearParam) {
+  const year = yearParam.value;
+  document.getElementById('year-list').value = year;
+  submitQuery();
+}
+
 // Return an array of state number and name sorted alphabetically.
 // Excludes Puerto Rico.
 function getSortedStateInfoArray() {
@@ -220,9 +227,10 @@ function getSortedStateInfoArray() {
   return stateInfoArray;
 }
 
-async function setupLocationDropdown() {
+async function setupQuery() {
   await createStateDropdownList();
   setupAutocompleteLocation();
+  setupYearSlider();
 }
 
 // Append all locations to the location dropdown element.
@@ -307,6 +315,16 @@ function debounce(func, waitTime) {
     clearTimeout(timeout);
     timeout = setTimeout(later, waitTime);
   };
+}
+
+function setupYearSlider() {
+  var slider = document.getElementById("set-year");
+  var text = document.getElementById("year-slider-text");
+  text.innerText = 'Change the year: ' + slider.value; // default value
+
+  slider.oninput = function() {
+    text.innerText = 'Change the year: ' + this.value; // update as user slides
+  }
 }
 
 // Set dropdown for datalistId to value
