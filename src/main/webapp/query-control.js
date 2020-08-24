@@ -66,8 +66,7 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   return title;
 }
 
-// putHistory puts the fields of the current query into the 
-// 
+// putHistory puts the fields of the current query into the
 function putHistory(personType, action, location, year, userId) {
   let fetchUrl = getFetchUrl('history', personType, action, location, year);
   fetchUrl = fetchUrl + '&user-id=' + userId;
@@ -259,7 +258,7 @@ function removeErroneousData(dataArray) {
   dataArray.forEach((elem, index) => {
     // Using splice, directly modifies array
     elem.forEach((item) => {
-      if (item === null || item < 0) {
+      if (item === null || item < 0 || item === 'Puerto Rico') {
         dataArray.splice(index, 1);
       }
     });
