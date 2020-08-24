@@ -44,8 +44,8 @@
             The data you see comes from several sources within the census.
             Depending on your question, we choose the census data with the most
             information available. Most of our data come from the annual
-            American Community Survey; if you ask about a year ending
-            in 0, you'll get information from the larger Decennial Survey
+            American Community Survey; if you ask about 2010, you'll get
+            information from the larger Decennial Survey
             instead. Both surveys provide estimates based on a sample
             population; if you don't see any data for a county, it's because
             the sample size was too small for an accurate estimate.
@@ -123,10 +123,10 @@
           </input>
           in
           <input type="list" list="year" name="year" id="year-list" autocomplete="off" required
-            onkeyup="validateInput('year')" onfocus="storeValueAndEmpty('year')"
-            onfocusout="replaceValueIfEmpty('year')" value="2018" pattern="201[0-8]">
+            onkeyup="validateInput('year')" onfocus="storeValueAndEmpty('year')" value="2018"
+            onfocusout="replaceValueIfEmpty('year')" pattern="2010 \(decennial census\)|201[0-8]">
           <datalist id="year">
-            <option data-value="2010" value="2010"></option>
+            <option data-value="2010" value="2010 (decennial census)"></option>
             <option data-value="2011" value="2011"></option>
             <option data-value="2012" value="2012"></option>
             <option data-value="2013" value="2013"></option>

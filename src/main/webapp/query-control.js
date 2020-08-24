@@ -137,11 +137,14 @@ function submitQuery() {
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
   const locationInput = query.get('location').replace(/'/g, '');
-  const year = query.get('year');
+  const yearInput = query.get('year');
+
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
     '#action option[value=\'' + actionInput + '\']').dataset.value;
+  const year = document.querySelector(
+    '#year option[value=\'' + yearInput + '\']').dataset.value;
   const locationDropdown = document.querySelector(
     '#location option[value=\'' + locationInput + '\']');
   let location;
