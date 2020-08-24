@@ -91,26 +91,26 @@ function displayAmChartsMap(
         {
           'label': 'Image',
           'menu': [
-            {'type': 'png', 'label': 'PNG' },
-            {'type': 'jpg', 'label': 'JPG' },
-            {'type': 'svg', 'label': 'SVG' },
-            {'type': 'pdf', 'label': 'PDF' },
+            {'type': 'png', 'label': 'PNG'},
+            {'type': 'jpg', 'label': 'JPG'},
+            {'type': 'svg', 'label': 'SVG'},
+            {'type': 'pdf', 'label': 'PDF'},
           ],
         }, {
           'label': 'Data',
           'menu': [
-            {'type': 'json', 'label': 'JSON' },
-            {'type': 'csv', 'label': 'CSV' },
-            {'type': 'xlsx', 'label': 'XLSX' },
-            {'type': 'html', 'label': 'HTML' },
-            {'type': 'pdfdata', 'label': 'PDF' },
+            {'type': 'json', 'label': 'JSON'},
+            {'type': 'csv', 'label': 'CSV'},
+            {'type': 'xlsx', 'label': 'XLSX'},
+            {'type': 'html', 'label': 'HTML'},
+            {'type': 'pdfdata', 'label': 'PDF'},
           ],
         }, {
-          'label': 'Print', 'type': 'print'
-        }
-      ]
-    }
-  ]
+          'label': 'Print', 'type': 'print',
+        },
+      ],
+    },
+  ];
 
   const isCountyQuery = data[0].id.indexOf('US') === -1;
   // Albers projection for state level, Mercator for county level
