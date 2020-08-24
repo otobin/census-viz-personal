@@ -8,7 +8,7 @@ public class HistoryElement {
   String year;
 
   public HistoryElement(
-    String userId, String personType, String action, String location, String year) {
+      String userId, String personType, String action, String location, String year) {
     this.userId = userId;
     this.personType = personType;
     this.action = action;
@@ -44,8 +44,8 @@ public class HistoryElement {
     String otherLocation = otherElement.getLocation();
     String otherYear = otherElement.getYear();
     return ((this.personType.equals(otherPersonType))
-        && (this.action.equals(otherAction)) 
-        && (this.location.equals(otherLocation)) 
+        && (this.action.equals(otherAction))
+        && (this.location.equals(otherLocation))
         && (this.year.equals(otherYear)));
   }
 }

@@ -36,9 +36,9 @@ public class HistoryServlet extends HttpServlet {
         String entityAction = (String) entity.getProperty("action");
         String entityLocation = (String) entity.getProperty("location");
         String entityYear = (String) entity.getProperty("year");
-        HistoryElement dataHistoryElement = 
-          new HistoryElement(
-            entityUserId, entityPersonType,entityAction, entityLocation, entityYear);
+        HistoryElement dataHistoryElement =
+             new HistoryElement(
+                 entityUserId, entityPersonType, entityAction, entityLocation, entityYear);
         // Check to see if it is already in the results to eliminate duplicates
         if (!queryList.contains(dataHistoryElement)) {
           queryList.add(dataHistoryElement);
