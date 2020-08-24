@@ -27,8 +27,8 @@ async function getGeoData(locationInfo, isCountyQuery) {
 async function displayVisualization(censusDataArray, description, title,
   locationInfo, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
-  //document.getElementById('set-year').style.display = 'inline';
   const color = getColor();
+  document.getElementById('year-slider').style.display = 'block';
   const geoData = await getGeoData(locationInfo, isCountyQuery);
 
   // Put all necessary data in the cache
