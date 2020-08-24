@@ -40,7 +40,7 @@ async function displayVisualization(censusDataArray, description, title,
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
   localStorage.setItem('amChartsData', JSON.stringify(amChartsData));
   drawTable(amChartsData, description, isCountyQuery);
-  
+
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
       localStorage.setItem(

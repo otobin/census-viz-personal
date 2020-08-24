@@ -319,13 +319,13 @@ function debounce(func, waitTime) {
 }
 
 function setupYearSlider() {
-  var slider = document.getElementById("set-year");
-  var text = document.getElementById("year-slider-text");
+  const slider = document.getElementById('set-year');
+  const text = document.getElementById('year-slider-text');
   text.innerText = 'Change the year: ' + slider.value; // default value
 
   slider.oninput = function() {
     text.innerText = 'Change the year: ' + this.value; // update as user slides
-  }
+  };
 }
 
 // Set dropdown for datalistId to value

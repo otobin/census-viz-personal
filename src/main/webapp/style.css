@@ -125,12 +125,11 @@ input[type=submit]:hover {
 #set-year {
   -moz-appearance: none;
   -webkit-appearance: none;  /* Override default style for Chrome and Mozilla */
-  /*appearance: none;*/
   background: #d3d3d3;
   border-radius: 25px;
   height: 10px;
   outline: none;
-  width: 40%; 
+  width: 40%;
 }
 
 /* The handle for the set-year slider (once for Chrome, once for Mozilla) */
