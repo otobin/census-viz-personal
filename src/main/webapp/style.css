@@ -130,7 +130,7 @@ input[type=submit]:hover {
   border-radius: 25px;
   height: 10px;
   outline: none;
-  width: 100%; 
+  width: 40%; 
 }
 
 /* The handle for the set-year slider (once for Chrome, once for Mozilla) */
