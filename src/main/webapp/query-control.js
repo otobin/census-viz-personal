@@ -77,7 +77,7 @@ function putHistory(personType, action, location, year, userId) {
 
 function createSlide(title, url) {
   const historyItem = document.createElement('li');
-  historyItem.className ='splide__slide';
+  historyItem.className = 'splide__slide';
   const link = document.createElement('a');
   link.href = url;
   const titleNode = document.createTextNode(title);
@@ -135,7 +135,8 @@ function addHistoryToPage(historyElement, historyList) {
   const historyText = getTitle(historyElement.personType,
     historyElement.location, historyElement.year, location,
     historyElement.action);
-  historyList.appendChild(createSlide(historyText, getHistoryUrl(historyElement)));
+  historyList.appendChild(
+    createSlide(historyText, getHistoryUrl(historyElement)));
 }
 
 // Given a history element, return the appropriate url
@@ -318,7 +319,7 @@ function getSortedStateInfoArray() {
   for (const state in stateInfo) {
     if (stateInfo.hasOwnProperty(state)) { // Skip Puerto Rico
       if (state !== '72') {
-        stateInfoArray.push({ number: state, name: stateInfo[state].name });
+        stateInfoArray.push({number: state, name: stateInfo[state].name});
       }
     }
   }
@@ -392,7 +393,7 @@ function setupAutocompleteLocation() {
     service.getPlacePredictions({
       'input': value,
       'types': ['(regions)'], // no businesses, just cities counties etc.
-      'componentRestrictions': { 'country': 'us' }, // USA only
+      'componentRestrictions': {'country': 'us'}, // USA only
     }, displaySuggestions);
   }, 175)); // wait this many ms to send request so they don't overload
 }
