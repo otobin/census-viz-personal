@@ -45,12 +45,12 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   // Change the actionInput to be gramatically correct
   const gramaticallyCorrectAction = new Map();
   gramaticallyCorrectAction.set(
-        'live', 'lived in',
-      ).set(
-        'work', 'worked in',
-      ).set(
-        'moved', 'moved to',
-      );
+    'live', 'lived in',
+  ).set(
+    'work', 'worked in',
+  ).set(
+    'moved', 'moved to',
+  );
   let action;
   if (gramaticallyCorrectAction.has(actionInput)) {
     action = gramaticallyCorrectAction.get(actionInput);
@@ -88,37 +88,52 @@ function createSlide(title, url) {
   const historyItem = document.createElement('li');
   // const titleDiv = document.createElement('a');
   // titleDiv.href = url;
-  historyItem.innerText = title;
+  const image = document.createElement('img');
+  image.alt = 'Small U.S. map';
+  image.src = 'images/blank-map.png';
+  historyItem.appendChild(image);
+  const textNode = document.createTextNode(title);
+  historyItem.appendChild(textNode);
   return historyItem;
 }
 
+function resetHistoryList() {
+  const historyDiv = document.getElementById('history');
+  historyDiv.innerHTML =
+      `<div class="glide carousel">
+        <div class="glide__track" data-glide-el="track">
+          <ul class="glide__slides" id="history-list"></ul>
+        </div>
+      </div>`;
+}
+
 function getHistory() {
-  // clear previous results
+  resetHistoryList();
+  const historyList = document.getElementById('history-list');
   const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then(function(response) {
-      if (!response.ok) {
-        return;
-      } else {
-        return response.json();
-      }
-    })
+    if (!response.ok) {
+      return;
+    } else {
+      return response.json();
+    }
+  })
     .then(function(jsonResponse) {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
-      const historyList = document.getElementById('history-list');
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, historyList);
-        });
       });
       renderCarousel(3);
-  }
+    });
+}
 
 function addHistoryToPage(historyElement, historyList) {
   const location = historyElement.location ===
-          'state' ? 'Each U.S. state' :
-          stateInfo[historyElement.location].name;
+    'state' ? 'Each U.S. state' :
+    stateInfo[historyElement.location].name;
   const historyText = getTitle(historyElement.personType,
     historyElement.location, historyElement.year, location,
     historyElement.action);
@@ -175,14 +190,15 @@ async function passQuery(personType, action, location, year) {
     !locationDropdown.classList.contains('autocomplete-item')) {
     // User picked a location from the dropdown
     state = locationDropdown.value;
-    locationInfo = {stateName: state,
+    locationInfo = {
+      stateName: state,
       stateNumber: location,
       originalName: state,
       // Either the center of the state,
       // or the (slightly shifted for UX) center of the US
       lat: location in stateInfo ? stateInfo[location].lat : 40.5,
       lng: location in stateInfo ? stateInfo[location].lng : -96.5,
-      };
+    };
   } else { // Have to manually find which state the location is in
     locationInfo = await findStateOfLocation(location);
     if (locationInfo === undefined) {
@@ -195,14 +211,14 @@ async function passQuery(personType, action, location, year) {
     '#action option[data-value=\'' + action + '\']').value;
   const actionToPerson = new Map();
   actionToPerson.set(
-        'live', 'Population',
-      ).set(
-        'work', 'Workers',
-      ).set(
-        'moved', 'New inhabitants',
-      );
+    'live', 'Population',
+  ).set(
+    'work', 'Workers',
+  ).set(
+    'moved', 'New inhabitants',
+  );
   const description =
-      `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+    `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
   const title = getTitle(personType, location, year, state, actionInput);
@@ -225,7 +241,7 @@ async function passQuery(personType, action, location, year) {
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         displayVisualization(
-            data, description, title, locationInfo, isCountyQuery);
+          data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
@@ -304,7 +320,7 @@ function getSortedStateInfoArray() {
   for (const state in stateInfo) {
     if (stateInfo.hasOwnProperty(state)) { // Skip Puerto Rico
       if (state !== '72') {
-        stateInfoArray.push({number: state, name: stateInfo[state].name});
+        stateInfoArray.push({ number: state, name: stateInfo[state].name });
       }
     }
   }
@@ -360,13 +376,13 @@ function setupAutocompleteLocation() {
     const resultsHtml = [];
     predictions.forEach(function(prediction) {
       resultsHtml.push(
-          '<option class="autocomplete-item" value="' +
-          prediction.description + '" data-value="' +
-          prediction.description +
-          '"></option>');
+        '<option class="autocomplete-item" value="' +
+        prediction.description + '" data-value="' +
+        prediction.description +
+        '"></option>');
     });
     autocompleteResults.innerHTML =
-        resultsHtml.join('') + defaultLocationOptions;
+      resultsHtml.join('') + defaultLocationOptions;
   };
 
   // When the input box changes (due to typing), get what has been typed and
@@ -378,7 +394,7 @@ function setupAutocompleteLocation() {
     service.getPlacePredictions({
       'input': value,
       'types': ['(regions)'], // no businesses, just cities counties etc.
-      'componentRestrictions': {'country': 'us'}, // USA only
+      'componentRestrictions': { 'country': 'us' }, // USA only
     }, displaySuggestions);
   }, 175)); // wait this many ms to send request so they don't overload
 }
@@ -410,7 +426,7 @@ function setDropdownValue(datalistId, value) {
   const inputList = document.getElementById(datalistId + '-list');
   const dropdown = document.querySelector(
     '#' + datalistId + ' option[data-value=\'' + value + '\']');
-  if (dropdown !== null ) {
+  if (dropdown !== null) {
     inputList.value = dropdown.value;
   } else {
     // Value is not in dropdown

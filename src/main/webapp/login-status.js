@@ -5,7 +5,7 @@ function onSignIn(googleUser) {
   // Check if getHistory() has been called already in loginInit
   // by checking if history div is empty. If the user signed in without
   // calling logininit, then call getHIstory
-  if (document.getElementById('history').innerHTML === '') {
+  if (document.getElementById('history-list').innerHTML === '') {
     getHistory(getUserId());
   }
 }
