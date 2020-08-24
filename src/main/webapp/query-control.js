@@ -75,35 +75,28 @@ function putHistory(personType, action, location, year, userId) {
   });
 }
 
-function renderCarousel(perView) {
-  const carousel = new Glide('.carousel', {
-    type: 'carousel',
-    perView: perView
-  });
-  carousel.mount();
-}
-
 function createSlide(title, url) {
   const historyItem = document.createElement('li');
-  // const titleDiv = document.createElement('a');
-  // titleDiv.href = url;
+  historyItem.className ='splide__slide';
+  const link = document.createElement('a');
+  link.href = url;
+  const titleNode = document.createTextNode(title);
+  const imgWrapper = document.createElement('div');
+  imgWrapper.className = 'img-wrapper';
   const image = document.createElement('img');
   image.alt = 'Small U.S. map';
-  image.src = 'images/blank-map.png';
-  historyItem.appendChild(image);
-  const textNode = document.createTextNode(title);
-  historyItem.appendChild(textNode);
+  image.src = 'images/usa_map.png';
+  imgWrapper.appendChild(image);
+  link.appendChild(imgWrapper);
+  link.appendChild(titleNode);
+  historyItem.appendChild(link);
   return historyItem;
 }
 
 function resetHistoryList() {
-  const historyDiv = document.getElementById('history');
-  historyDiv.innerHTML =
-      `<div class="glide carousel">
-        <div class="glide__track" data-glide-el="track">
-          <ul class="glide__slides" id="history-list"></ul>
-        </div>
-      </div>`;
+  const historyDiv = document.getElementById('history-list');
+  historyDiv.innerHTML = '';
+  new Splide('.splide').mount();
 }
 
 function getHistory() {
@@ -125,7 +118,13 @@ function getHistory() {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, historyList);
       });
-      renderCarousel(3);
+      new Splide('.splide', {
+        type: 'loop',
+        gap: 20,
+        fixedWidth: 230,
+        padding: 20,
+        pagination: false,
+      }).mount();
     });
 }
 

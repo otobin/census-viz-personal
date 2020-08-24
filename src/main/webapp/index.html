@@ -20,8 +20,8 @@
   <script src="query-control.js"></script>
   <script src="login-status.js"></script>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.0.2/glide.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.0.2/css/glide.core.css">
+  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@2.4.12/dist/js/splide.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@2.4.12/dist/css/splide.min.css">
   <link rel="stylesheet" href="style.css">
   <link id="favicon" rel="shortcut icon" href="./images/favicon.ico">
 </head>
@@ -172,9 +172,10 @@
       <div id="data-table"></div>
     </div>
     <div id="history">
-      <div class="glide carousel">
-        <div class="glide__track" data-glide-el="track">
-          <ul class="glide__slides" id="history-list"></ul>
+      <h3>Query History</h3>
+      <div class="splide">
+        <div class="splide__track">
+          <ul class="splide__list" id="history-list"></ul>
         </div>
       </div>
     </div>
