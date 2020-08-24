@@ -131,6 +131,13 @@ input[type=submit]:hover {
   height: 650px;
 }
 
+/* Download/export button for amcharts */
+.amcharts-amexport-item-level-0 {
+  width: 100px!important;
+  height: 35px!important;
+  padding: 7px 0 0 0!important;
+}
+
 #map {
   height: 700px;
   display: none;
