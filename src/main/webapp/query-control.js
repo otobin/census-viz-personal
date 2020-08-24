@@ -34,11 +34,100 @@ function clearPreviousResult() {
   document.getElementById('result').style.display = 'block';
 }
 
-function getFetchUrl(personType, action, location, year) {
-  return '/query?person-type=' + personType +
+function getFetchUrl(servlet, personType, action, location, year) {
+  return '/' + servlet + '?person-type=' + personType +
     '&action=' + action +
     '&location=' + location +
     '&year=' + year;
+}
+
+function getTitle(personType, location, year, locationInput, actionInput) {
+  // Change the actionInput to be gramatically correct
+  const gramaticallyCorrectAction = new Map();
+  gramaticallyCorrectAction.set(
+        'live', 'lived in',
+      ).set(
+        'work', 'worked in',
+      ).set(
+        'moved', 'moved to',
+      );
+  let action;
+  if (gramaticallyCorrectAction.has(actionInput)) {
+    action = gramaticallyCorrectAction.get(actionInput);
+  } else {
+    action = actionInput;
+  }
+  const isCountyQuery = location !== 'state';
+  const region = isCountyQuery ? locationInput + ' county' : 'U.S. state';
+  const title = 'Population who ' + action +
+    ' each ' + region + ' (' +
+    personType.replace('-', ' ') + ')' +
+    ' in ' + year;
+  return title;
+}
+
+// putHistory puts the fields of the current query into the
+function putHistory(personType, action, location, year, userId) {
+  let fetchUrl = getFetchUrl('history', personType, action, location, year);
+  fetchUrl = fetchUrl + '&user-id=' + userId;
+  fetch(fetchUrl, {
+    method: 'POST',
+  });
+}
+
+function getHistory() {
+  // clear previous results
+  const historyContainer = document.getElementById('history');
+  historyContainer.innerHTML = '';
+  const header = document.createElement('p');
+  header.innerText = "Pages you've Viewed";
+  historyContainer.appendChild(header);
+  const fetchUrl = '/history?user-id=' + getUserId();
+  fetch(fetchUrl).then(function(response) {
+      if (!response.ok) {
+        return;
+      } else {
+        return response.json();
+      }
+    })
+    .then(function(jsonResponse) {
+      // iterate through list of history elements returned by
+      // the history servlet and create title elements using
+      // the attributes.
+      jsonResponse.forEach((historyElement) => {
+        if (historyElement === null) return;
+        addHistoryToPage(historyElement, historyContainer);
+        });
+      });
+  }
+
+function addHistoryToPage(historyElement, historyContainer) {
+  const location = historyElement.location ===
+          'state' ? 'Each U.S. state' :
+          stateInfo[historyElement.location].name;
+  const historyText = getTitle(historyElement.personType,
+    historyElement.location, historyElement.year, location,
+    historyElement.action);
+  // Create the text node and add link to it
+  const historyTextNode = document.createTextNode(historyText);
+  const linkElement = document.createElement('a');
+  linkElement.href = getHistoryUrl(historyElement);
+  linkElement.appendChild(historyTextNode);
+  historyContainer.appendChild(linkElement);
+  const breakElement = document.createElement('br');
+  historyContainer.appendChild(breakElement);
+}
+
+// Given a history element, return the appropriate url
+function getHistoryUrl(historyElement) {
+  // get the fetchUrl for history and then replace the '/history?' with
+  // '/#/ in order to get the hash url
+  let fetchUrl = getFetchUrl('history', historyElement.personType,
+    historyElement.action, historyElement.location, historyElement.year);
+  fetchUrl = fetchUrl.replace('/history?', '/#');
+  const host = window.location.origin;
+  const url = host + fetchUrl;
+  return url;
 }
 
 // Change hash to match dropdown inputs. Triggers onhashchange listener
@@ -61,7 +150,7 @@ function submitQuery() {
   } else {
     location = locationInput;
   }
-  const fetchUrl = getFetchUrl(personType, action, location, year);
+  const fetchUrl = getFetchUrl('query', personType, action, location, year);
   window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
 }
 
@@ -109,13 +198,8 @@ async function passQuery(personType, action, location, year) {
       `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? state + ' county' : 'U.S. state';
-  const title = 'Population who ' + actionInput +
-    ' each ' + region + ' (' +
-    personType.replace('-', ' ') + ')' +
-    ' in ' + year;
-
-  const fetchUrl = getFetchUrl(personType, action, location, year);
+  const title = getTitle(personType, location, year, state, actionInput);
+  const fetchUrl = getFetchUrl('query', personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
       data: jsonResponse,
@@ -127,6 +211,11 @@ async function passQuery(personType, action, location, year) {
         // data is a 2D array, where the first row is a
         // header row and all subsequent rows are one piece of
         // data (e.g. for a state or county)
+        if (getLoginStatus()) {
+          const userId = getUserId();
+          putHistory(personType, action, location, year, userId);
+          getHistory(userId);
+        }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         displayVisualization(
             data, description, title, locationInfo, isCountyQuery);
