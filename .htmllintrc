@@ -45,7 +45,7 @@
     "id-class-style": "dash",
     "class-no-dup": true,
     "class-style": false,
-    "id-class-ignore-regex": "abc.*",
+    "id-class-ignore-regex": "(abc.*|splide.*)",
     "img-req-alt": true,
     "img-req-src": true,
     "html-valid-content-model": true,
