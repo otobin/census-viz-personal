@@ -141,9 +141,9 @@ input[type=submit]:hover {
 
 /* Download/export button for amcharts */
 .amcharts-amexport-item-level-0 {
-  width: 100px!important;
-  height: 35px!important;
-  padding: 7px 0 0 0!important;
+  width: 100px !important;
+  height: 35px !important;
+  padding: 7px 0 0 0 !important;
 }
 
 #map {
