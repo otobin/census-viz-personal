@@ -3,8 +3,9 @@
 async function getGeoData(locationInfo, isCountyQuery) {
   if (isCountyQuery) {
     const abbrev =
-        stateInfo[locationInfo.number].ISO.replace(/US-/, '').toLowerCase();
-    if (!stateInfo[locationInfo.number].geoJsonLoaded) {
+        stateInfo[locationInfo.stateNumber]
+        .ISO.replace(/US-/, '').toLowerCase();
+    if (!stateInfo[locationInfo.stateNumber].geoJsonLoaded) {
       await new Promise((resolve, reject) => {
         const script = document.createElement('script');
         document.body.appendChild(script);
@@ -14,7 +15,7 @@ async function getGeoData(locationInfo, isCountyQuery) {
         script.src =
         `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
       });
-      stateInfo[locationInfo.number].geoJsonLoaded = true;
+      stateInfo[locationInfo.stateNumber].geoJsonLoaded = true;
     }
     return window['am4geodata_region_usa_' + abbrev + 'Low'];
   } else {
@@ -23,7 +24,7 @@ async function getGeoData(locationInfo, isCountyQuery) {
 }
 
 // Display amCharts and geoJson visulizations for given data.
-async function displayVisualization(censusDataArray, description,
+async function displayVisualization(censusDataArray, description, title,
   locationInfo, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
   const color = getColor();
@@ -32,6 +33,7 @@ async function displayVisualization(censusDataArray, description,
   localStorage.setItem('geoData', JSON.stringify(geoData));
   localStorage.setItem('location', JSON.stringify(locationInfo));
   localStorage.setItem('description', description);
+  localStorage.setItem('title', title);
   setStyle(isCountyQuery);
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
   localStorage.setItem('amChartsData', JSON.stringify(amChartsData));
@@ -42,24 +44,21 @@ async function displayVisualization(censusDataArray, description,
           'mapsData',
           JSON.stringify(mapsData));
       displayAmChartsMap(
-          amChartsData, locationInfo, description, geoData, color);
+          amChartsData, locationInfo, description, title, geoData, color);
       displayCountyGeoJson(mapsData, description, locationInfo, geoData, color);
   } else {
       displayAmChartsMap(
-          amChartsData, locationInfo, description, geoData, color);
+          amChartsData, locationInfo, description, title, geoData, color);
   }
   document.getElementById('more-info').innerText = '';
 }
 
 // Create and display amcharts map using data and geoData.
-function displayAmChartsMap(data, locationInfo, description, geoData, color) {
+function displayAmChartsMap(
+    data, locationInfo, description, title, geoData, color) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
-  chart.homeGeoPoint = {
-    latitude: locationInfo.lat,
-    longitude: locationInfo.lng,
-  };
   chart.zoomControl = new am4maps.ZoomControl();
   // only allow zooming with buttons
   chart.mouseWheelBehavior = 'none';
@@ -72,8 +71,20 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
     chart.goHome();
   });
 
-  const isCountyQuery = data[0].id.indexOf('US') === -1;
+  // Title for graph
+  const mapTitle = chart.titles.create();
+  mapTitle.text = title;
+  mapTitle.fontSize = 25;
+  mapTitle.marginBottom = 60;
+  mapTitle.paddingBottom = 60;
 
+  // Allow export
+  chart.exporting.menu = new am4core.ExportMenu();
+  chart.exporting.menu.align = 'left';
+  chart.exporting.menu.verticalAlign = 'top';
+  chart.exporting.filePrefix = 'CensusViz';
+
+  const isCountyQuery = data[0].id.indexOf('US') === -1;
   // Albers projection for state level, Mercator for county level
   if (isCountyQuery) {
     chart.projection = new am4maps.projections.Mercator();
@@ -81,6 +92,8 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
     chart.projection = new am4maps.projections.AlbersUsa();
   }
   const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+  const moveDown = 50;
+  polygonSeries.dy = moveDown; // shift map down to make room for title
 
   // Set min/max fill color for each area
   polygonSeries.heatRules.push({
@@ -94,6 +107,40 @@ function displayAmChartsMap(data, locationInfo, description, geoData, color) {
   addTooltipText(data, geoData.features, description);
   polygonSeries.useGeodata = true;
   polygonSeries.data = data;
+
+  if (isCountyQuery &&
+      stateInfo[locationInfo.stateNumber].name !== locationInfo.originalName) {
+    // User searched for a specific point; put a marker there
+    // Add an image layer to the map
+    const imageSeries = chart.series.push(new am4maps.MapImageSeries());
+    const imageTemplate = imageSeries.mapImages.template;
+    imageTemplate.propertyFields.longitude = 'longitude';
+    imageTemplate.propertyFields.latitude = 'latitude';
+    imageTemplate.nonScaling = true;
+
+    // Add a marker to the image layer
+    const marker = imageTemplate.createChild(am4plugins_bullets.PointedCircle);
+    marker.fill = am4core.color('#ea4335');
+    marker.pointerLength = 23;
+    marker.pointerBaseWidth = 12;
+    marker.stroke = am4core.color('black');
+    marker.strokeWidth = 2;
+    marker.radius = 14;
+    marker.dy = moveDown;
+    marker.tooltipText = locationInfo.originalName;
+
+    // Add shadow to the marker (for appearance)
+    const shadow = imageTemplate.createChild(am4core.Circle);
+    shadow.radius = 5;
+    shadow.fill = am4core.color('#811411');
+    shadow.zIndex = 1;
+    shadow.dy = -36 + moveDown;
+
+    // One location listing for the marker, one for the shadow (same location)
+    imageSeries.data =
+        [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng},
+        {'latitude': locationInfo.lat, 'longitude': locationInfo.lng}];
+  }
 
   // Set up heat legend
   const heatLegend = chart.createChild(am4maps.HeatLegend);
@@ -245,10 +292,25 @@ function getMinAndMaxPopulation(populationArray) {
 // Initializes the geoJson and adds multiple event listeners.
 async function displayCountyGeoJson(mapsData, description,
     locationInfo, geoData, color) {
+  const state = stateInfo[locationInfo.stateNumber];
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: stateInfo[locationInfo.number].zoomLevel,
-    center: {lat: locationInfo.lat, lng: locationInfo.lng},
+    zoom: state.zoomLevel, center: {lat: state.lat, lng: state.lng},
   });
+
+  if (state.name !== locationInfo.originalName) {
+    // user searched for a specific point; put a marker there
+    const marker = new google.maps.Marker({map: map,
+        position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map});
+    const infowindow = new google.maps.InfoWindow({
+      content: `<p>${locationInfo.originalName}<p>`,
+    });
+    marker.addListener('mouseover', () => {
+      infowindow.open(map, marker);
+    });
+    marker.addListener('mouseout', () => {
+      infowindow.close();
+    });
+  }
 
   const countyToPopMap = mapsData.map;
   const maxPopulation = mapsData.maxValue;
@@ -350,13 +412,14 @@ function changeColor(colorParam) {
   const cacheAmCharts = JSON.parse(localStorage.getItem('amChartsData'));
   const cacheLocation = JSON.parse(localStorage.getItem('location'));
   const cacheDescription = localStorage.getItem('description');
+  const cacheTitle = localStorage.getItem('title');
   // map is undefined on a state query, so check to be sure that
   // it is undefined before calling displayCountyGeoJson.
   if (cacheLocation !== 'state') {
     displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation,
       cacheGeoData, color);
   }
-  displayAmChartsMap(cacheAmCharts, cacheLocation, cacheDescription,
+  displayAmChartsMap(cacheAmCharts, cacheLocation, cacheDescription, cacheTitle,
       cacheGeoData, color);
 }
 
