@@ -307,3 +307,46 @@ input[type="color"] {
   padding: 8px;
   height: 18px;
 }
+
+#history-list a {
+  color: black;
+  text-decoration: none;
+}
+
+#history-list a img {
+  border-bottom: 1px solid #e7e7e9;
+  display: block;
+  padding-bottom: 15px;
+  margin: 0 auto 15px auto;
+  width: 150px;
+}
+
+#history-list li {
+  border: 1px solid #e7e7e9;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 4px 8px #e7e7e9;
+  padding: 15px;
+  transition: .3s;
+}
+
+#history-list li:hover {
+  box-shadow: 8px 8px 16px #e7e7e9;
+}
+
+#history {
+  padding-bottom: 30px;
+}
+
+#history h3 {
+  padding-left: 35px;
+}
+
+.splide__track {
+  overflow: visible;
+}
+
+.splide__arrow {
+  top: 70px;
+}

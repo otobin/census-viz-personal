@@ -2,7 +2,12 @@
 function onSignIn(googleUser) {
   const idToken = googleUser.getAuthResponse().id_token;
   setSignInButton(true);
-  getHistory(getUserId());
+  // Check if getHistory() has been called already in loginInit
+  // by checking if history div is empty. If the user signed in without
+  // calling logininit, then call getHIstory
+  if (document.getElementById('history-list').innerHTML === '') {
+    getHistory(getUserId());
+  }
 }
 
 // Sign user out
@@ -16,8 +21,13 @@ function signOut() {
 
 // Get whether user is signed in
 function getLoginStatus() {
-  const auth2 = gapi.auth2.getAuthInstance();
-  return auth2.isSignedIn.get();
+  let auth2 = gapi.auth2;
+  if (typeof auth2 === 'undefined') {
+    return false;
+  } else {
+    auth2 = gapi.auth2.getAuthInstance();
+    return auth2.isSignedIn.get();
+  }
 }
 
 // Set whether to show Sign In or Sign Out button
@@ -47,6 +57,10 @@ function loginInit() {
         'onsuccess': onSignIn,
       });
       displayLoginStatus();
+    }).then(() => {
+      if (getLoginStatus()) {
+        getHistory(getUserId());
+      }
     });
   });
 }

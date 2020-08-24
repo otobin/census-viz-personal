@@ -45,12 +45,12 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   // Change the actionInput to be gramatically correct
   const gramaticallyCorrectAction = new Map();
   gramaticallyCorrectAction.set(
-        'live', 'lived in',
-      ).set(
-        'work', 'worked in',
-      ).set(
-        'moved', 'moved to',
-      );
+    'live', 'lived in',
+  ).set(
+    'work', 'worked in',
+  ).set(
+    'moved', 'moved to',
+  );
   let action;
   if (gramaticallyCorrectAction.has(actionInput)) {
     action = gramaticallyCorrectAction.get(actionInput);
@@ -66,8 +66,7 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   return title;
 }
 
-// getHistory fetches to the History Servlet and returns a list of
-// links of queries that the logged in user has visited before
+// putHistory puts the fields of the current query into the
 function putHistory(personType, action, location, year, userId) {
   let fetchUrl = getFetchUrl('history', personType, action, location, year);
   fetchUrl = fetchUrl + '&user-id=' + userId;
@@ -76,51 +75,76 @@ function putHistory(personType, action, location, year, userId) {
   });
 }
 
+function createSlide(title, url) {
+  const historyItem = document.createElement('li');
+  historyItem.className = 'splide__slide';
+  const link = document.createElement('a');
+  link.href = url;
+  const titleNode = document.createTextNode(title);
+  const imgWrapper = document.createElement('div');
+  imgWrapper.className = 'img-wrapper';
+  const image = document.createElement('img');
+  image.alt = 'Small U.S. map';
+  image.src = 'images/usa_map.png';
+  imgWrapper.appendChild(image);
+  link.appendChild(imgWrapper);
+  link.appendChild(titleNode);
+  historyItem.appendChild(link);
+  return historyItem;
+}
+
+function resetHistoryList() {
+  const historyDiv = document.getElementById('history-list');
+  historyDiv.innerHTML = '';
+  new Splide('.splide').mount();
+}
+
 function getHistory() {
-  // clear previous results
-  const historyContainer = document.getElementById('history');
-  historyContainer.innerHTML = '';
-  const header = document.createElement('p');
-  header.innerText = "Pages you've Viewed";
-  historyContainer.appendChild(header);
+  resetHistoryList();
+  const historyList = document.getElementById('history-list');
   const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then(function(response) {
-      if (!response.ok) {
-        return;
-      } else {
-        return response.json();
-      }
-    })
+    if (!response.ok) {
+      return;
+    } else {
+      return response.json();
+    }
+  })
     .then(function(jsonResponse) {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
       jsonResponse.forEach((historyElement) => {
-        if (historyElement !== null) {
-          let historyTextNode;
-          const location = historyElement.location === 'state' ? 'Each U.S. state' :
-            stateInfo[historyElement.location].name;
-          const historyText = getTitle(historyElement.personType, historyElement.location,
-            historyElement.year, location, historyElement.action);
-          // Create the text node and add link to it
-          historyTextNode = document.createTextNode(historyText);
-          const linkElement = document.createElement('a');
-          linkElement.href = getHistoryUrl(historyElement);
-          linkElement.appendChild(historyTextNode);
-          historyContainer.appendChild(linkElement);
-          const breakElement = document.createElement('br');
-          historyContainer.appendChild(breakElement);
-        }
-      })
-    })
+        if (historyElement === null) return;
+        addHistoryToPage(historyElement, historyList);
+      });
+      new Splide('.splide', {
+        type: 'loop',
+        gap: 20,
+        fixedWidth: 230,
+        padding: 20,
+        pagination: false,
+      }).mount();
+    });
+}
+
+function addHistoryToPage(historyElement, historyList) {
+  const location = historyElement.location ===
+    'state' ? 'Each U.S. state' :
+    stateInfo[historyElement.location].name;
+  const historyText = getTitle(historyElement.personType,
+    historyElement.location, historyElement.year, location,
+    historyElement.action);
+  historyList.appendChild(
+    createSlide(historyText, getHistoryUrl(historyElement)));
 }
 
 // Given a history element, return the appropriate url
 function getHistoryUrl(historyElement) {
   // get the fetchUrl for history and then replace the '/history?' with
   // '/#/ in order to get the hash url
-  let fetchUrl = getFetchUrl('history', historyElement.personType, historyElement.action, 
-    historyElement.location, historyElement.year);
+  let fetchUrl = getFetchUrl('history', historyElement.personType,
+    historyElement.action, historyElement.location, historyElement.year);
   fetchUrl = fetchUrl.replace('/history?', '/#');
   const host = window.location.origin;
   const url = host + fetchUrl;
@@ -165,14 +189,15 @@ async function passQuery(personType, action, location, year) {
     !locationDropdown.classList.contains('autocomplete-item')) {
     // User picked a location from the dropdown
     state = locationDropdown.value;
-    locationInfo = {stateName: state,
+    locationInfo = {
+      stateName: state,
       stateNumber: location,
       originalName: state,
       // Either the center of the state,
       // or the (slightly shifted for UX) center of the US
       lat: location in stateInfo ? stateInfo[location].lat : 40.5,
       lng: location in stateInfo ? stateInfo[location].lng : -96.5,
-      };
+    };
   } else { // Have to manually find which state the location is in
     locationInfo = await findStateOfLocation(location);
     if (locationInfo === undefined) {
@@ -185,22 +210,17 @@ async function passQuery(personType, action, location, year) {
     '#action option[data-value=\'' + action + '\']').value;
   const actionToPerson = new Map();
   actionToPerson.set(
-        'live', 'Population',
-      ).set(
-        'work', 'Workers',
-      ).set(
-        'moved', 'New inhabitants',
-      );
+    'live', 'Population',
+  ).set(
+    'work', 'Workers',
+  ).set(
+    'moved', 'New inhabitants',
+  );
   const description =
-      `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+    `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const region = isCountyQuery ? state + ' county' : 'U.S. state';
-  const title = 'Population who ' + actionInput +
-    ' each ' + region + ' (' +
-    personType.replace('-', ' ') + ')' +
-    ' in ' + year;
-
+  const title = getTitle(personType, location, year, state, actionInput);
   const fetchUrl = getFetchUrl('query', personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
@@ -220,7 +240,7 @@ async function passQuery(personType, action, location, year) {
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         displayVisualization(
-            data, description, title, locationInfo, isCountyQuery);
+          data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
@@ -238,7 +258,7 @@ function removeErroneousData(dataArray) {
   dataArray.forEach((elem, index) => {
     // Using splice, directly modifies array
     elem.forEach((item) => {
-      if (item === null || item < 0) {
+      if (item === null || item < 0 || item === 'Puerto Rico') {
         dataArray.splice(index, 1);
       }
     });
@@ -355,13 +375,13 @@ function setupAutocompleteLocation() {
     const resultsHtml = [];
     predictions.forEach(function(prediction) {
       resultsHtml.push(
-          '<option class="autocomplete-item" value="' +
-          prediction.description + '" data-value="' +
-          prediction.description +
-          '"></option>');
+        '<option class="autocomplete-item" value="' +
+        prediction.description + '" data-value="' +
+        prediction.description +
+        '"></option>');
     });
     autocompleteResults.innerHTML =
-        resultsHtml.join('') + defaultLocationOptions;
+      resultsHtml.join('') + defaultLocationOptions;
   };
 
   // When the input box changes (due to typing), get what has been typed and
@@ -405,7 +425,7 @@ function setDropdownValue(datalistId, value) {
   const inputList = document.getElementById(datalistId + '-list');
   const dropdown = document.querySelector(
     '#' + datalistId + ' option[data-value=\'' + value + '\']');
-  if (dropdown !== null ) {
+  if (dropdown !== null) {
     inputList.value = dropdown.value;
   } else {
     // Value is not in dropdown
