@@ -53,19 +53,12 @@ public class HistoryServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Put the current query from the user in datastore
-    String personType = request.getParameter("person-type");
-    String action = request.getParameter("action");
-    String location = request.getParameter("location");
-    String year = request.getParameter("year");
-    String userId = request.getParameter("user-id");
-
     Entity historyEntity = new Entity("historyEntity");
-    historyEntity.setProperty("personType", personType);
-    historyEntity.setProperty("action", action);
-    historyEntity.setProperty("location", location);
-    historyEntity.setProperty("year", year);
-    historyEntity.setProperty("userId", userId);
+    historyEntity.setProperty("personType", request.getParameter("person-type"));
+    historyEntity.setProperty("action", request.getParameter("action"));
+    historyEntity.setProperty("location", request.getParameter("location"));
+    historyEntity.setProperty("year", request.getParameter("year"));
+    historyEntity.setProperty("userId", request.getParameter("user-id"));
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(historyEntity);

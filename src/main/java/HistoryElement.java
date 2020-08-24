@@ -1,14 +1,14 @@
 package com.google.sps.data;
 
 public class HistoryElement {
-  String id;
+  String userId;
   String personType;
   String action;
   String location;
   String year;
 
-  public HistoryElement(String id, String personType, String action, String location, String year) {
-    this.id = id;
+  public HistoryElement(String userId, String personType, String action, String location, String year) {
+    this.userId = userId;
     this.personType = personType;
     this.action = action;
     this.location = location;
@@ -16,7 +16,7 @@ public class HistoryElement {
   }
 
   public String getId() {
-    return id;
+    return userId;
   }
 
   public String getPersonType() {

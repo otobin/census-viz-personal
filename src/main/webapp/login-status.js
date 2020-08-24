@@ -21,7 +21,7 @@ function signOut() {
 
 // Get whether user is signed in
 function getLoginStatus() {
-  const auth2 = gapi.auth2;
+  let auth2 = gapi.auth2;
   if (typeof auth2 === 'undefined') {
     return false;
   } else {
