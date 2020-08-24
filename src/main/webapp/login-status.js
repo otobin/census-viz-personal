@@ -25,7 +25,7 @@ function getLoginStatus() {
   if (typeof auth2 === 'undefined') {
     return false;
   } else {
-    const auth2 = gapi.auth2.getAuthInstance();
+    auth2 = gapi.auth2.getAuthInstance();
     return auth2.isSignedIn.get();
   }
 }
