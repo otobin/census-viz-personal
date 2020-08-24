@@ -26,6 +26,7 @@ function getColor() {
 function clearPreviousResult() {
   document.getElementById('data-table').innerHTML = '';
   document.getElementById('colors').style.display = 'none';
+  document.getElementById('edit-title').style.display = 'none';
   document.getElementById('census-link').style.display = 'none';
   document.getElementById('toggle-data-btn').style.display = 'none';
   document.getElementById('map-options').style.display = 'none';
@@ -161,7 +162,7 @@ function submitQuery() {
 // Breaks down the query and passes it to the backend to be analyzed;
 // the backend returns the appropriate data, which is then passed off
 // to be reformatted and visualized.
-async function passQuery(personType, action, location, year) {
+async function passQuery(personType, action, location, year, title) {
   clearPreviousResult();
   const locationDropdown = document.querySelector(
     '#location option[data-value=\'' + location + '\']');
@@ -201,7 +202,9 @@ async function passQuery(personType, action, location, year) {
       `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const title = getTitle(personType, location, year, state, actionInput);
+  if (title === '') { // no user-chosen title available
+      title = getTitle(personType, location, year, state, actionInput);
+  }
   const fetchUrl = getFetchUrl('query', personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
@@ -290,6 +293,16 @@ function replaceValueIfEmpty(dataListId) {
   if (typedSoFar === '') {
     inputlist.value = storedVal;
   }
+}
+
+function showEditTitle() {
+  document.getElementById('edit-title').style.display = 'inline';
+}
+
+function editTitle() {
+  const title = document.getElementById('edit-title-text').value;
+  submitHashQuery(title);
+  return false;
 }
 
 // Return an array of state number and name sorted alphabetically.
@@ -417,7 +430,7 @@ function setDropdownValue(datalistId, value) {
 
 // Called on load and on hash change. Check for
 // query params in url and call passQuery() if found.
-function submitHashQuery() {
+function submitHashQuery(title='') {
   const urlHash = window.location.hash;
   if (urlHash) {
     const params = new URLSearchParams(urlHash.slice(1));
@@ -428,7 +441,7 @@ function submitHashQuery() {
     const action = params.get('action');
     const location = params.get('location');
     const year = params.get('year');
-    passQuery(personType, action, location, year);
+    passQuery(personType, action, location, year, title);
   }
 }
 

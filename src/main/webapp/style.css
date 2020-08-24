@@ -127,6 +127,14 @@ input[type=submit]:hover {
   text-align: center;
 }
 
+#open-edit-title {
+  display: none;
+}
+
+#edit-title {
+  display: none;
+}
+
 #am-charts {
   height: 650px;
 }
@@ -219,12 +227,6 @@ input:checked + .slider::before {
   padding: 5px;
   text-transform: uppercase;
   font-weight: bolder;
-}
-
-#map-title {
-  text-align: center;
-  font-weight: bolder;
-  font-size: 20px;
 }
 
 #more-info {

@@ -27,6 +27,7 @@ async function getGeoData(locationInfo, isCountyQuery) {
 async function displayVisualization(censusDataArray, description, title,
   locationInfo, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
+  document.getElementById('open-edit-title').style.display = 'inline';
   const color = getColor();
   const geoData = await getGeoData(locationInfo, isCountyQuery);
   // Put all necessary data in the cache
@@ -110,7 +111,7 @@ function displayAmChartsMap(
       ]
     }
   ]
-  
+
   const isCountyQuery = data[0].id.indexOf('US') === -1;
   // Albers projection for state level, Mercator for county level
   if (isCountyQuery) {

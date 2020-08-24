@@ -160,7 +160,11 @@
           </label>
         </p>
       </div>
-      <br>
+      <button id="open-edit-title" onclick="showEditTitle()">Edit title</button>
+      <form id="edit-title" onsubmit="editTitle();return false;">
+        <input type="text" id="edit-title-text">
+        <input type="submit" value="done">
+      </form>
       <div id="am-charts"></div>
       <div id="map"></div>
       <button id="toggle-data-btn" onclick="toggleDataTable()">Display raw data</button>
