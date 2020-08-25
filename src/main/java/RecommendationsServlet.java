@@ -97,7 +97,7 @@ public class RecommendationsServlet extends HttpServlet {
       updateMap(personTypeMap, currentElement.getPersonType());
       updateMap(actionMap, currentElement.getAction());
       updateMap(locationMap, currentElement.getLocation());
-      updateMap(yearsMap, currentElement.getYear());
+      updateMap(yearsMap, currentElement.year);
     }
   }
 
@@ -117,19 +117,19 @@ public class RecommendationsServlet extends HttpServlet {
     Set<String> personTypeKeys = reverseSortedPersonType.keySet();
     Set<String> actionKeys = reverseSortedAction.keySet();
     Set<String> locationKeys = reverseSortedLocation.keySet();
-    Set<String> yearKeys = reverseSortedLocation.keySet();
+    Set<String> yearKeys = reverseSortedYear.keySet();
     ArrayList<HistoryElement> recommendationList = new ArrayList<HistoryElement>();
     for (String personType:personTypeKeys) {
       for(String action:actionKeys) {
         for (String location:locationKeys) {
           for (String year:yearKeys) {
             HistoryElement recommendation = new HistoryElement(userId, personType, action, location, year);
-            if (isRecommendationValid(recommendation, userHistory)) {
-              recommendationList.add(recommendation);
-              if (recommendationList.size() > 3) {
-                return recommendationList;
-              }
-            }
+             if (isRecommendationValid(recommendation, userHistory)) {
+               recommendationList.add(recommendation);
+               if (recommendationList.size() > 3) {
+                 return recommendationList;
+               }
+             }
           }
         }
       }
@@ -144,8 +144,8 @@ public class RecommendationsServlet extends HttpServlet {
     History userHistoryObj = new History(userId);
     ArrayList<HistoryElement> userHistory = userHistoryObj.getHistoryList();
     ArrayList<HistoryElement> recommendations = getRecommendations(userHistory, userId);
-    HistoryElement randomElement = getRandomRecommendation(userId, userHistory);
-    recommendations.add(randomElement);
+    HistoryElement randomRecommendation = getRandomRecommendation(userId, userHistory);
+    recommendations.add(randomRecommendation);
     String json = new Gson().toJson(recommendations);
     response.getWriter().write(json);
   }

@@ -5,7 +5,7 @@ public class HistoryElement {
   String personType;
   String action;
   String location;
-  String year;
+  public String year;
 
   public HistoryElement(
       String userId, String personType, String action, String location, String year) {
