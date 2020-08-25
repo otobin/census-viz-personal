@@ -406,6 +406,15 @@ function changeColor(colorParam) {
   const color = colorParam.value;
   document.getElementById('set-color-label').style.backgroundColor = color;
   localStorage.setItem('color', color);
+
+  // Set button color (but make it darker if it's too light)
+  let chromaColor = chroma(color);
+  if (chromaColor.luminance() > 0.3) {
+    chromaColor = chromaColor.luminance(0.3);
+  }
+  document.documentElement.style.setProperty(
+      '--button-color', chromaColor.hex());
+
   // Get variables out of cache
   const cacheMapsData = JSON.parse(localStorage.getItem('mapsData'));
   const cacheGeoData = JSON.parse(localStorage.getItem('geoData'));
