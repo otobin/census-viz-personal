@@ -146,9 +146,7 @@ function getRecommendations() {
     }
   })
     .then(function(jsonResponse) {
-      // iterate through list of history elements returned by
-      // the history servlet and create title elements using
-      // the attributes.
+      // iterate through list of recommendations
       console.log(jsonResponse);
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;

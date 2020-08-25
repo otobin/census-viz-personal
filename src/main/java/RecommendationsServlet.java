@@ -101,6 +101,8 @@ public class RecommendationsServlet extends HttpServlet {
     }
   }
 
+  // Takes in a hashmap and returns a linkedHashMap sorted by value in descending order such that 
+  // the most frequented query types are first in the list
   private LinkedHashMap<String, Integer> sortHashMapDescending(HashMap<String, Integer> frequencyMap) {
     LinkedHashMap<String, Integer> reverseSortedMap = new LinkedHashMap<>();
         frequencyMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -108,6 +110,8 @@ public class RecommendationsServlet extends HttpServlet {
     return reverseSortedMap;
   }
 
+  // Return suggested recommendations based on the history. Create hashmaps for each input for all of the queries,
+  // then create four combinations based on the most frequented fields.
   private ArrayList<HistoryElement> getRecommendations(ArrayList<HistoryElement> userHistory, String userId) {
     getFrequencyMaps(userHistory);
     LinkedHashMap<String, Integer> reverseSortedPersonType = sortHashMapDescending(personTypeMap);
