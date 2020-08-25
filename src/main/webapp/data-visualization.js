@@ -83,7 +83,7 @@ function displayAmChartsMap(
   chart.exporting.menu = new am4core.ExportMenu();
   chart.exporting.menu.align = 'left';
   chart.exporting.menu.verticalAlign = 'top';
-  chart.exporting.filePrefix = 'CensusViz';
+  chart.exporting.filePrefix = title;
   chart.exporting.menu.items = [
     {
       'label': 'Download',
