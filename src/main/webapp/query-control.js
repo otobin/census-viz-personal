@@ -99,6 +99,12 @@ function resetHistoryList() {
   new Splide('.splide').mount();
 }
 
+function resetRecommendationList() {
+  const recommendationDiv = document.getElementById('recommendation-list');
+  recommendationDiv.innerHTML = '';
+  // new Splid('.splide').mount();
+}
+
 function getHistory() {
   resetHistoryList();
   const historyList = document.getElementById('history-list');
@@ -125,6 +131,36 @@ function getHistory() {
         padding: 20,
         pagination: false,
       }).mount();
+    });
+}
+
+function getRecommendations() {
+  resetRecommendationList();
+  const recommendationList = document.getElementById('recommendation-list');
+  const fetchUrl = '/recommendations?user-id=' + getUserId();
+  fetch(fetchUrl).then(function(response) {
+    if (!response.ok) {
+      return;
+    } else {
+      return response.json();
+    }
+  })
+    .then(function(jsonResponse) {
+      // iterate through list of history elements returned by
+      // the history servlet and create title elements using
+      // the attributes.
+      console.log(jsonResponse);
+      jsonResponse.forEach((historyElement) => {
+        if (historyElement === null) return;
+        addHistoryToPage(historyElement, recommendationList);
+      });
+      // new Splide('.splide', {
+      //   type: 'loop',
+      //   gap: 20,
+      //   fixedWidth: 230,
+      //   padding: 20,
+      //   pagination: false,
+      // }).mount();
     });
 }
 

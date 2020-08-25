@@ -7,6 +7,7 @@ function onSignIn(googleUser) {
   // calling logininit, then call getHIstory
   if (document.getElementById('history-list').innerHTML === '') {
     getHistory(getUserId());
+    getRecommendations(getUserId());
   }
 }
 
@@ -60,6 +61,7 @@ function loginInit() {
     }).then(() => {
       if (getLoginStatus()) {
         getHistory(getUserId());
+        getRecommendations(getUserId());
       }
     });
   });
