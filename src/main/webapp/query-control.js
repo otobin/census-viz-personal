@@ -96,7 +96,6 @@ function createSlide(title, url) {
 function resetHistoryList() {
   const historyDiv = document.getElementById('history-list');
   historyDiv.innerHTML = '';
-  new Splide('.splide').mount();
 }
 
 function getHistory() {
@@ -114,13 +113,21 @@ function getHistory() {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
+      const historyDiv = document.getElementById('history');
+      if (jsonResponse.length === 0) {
+        historyDiv.style.display = 'none';
+      } else {
+        historyDiv.style.display = 'block';
+      }
+      jsonResponse.reverse(); // latest query first
+      // console.log(jsonResponse);
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, historyList);
       });
       new Splide('.splide', {
-        type: 'loop',
         gap: 20,
+        rewind: true,
         fixedWidth: 230,
         padding: 20,
         pagination: false,
