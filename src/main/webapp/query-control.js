@@ -321,6 +321,7 @@ async function setupQuery() {
   await createStateDropdownList();
   setupAutocompleteLocation();
   setupYearSlider();
+  setButtonColor();
 }
 
 // Append all locations to the location dropdown element.
@@ -415,6 +416,16 @@ function setupYearSlider() {
   slider.oninput = function() {
     text.innerText = 'Change the year: ' + this.value; // update as user slides
   };
+}
+
+function setButtonColor() {
+  const color = getColor();
+  let chromaColor = chroma(color);
+  if (chromaColor.luminance() > 0.3) {
+    chromaColor = chromaColor.luminance(0.3);
+  }
+  document.documentElement.style.setProperty(
+      '--button-color', chromaColor.hex());
 }
 
 // Set dropdown for datalistId to value
