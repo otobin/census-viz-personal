@@ -1,82 +1,77 @@
-// import com.google.gson.JsonObject;
-// import com.google.gson.Gson;
-// import com.google.sps.data.HistoryElement;
-// import com.google.appengine.api.datastore.DatastoreService;
-// import com.google.appengine.api.datastore.DatastoreServiceFactory;
-// import com.google.appengine.api.datastore.Entity;
-// import com.google.appengine.api.datastore.Query;
-// import com.google.appengine.api.datastore.PreparedQuery;
-// import java.io.IOException;
-// import javax.servlet.annotation.WebServlet;
-// import javax.servlet.http.HttpServlet;
-// import javax.servlet.http.HttpServletRequest;
-// import javax.servlet.http.HttpServletResponse;
-// import java.util.List;
-// import java.util.ArrayList;
-// import java.util.Arrays;
-// //import java.util.Pair;
-// import java.lang.String;
-// import java.util.Random;
+import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.google.sps.data.HistoryElement;
+import com.google.sps.data.History;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.PreparedQuery;
+import java.io.IOException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.lang.String;
+import java.util.Random;
 
-// @WebServlet("/recommendations")
-// public class RecommendationsServlet extends HttpServlet {
+@WebServlet("/recommendations")
+public class RecommendationsServlet extends HttpServlet {
 
-//   // Returns a HistoryElement whose contents are completely random
-//   // in order to alleviate recommendation fatigue. 
-//   public HistoryElement getRandomRecommendation() {
-//     // Create an array of banned pairs to make sure that the function 
-//     // doesn't return information that we don't have.
-//     //Pair p1 = new Pair("children", "work in");
-//     //Pair p2 = new Pair("children", "moved to");
-//     // ArrayList<Pair> bannedCombinations = new ArrayList<Pair>(Arrays.asList(p1, p2));
-    
-//     ArrayList<String> personType = new ArrayList<String>(
-//       Arrays.asList("children", "adults", "people", "men", "women"));
-//     ArrayList<String> action = new ArrayList<String>(
-//       Arrays.asList("lived in", "worked in", "moved to"));
-//     ArrayList<String> location = new ArrayList<String>(
-//       Arrays.asList("Alabama","Alaska","Arizona","Arkansas","California",
-//       "Colorado","Connecticut","Delaware","District of Columbia", "Florida",
-//       "Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky",
-//       "Louisiana", "Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi",
-//       "Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey",
-//       "New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma",
-//       "Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota",
-//       "Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia",
-//       "Wisconsin","Wyoming"));
-//     ArrayList<String> years = new ArrayList<String> (
-//       Arrays.asList("2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018")); 
+  // uses java.util.random to get a random integer between 
+  // 0 and upperBound-1 in order to access a random element 
+  // for each of the options
+  private int getRandomInt(int upperBound) {
+    Random randomObject = new Random();
+    int randomInt = randomObject.nextInt(upperBound);
+    return randomInt;
+  }
 
-//     boolean found = false;
-    
-//   }
+  // Returns a HistoryElement whose contents are completely random
+  // in order to alleviate recommendation fatigue. 
+  private HistoryElement getRandomRecommendation(String userId) {
+    History userHistory = new History(userId);
+    ArrayList<HistoryElement> userHistoryList = userHistory.getHistoryList();
+    ArrayList<String> personType = new ArrayList<String>(
+      Arrays.asList("under-18", "over-18", "all-ages", "male", "female"));
+    ArrayList<String> action = new ArrayList<String>(
+      Arrays.asList("live", "work", "moved"));
+    ArrayList<String> location = new ArrayList<String>(
+      Arrays.asList("state","01","02","04","05","06","08","09","10","11","12","13","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42", "44", "45", "46","47","48","49","50","51","53","54","55","56"));
+    ArrayList<String> years = new ArrayList<String> (
+      Arrays.asList("2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018")); 
+    boolean foundCombination = false;
+    HistoryElement randomRecommendation = userHistoryList.get(0);
+    while (!foundCombination) {
+      String randomPersonType = personType.get(getRandomInt(personType.size()));
+      String randomAction = action.get(getRandomInt(action.size()));
+      String randomLocation = location.get(getRandomInt(location.size()));
+      String randomYear = years.get(getRandomInt(years.size()));
+      randomRecommendation = new HistoryElement(
+          userId, randomPersonType, randomAction, randomLocation, randomYear);
+      // Check that the History element can be found in our database and isn't one
+      // that the user has already viewed.
+      if (!(userHistoryList.contains(randomRecommendation) || 
+        (randomPersonType == "under-18" && randomAction == "work") ||
+        (randomPersonType == "under-18" && randomAction == "moved"))) {
+        return randomRecommendation;
+      }
+    }
+    return randomRecommendation;
+  }
 
-//   @Override
-//   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//     // Go through datastore count the number of occurances 
-//     // for all the queries from the user. 
-//     Map<String, int> personTypeOccurances = new HashMap<String, integer>();
-//     Map<String, int> actionOccurances = new HashMap<String, integer>();
-//     Map<String, int> locationOccurances = new HashMap<String, integer>();
-//     Map<String, int> yearOccurances = new HashMap<String, integer>();
-//     String locationSetting = request.getParameter("location-settings");
-//     String userId = request.getParameter("user-id");
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String userId = request.getParameter("user-id");
+    HistoryElement randomElement = getRandomRecommendation(userId);
+    ArrayList<HistoryElement> recommendations = new ArrayList<HistoryElement>(
+        Arrays.asList(randomElement));
+    String json = new Gson().toJson(recommendations);
+    response.getWriter().write(json);
+  }
 
-//     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-//     Query query = new Query("historyEntity");
-//     PreparedQuery results = datastore.prepare(query);
-//     for (Entity entity: results.asIterable()) {
-//         String entityUserId = (String) entity.getProperty("userId");
-//         if (entityUserId != null && userId != null) {
-//           if (entityUserId.equals(userId)) {
-//             entityPersonType = (String) entity.getProperty("personType");
-//             if (personTypeOccurances.containsKey(entityPersonType)) {
-//               personTypeOccurances.put(entityPersonType, map.get(entityPersonType) + 1);
-//             } else {
-//               personTypeOccurances.put(entityPersonType, 1);
-//             }
-//           }
-//     }
-//   }
-// }
-// }
+}
+
