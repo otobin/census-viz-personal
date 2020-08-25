@@ -102,7 +102,7 @@ function resetHistoryList() {
 function resetRecommendationList() {
   const recommendationDiv = document.getElementById('recommendation-list');
   recommendationDiv.innerHTML = '';
-  new Splid('.splide2').mount();
+  new Splide('.splide2').mount();
 }
 
 function getHistory() {
