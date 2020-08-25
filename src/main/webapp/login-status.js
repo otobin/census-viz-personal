@@ -2,12 +2,6 @@
 function onSignIn(googleUser) {
   const idToken = googleUser.getAuthResponse().id_token;
   setSignInButton(true);
-  // Check if getHistory() has been called already in loginInit
-  // by checking if history div is empty. If the user signed in without
-  // calling logininit, then call getHIstory
-  if (document.getElementById('history-list').innerHTML === '') {
-    getHistory();
-  }
 }
 
 // Sign user out
@@ -58,9 +52,11 @@ function loginInit() {
       });
       displayLoginStatus();
     }).then(() => {
-      if (getLoginStatus()) {
+      const isLoggedIn = getLoginStatus();
+      if (isLoggedIn) {
         getHistory();
       }
+      toggleHistory(isLoggedIn);
     });
   });
 }
