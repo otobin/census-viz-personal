@@ -255,7 +255,7 @@ function getMapsData(censusDataArray) {
     // ^^ ["Contra Costa County", "California"]
     // Trim space and region suffix
     const countyRegex = new RegExp('( County| City and Borough|' +
-        ' Borough| Municipality| Census Area| city| City)$');
+        ' Borough| Municipality| Census Area| city| City| Parish)$');
     let countyString = countyAndStateArray[0].replace(countyRegex, '');
     if (countyString === 'District of Columbia') { // Handle D.C. name mismatch
       countyString = 'Washington, District of Columbia';

@@ -102,7 +102,7 @@ function resetHistoryList() {
 function resetRecommendationList() {
   const recommendationDiv = document.getElementById('recommendation-list');
   recommendationDiv.innerHTML = '';
-  // new Splid('.splide').mount();
+  new Splid('.splide2').mount();
 }
 
 function getHistory() {
@@ -154,13 +154,13 @@ function getRecommendations() {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, recommendationList);
       });
-      // new Splide('.splide', {
-      //   type: 'loop',
-      //   gap: 20,
-      //   fixedWidth: 230,
-      //   padding: 20,
-      //   pagination: false,
-      // }).mount();
+      new Splide('.splide2', {
+        type: 'loop',
+        gap: 20,
+        fixedWidth: 230,
+        padding: 20,
+        pagination: false,
+      }).mount();
     });
 }
 
