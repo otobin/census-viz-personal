@@ -60,8 +60,8 @@ function loginInit() {
       displayLoginStatus();
     }).then(() => {
       if (getLoginStatus()) {
-        getHistory(getUserId());
-        getRecommendations(getUserId());
+        getHistory();
+        getRecommendations();
       }
     });
   });
