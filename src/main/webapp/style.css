@@ -1,5 +1,6 @@
 :root {
   font-family: 'Roboto', sans-serif;
+  
   --button-color: #0071bd;
 }
 
@@ -208,11 +209,11 @@ input[type=submit]:hover {
 }
 
 input:checked + .slider {
-  background-color: #2196f3;
+  background-color: var(--button-color);
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
+  box-shadow: 0 0 1px var(--button-color);
 }
 
 input:checked + .slider::before {
