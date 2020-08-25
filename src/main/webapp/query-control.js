@@ -81,7 +81,7 @@ function getHistory() {
   const historyContainer = document.getElementById('history');
   historyContainer.innerHTML = '';
   const header = document.createElement('p');
-  header.innerText = 'Pages you've Viewed';
+  header.innerText = 'Pages you\'ve Viewed';
   historyContainer.appendChild(header);
   const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then(function(response) {
