@@ -75,27 +75,25 @@ public class RecommendationsServlet extends HttpServlet {
   // Returns a VisualizationData whose contents are completely random
   // in order to alleviate recommendation fatigue. 
   private VisualizationData getRandomRecommendation(String userId, ArrayList<VisualizationData> userHistory) {
-    // Max number of visualizations user could have viewed
-    int maxCombinations = 6885;
-    int counter = 0;
-    VisualizationData randomRecommendation = userHistory.get(0);
-    while (counter < maxCombinations) {
+    ArrayList<VisualizationData> invalidRecommendations = new ArrayList<VisualizationData>();
+    boolean isValid = false;
+    while (!isValid) {
       String randomPersonType = personType.get(getRandomInt(personType.size()));
       String randomAction = action.get(getRandomInt(action.size()));
       String randomLocation = location.get(getRandomInt(location.size()));
       String randomYear = years.get(getRandomInt(years.size()));
-      randomRecommendation = new VisualizationData(
+      VisualizationData randomRecommendation = new VisualizationData(
           userId, randomPersonType, randomAction, randomLocation, randomYear);
-      // Check that the History element can be found in our database and isn't one
-      // that the user has already viewed.
-      if (isRecommendationValid(randomRecommendation, userHistory)) {
+      if (isRecommendationValid(randomRecommendation, userHistory) && !invalidRecommendations.contains(randomRecommendation)) {
         return randomRecommendation;
+      } else {
+        invalidRecommendations.add(randomRecommendation);
       }
-      counter += 1;
+      if (invalidRecommendations.size() >= 6885) {
+        isValid = true;
+      }
     }
-    // If the user has looked at EVERy visualization (not likely), just return the first 
-    // one in the history. 
-    return randomRecommendation;
+    return userHistory.get(0);
   }
 
   // Takes in a map and updates the key/value pairs
