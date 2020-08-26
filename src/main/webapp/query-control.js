@@ -206,6 +206,8 @@ async function passQuery(personType, action, location, year, title) {
   if (title === '') { // no user-chosen title available
       title = getTitle(personType, location, year, state, actionInput);
   }
+  localStorage.setItem('title', title);
+
   const fetchUrl = getFetchUrl('query', personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
@@ -299,6 +301,10 @@ function replaceValueIfEmpty(dataListId) {
 // Show the div that allows for AmCharts map title editing
 function showEditTitle() {
   document.getElementById('edit-title').style.display = 'inline';
+  const currentTitle = localStorage.getItem('title');
+  if (currentTitle !== undefined) {
+    document.getElementById('edit-title-text').value = currentTitle;
+  }
 }
 
 // Update the title in the AmCharts map
