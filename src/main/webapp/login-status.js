@@ -45,8 +45,7 @@ function loginInit() {
       displayLoginStatus();
       toggleHistory(false);
     }).then(() => {
-      const isLoggedIn = getLoginStatus();
-      if (isLoggedIn) {
+      if (getLoginStatus()) {
         getHistory();
       }
     });
