@@ -3,7 +3,7 @@
 async function getGeoData(locationInfo, isCountyQuery) {
   if (isCountyQuery) {
     const abbrev =
-        stateInfo[locationInfo.stateNumber]
+      stateInfo[locationInfo.stateNumber]
         .ISO.replace(/US-/, '').toLowerCase();
     if (!stateInfo[locationInfo.stateNumber].geoJsonLoaded) {
       await new Promise((resolve, reject) => {
@@ -13,7 +13,7 @@ async function getGeoData(locationInfo, isCountyQuery) {
         script.onerror = reject;
         script.async = true;
         script.src =
-        `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
+          `https://www.amcharts.com/lib/4/geodata/region/usa/${abbrev}Low.js`;
       });
       stateInfo[locationInfo.stateNumber].geoJsonLoaded = true;
     }
@@ -42,23 +42,23 @@ async function displayVisualization(censusDataArray, description, title,
   drawTable(amChartsData, description, isCountyQuery);
 
   if (isCountyQuery) {
-      const mapsData = getMapsData(censusDataArray);
-      localStorage.setItem(
-          'mapsData',
-          JSON.stringify(mapsData));
-      displayAmChartsMap(
-          amChartsData, locationInfo, description, title, geoData, color);
-      displayCountyGeoJson(mapsData, description, locationInfo, geoData, color);
+    const mapsData = getMapsData(censusDataArray);
+    localStorage.setItem(
+      'mapsData',
+      JSON.stringify(mapsData));
+    displayAmChartsMap(
+      amChartsData, locationInfo, description, title, geoData, color);
+    displayCountyGeoJson(mapsData, description, locationInfo, geoData, color);
   } else {
-      displayAmChartsMap(
-          amChartsData, locationInfo, description, title, geoData, color);
+    displayAmChartsMap(
+      amChartsData, locationInfo, description, title, geoData, color);
   }
   document.getElementById('more-info').innerText = '';
 }
 
 // Create and display amcharts map using data and geoData.
 function displayAmChartsMap(
-    data, locationInfo, description, title, geoData, color) {
+  data, locationInfo, description, title, geoData, color) {
   am4core.useTheme(am4themes_animated);
   const chart = am4core.create('am-charts', am4maps.MapChart);
   chart.height = 550;
@@ -112,7 +112,7 @@ function displayAmChartsMap(
   polygonSeries.data = data;
 
   if (isCountyQuery &&
-      stateInfo[locationInfo.stateNumber].name !== locationInfo.originalName) {
+    stateInfo[locationInfo.stateNumber].name !== locationInfo.originalName) {
     // User searched for a specific point; put a marker there
     // Add an image layer to the map
     const imageSeries = chart.series.push(new am4maps.MapImageSeries());
@@ -141,8 +141,8 @@ function displayAmChartsMap(
 
     // One location listing for the marker, one for the shadow (same location)
     imageSeries.data =
-        [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng},
-        {'latitude': locationInfo.lat, 'longitude': locationInfo.lng}];
+      [{ 'latitude': locationInfo.lat, 'longitude': locationInfo.lng },
+      { 'latitude': locationInfo.lat, 'longitude': locationInfo.lng }];
   }
 
   // Set up heat legend
@@ -179,7 +179,7 @@ function displayAmChartsMap(
     chart.zoomToMapObject(event.target);
     const locationName = event.target.dataItem.dataContext.locationName;
     const locationNumber = document.querySelector(
-        '#location option[value=\'' + locationName + '\']').dataset.value;
+      '#location option[value=\'' + locationName + '\']').dataset.value;
     setDropdownValue('location', locationNumber);
     submitQuery();
   };
@@ -189,7 +189,7 @@ function displayAmChartsMap(
   };
 
   polygonTemplate.events.on('hit',
-      isCountyQuery ? countyMapOnHit : allStatesMapOnHit);
+    isCountyQuery ? countyMapOnHit : allStatesMapOnHit);
 
   function handleHover(column) {
     if (!isNaN(column.dataItem.value)) {
@@ -209,7 +209,7 @@ function addTooltipText(data, geoDataFeatures, description) {
     const index = data.findIndex((elem) => elem.id === location.id);
     if (index !== -1) {
       data[index].tooltipText =
-          `${description}: ${parseInt(data[index].value).toLocaleString()}`;
+        `${description}: ${parseInt(data[index].value).toLocaleString()}`;
     } else {
       data.push({
         id: location.id,
@@ -238,8 +238,9 @@ function createDataArray(censusDataArray, isCountyQuery) {
     vizDataArray.push({
       id: getLocationId(location, isCountyQuery, regionIndex),
       locationName: location[0],
-      value: location[1]});
+      value: location[1]
     });
+  });
   return vizDataArray;
 }
 
@@ -258,7 +259,7 @@ function getMapsData(censusDataArray) {
     // ^^ ["Contra Costa County", "California"]
     // Trim space and region suffix
     const countyRegex = new RegExp('( County| City and Borough|' +
-        ' Borough| Municipality| Census Area| city| City)$');
+      ' Borough| Municipality| Census Area| city| City)$');
     let countyString = countyAndStateArray[0].replace(countyRegex, '');
     if (countyString === 'District of Columbia') { // Handle D.C. name mismatch
       countyString = 'Washington, District of Columbia';
@@ -266,10 +267,12 @@ function getMapsData(censusDataArray) {
     // Map the population to the county
     countyToPopMap[countyString] = county[1];
     populationsList.push(parseInt(county[1]));
-    });
+  });
   const minAndMax = getMinAndMaxPopulation(populationsList);
-  mapData = {map: countyToPopMap,
-    minValue: minAndMax.min, maxValue: minAndMax.max};
+  mapData = {
+    map: countyToPopMap,
+    minValue: minAndMax.min, maxValue: minAndMax.max
+  };
   return mapData;
 }
 
@@ -286,7 +289,7 @@ function getMinAndMaxPopulation(populationArray) {
       min = populationArray[i];
     }
   }
-  return {max: max, min: min};
+  return { max: max, min: min };
 }
 
 
@@ -294,16 +297,18 @@ function getMinAndMaxPopulation(populationArray) {
 // counties to populations, a max population, and a min population.
 // Initializes the geoJson and adds multiple event listeners.
 async function displayCountyGeoJson(mapsData, description,
-    locationInfo, geoData, color) {
+  locationInfo, geoData, color) {
   const state = stateInfo[locationInfo.stateNumber];
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: state.zoomLevel, center: {lat: state.lat, lng: state.lng},
+    zoom: state.zoomLevel, center: { lat: state.lat, lng: state.lng },
   });
 
   if (state.name !== locationInfo.originalName) {
     // user searched for a specific point; put a marker there
-    const marker = new google.maps.Marker({map: map,
-        position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map});
+    const marker = new google.maps.Marker({
+      map: map,
+      position: { lat: locationInfo.lat, lng: locationInfo.lng }, map: map
+    });
     const infowindow = new google.maps.InfoWindow({
       content: `<p>${locationInfo.originalName}<p>`,
     });
@@ -328,7 +333,7 @@ async function displayCountyGeoJson(mapsData, description,
     map.data.setStyle((feature) => {
       return {
         fillColor: colorScale(
-            countyToPopMap[feature.j.name.replace('Saint', 'St.')]).toString(),
+          countyToPopMap[feature.j.name.replace('Saint', 'St.')]).toString(),
         fillOpacity: 0.5,
       };
     });
@@ -341,15 +346,15 @@ async function displayCountyGeoJson(mapsData, description,
     });
     let contentString;
     if (countyToPopMap[event.feature.j.name.replace('Saint', 'St.')] !==
-        undefined) {
+      undefined) {
       contentString = '<p>' + event.feature.j.name +
-          '<p>' + description + ': ' +
-          parseInt(
-            countyToPopMap[event.feature.j.name.replace('Saint', 'St.')])
-            .toLocaleString();
+        '<p>' + description + ': ' +
+        parseInt(
+          countyToPopMap[event.feature.j.name.replace('Saint', 'St.')])
+          .toLocaleString();
     } else {
       contentString = '<p>' + event.feature.j.name +
-          '<p>Data not available';
+        '<p>Data not available';
     }
     const infoWindow = new google.maps.InfoWindow({
       content: contentString,
@@ -358,14 +363,14 @@ async function displayCountyGeoJson(mapsData, description,
     infoWindow.setPosition(event.latLng);
     infoWindow.open(map);
     openInfoWindows.push(infoWindow);
-  }, {passive: true});
+  }, { passive: true });
   map.data.addListener('mouseout', function(event) {
     map.data.revertStyle();
     let i;
     for (i = 0; i < openInfoWindows.length; i++) {
       openInfoWindows[i].close();
     }
-  }, {passive: true});
+  }, { passive: true });
 }
 
 // Toggle between amcharts and maps.
@@ -423,7 +428,7 @@ function changeColor(colorParam) {
       cacheGeoData, color);
   }
   displayAmChartsMap(cacheAmCharts, cacheLocation, cacheDescription, cacheTitle,
-      cacheGeoData, color);
+    cacheGeoData, color);
 }
 
 // Draw data table using Visualization API
@@ -432,7 +437,7 @@ function drawTable(dataArray, description, isCountyQuery) {
   // the for each loop used to populate the data table,
   // so I made a copy
   const dataArrayCopy = dataArray.slice();
-  google.charts.load('current', {'packages': ['table']});
+  google.charts.load('current', { 'packages': ['table'] });
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
@@ -442,11 +447,12 @@ function drawTable(dataArray, description, isCountyQuery) {
       data.addRow([elem.locationName, parseInt(elem.value)]);
     });
     const table = new google.visualization.Table(
-        document.getElementById('data-table'));
+      document.getElementById('data-table'));
     table.draw(data, {
       width: '30%',
       height: '100%',
-      cssClassNames: {headerRow: 'data-table-header'}});
+      cssClassNames: { headerRow: 'data-table-header' }
+    });
   });
 }
 
@@ -454,13 +460,54 @@ function drawTable(dataArray, description, isCountyQuery) {
 function toggleDataTable() {
   const dataTable = document.getElementById('data-table');
   if (window.getComputedStyle(dataTable)
-      .getPropertyValue('display') === 'none') {
+    .getPropertyValue('display') === 'none') {
     dataTable.style.display = 'inline';
     document.getElementById('toggle-data-btn').innerText = 'Hide raw data';
   } else {
     dataTable.style.display = 'none';
     document.getElementById('toggle-data-btn').innerText = 'Display raw data';
   }
+}
+
+//
+async function createYearlyChart(personType, action, location, description) {
+  const chart = am4core.create("yearly-chart", am4charts.XYChart);
+  let data = [];
+  for (let year = 2010; year <= 2018; year++) {
+    await fetch(getFetchUrl('query', personType, action, location, year))
+      .then((response) => response.json().then((jsonResponse) => ({
+        data: jsonResponse,
+        success: response.ok,
+        status: response.status,
+      })))
+      .then((response) => {
+        if (response.success) {
+          let censusData = removeErroneousData(
+            JSON.parse(response.data.censusData));
+          censusData = censusData.slice(1, censusData.length - 1);
+          let totalPopulation = 0;
+          censusData.forEach((county) => {
+            totalPopulation += parseInt(county[1]);
+          });
+          data.push({ 'year': year, 'value': totalPopulation });
+        }
+      });
+  }
+  chart.data = data;
+  const categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+  categoryAxis.dataFields.category = "year";
+  categoryAxis.title.text = "Year";
+  const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  valueAxis.title.text = description;
+  const series = chart.series.push(new am4charts.LineSeries());
+  series.dataFields.valueY = "value";
+  series.dataFields.categoryX = "year";
+  series.name = description;
+  series.tooltipText = `${description}: [bold]{valueY}[/]`;
+  series.strokeWidth = 3;
+  series.yAxis = valueAxis;
+  chart.legend = new am4charts.Legend();
+  chart.cursor = new am4charts.XYCursor();
 }
 
 // Display link to data.census.gov table for the table the displayed
