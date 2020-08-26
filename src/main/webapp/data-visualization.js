@@ -87,6 +87,18 @@ function displayAmChartsMap(
   chart.exporting.menu.align = 'left';
   chart.exporting.menu.verticalAlign = 'top';
   chart.exporting.filePrefix = title;
+  chart.exporting.adapter.add('data', function(data) {
+    data.data = [];
+    for (let i = 0; i < polygonSeries.data.length; i++) {
+      const row = polygonSeries.data[i];
+      data.data.push({
+        id: row.id,
+        name: row.name,
+        value: row.value
+      });
+    }
+    return data;
+  });  
   chart.exporting.menu.items = [
     {
       'label': 'Download',
