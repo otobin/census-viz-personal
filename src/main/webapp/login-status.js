@@ -1,9 +1,3 @@
-// Get signed in user info
-function onSignIn(googleUser) {
-  const idToken = googleUser.getAuthResponse().id_token;
-  setSignInButton(true);
-}
-
 // Sign user out
 function signOut() {
   const auth2 = gapi.auth2.getAuthInstance();
@@ -47,16 +41,14 @@ function loginInit() {
       client_id: '156213329836-pnoe2errhb8gr29aplgo0klfkjrfeknf' +
           '.apps.googleusercontent.com',
     }).then(() => {
-      gapi.signin2.render('sign-in-btn', {
-        'onsuccess': onSignIn,
-      });
+      gapi.signin2.render('sign-in-btn');
       displayLoginStatus();
+      toggleHistory(false);
     }).then(() => {
       const isLoggedIn = getLoginStatus();
       if (isLoggedIn) {
         getHistory();
       }
-      toggleHistory(isLoggedIn);
     });
   });
 }

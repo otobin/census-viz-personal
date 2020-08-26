@@ -75,7 +75,7 @@ function putHistory(personType, action, location, year, userId) {
   });
 }
 
-function createSlide(title, url) {
+function createSlide(title, url, location) {
   const historyItem = document.createElement('li');
   historyItem.className = 'splide__slide';
   const link = document.createElement('a');
@@ -85,7 +85,10 @@ function createSlide(title, url) {
   imgWrapper.className = 'img-wrapper';
   const image = document.createElement('img');
   image.alt = 'Small U.S. map';
-  image.src = 'images/usa_map.png';
+  const isCountyQuery = location !== 'state';
+  const zoom = isCountyQuery ? stateInfo[location].zoomLevel - 2 : 2;
+  const center  = isCountyQuery ? `${stateInfo[location].lat},${stateInfo[location].lng}` : 'United+States';
+  image.src = `https://maps.googleapis.com/maps/api/staticmap?center=${center}&style=feature:administrative.locality|element:labels|visibility:off&style=feature:road|visibility:off&zoom=${zoom}&size=200x200&key=AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ`;
   imgWrapper.appendChild(image);
   link.appendChild(imgWrapper);
   link.appendChild(titleNode);
@@ -124,7 +127,6 @@ function getHistory() {
       // the attributes.
       toggleHistory(jsonResponse.length > 0);
       jsonResponse.reverse(); // latest query first
-      console.log(jsonResponse);
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, historyList);
@@ -147,7 +149,7 @@ function addHistoryToPage(historyElement, historyList) {
     historyElement.location, historyElement.year, location,
     historyElement.action);
   historyList.appendChild(
-    createSlide(historyText, getHistoryUrl(historyElement)));
+    createSlide(historyText, getHistoryUrl(historyElement), historyElement.location));
 }
 
 // Given a history element, return the appropriate url
