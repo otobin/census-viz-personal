@@ -81,7 +81,7 @@ function getHistory() {
   const historyContainer = document.getElementById('history');
   historyContainer.innerHTML = '';
   const header = document.createElement('p');
-  header.innerText = "Pages you've Viewed";
+  header.innerText = 'Pages you\'ve Viewed';
   historyContainer.appendChild(header);
   const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then(function(response) {
@@ -291,7 +291,7 @@ function replaceValueIfEmpty(dataListId) {
 }
 
 // When the user picks certain dropdown values,
-// exclude the combinations that don't have data available 
+// exclude the combinations that don't have data available
 const dropdownsToExclude = new Map();
 dropdownsToExclude.set(
       'worked in', ['children'],
@@ -304,10 +304,10 @@ dropdownsToExclude.set(
     );
 const defaultDropdowns = new Map();
 defaultDropdowns.set(
-      'action', 
+      'action',
       [['lived in', 'live'], ['worked in', 'work'], ['moved to', 'moved']],
     ).set(
-      'person-type', 
+      'person-type',
       [['people', 'all-ages'], ['adults', 'over-18'], ['children', 'under-18'],
       ['men', 'male'], ['women', 'female']],
     );
