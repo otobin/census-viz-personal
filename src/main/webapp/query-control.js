@@ -26,6 +26,7 @@ function getColor() {
 function clearPreviousResult() {
   document.getElementById('data-table').innerHTML = '';
   document.getElementById('colors').style.display = 'none';
+  document.getElementById('year-slider').style.display = 'none';
   document.getElementById('census-link').style.display = 'none';
   document.getElementById('toggle-data-btn').style.display = 'none';
   document.getElementById('map-options').style.display = 'none';
@@ -75,7 +76,7 @@ function putHistory(personType, action, location, year, userId) {
   });
 }
 
-function createSlide(title, url) {
+function createSlide(title, url, location) {
   const historyItem = document.createElement('li');
   historyItem.className = 'splide__slide';
   const link = document.createElement('a');
@@ -83,9 +84,17 @@ function createSlide(title, url) {
   const titleNode = document.createTextNode(title);
   const imgWrapper = document.createElement('div');
   imgWrapper.className = 'img-wrapper';
+  const isCountyQuery = location !== 'state';
+  const zoom = isCountyQuery ? stateInfo[location].zoomLevel - 2 : 2;
+  const center = isCountyQuery ?
+      `${stateInfo[location].lat},${stateInfo[location].lng}` : 'United+States';
   const image = document.createElement('img');
-  image.alt = 'Small U.S. map';
-  image.src = 'images/usa_map.png';
+  image.alt = isCountyQuery ?
+      `Small ${stateInfo[location].name} map` : 'Small U.S. map';
+  image.src = `https://maps.googleapis.com/maps/api/staticmap?center=${center}
+      &style=feature:administrative.locality|element:labels|visibility:off
+      &style=feature:road|visibility:off&zoom=${zoom}&size=200x200
+      &key=AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ`;
   imgWrapper.appendChild(image);
   link.appendChild(imgWrapper);
   link.appendChild(titleNode);
@@ -96,7 +105,15 @@ function createSlide(title, url) {
 function resetHistoryList() {
   const historyDiv = document.getElementById('history-list');
   historyDiv.innerHTML = '';
-  new Splide('.splide').mount();
+}
+
+function toggleHistory(shouldShow) {
+  const historyDiv = document.getElementById('history');
+  if (shouldShow) {
+    historyDiv.style.display = 'block';
+  } else {
+    historyDiv.style.display = 'none';
+  }
 }
 
 function resetRecommendationList() {
@@ -120,6 +137,8 @@ function getHistory() {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
+      toggleHistory(jsonResponse.length > 0);
+      jsonResponse.reverse(); // latest query first
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, historyList);
@@ -153,6 +172,7 @@ function getRecommendations() {
       });
       new Splide('.splide2', {
         gap: 20,
+        rewind: true,
         fixedWidth: 230,
         padding: 20,
         pagination: false,
@@ -168,7 +188,8 @@ function addHistoryToPage(historyElement, historyList) {
     historyElement.location, historyElement.year, location,
     historyElement.action);
   historyList.appendChild(
-    createSlide(historyText, getHistoryUrl(historyElement)));
+    createSlide(
+      historyText, getHistoryUrl(historyElement), historyElement.location));
 }
 
 // Given a history element, return the appropriate url
@@ -343,6 +364,12 @@ function replaceValueIfEmpty(dataListId) {
   }
 }
 
+// Change the year of data being visualized
+function changeYear(yearParam) {
+  document.getElementById('year-list').value = yearParam.value;
+  submitQuery();
+}
+
 // Return an array of state number and name sorted alphabetically.
 // Excludes Puerto Rico.
 function getSortedStateInfoArray() {
@@ -363,9 +390,10 @@ function getSortedStateInfoArray() {
   return stateInfoArray;
 }
 
-async function setupLocationDropdown() {
+async function setupQuery() {
   await createStateDropdownList();
   setupAutocompleteLocation();
+  setupYearSlider();
 }
 
 // Append all locations to the location dropdown element.
@@ -449,6 +477,16 @@ function debounce(func, waitTime) {
     // function will not be executed
     clearTimeout(timeout);
     timeout = setTimeout(later, waitTime);
+  };
+}
+
+function setupYearSlider() {
+  const slider = document.getElementById('set-year');
+  const text = document.getElementById('year-slider-text');
+  text.innerText = 'Change the year: ' + slider.value; // default value
+
+  slider.oninput = function() {
+    text.innerText = 'Change the year: ' + this.value; // update as user slides
   };
 }
 
