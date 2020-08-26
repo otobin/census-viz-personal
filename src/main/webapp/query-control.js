@@ -88,7 +88,7 @@ function createSlide(title, url, location) {
   image.alt = 'Small U.S. map';
   const isCountyQuery = location !== 'state';
   const zoom = isCountyQuery ? stateInfo[location].zoomLevel - 2 : 2;
-  const center  = isCountyQuery ? 
+  const center = isCountyQuery ?
       `${stateInfo[location].lat},${stateInfo[location].lng}` : 'United+States';
   image.src = `https://maps.googleapis.com/maps/api/staticmap?center=${center}
       &style=feature:administrative.locality|element:labels|visibility:off
@@ -154,7 +154,8 @@ function addHistoryToPage(historyElement, historyList) {
     historyElement.location, historyElement.year, location,
     historyElement.action);
   historyList.appendChild(
-    createSlide(historyText, getHistoryUrl(historyElement), historyElement.location));
+    createSlide(
+      historyText, getHistoryUrl(historyElement), historyElement.location));
 }
 
 // Given a history element, return the appropriate url
