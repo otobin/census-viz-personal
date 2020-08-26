@@ -44,8 +44,8 @@ public class RecommendationsServlet extends HttpServlet {
   private HashMap<String, Integer> yearsMap = new HashMap<String, Integer>(); 
 
   // if the user doesn't have any history to draw from to get recommendations, 
-  // return default recommendations that would be applicable to most users,
-  // the number of children, adults, all people, men, and women who lived in each 
+  // return default recommendations that would be applicable to most users which is
+  // the number of children, adults, people, men, and women who lived in each 
   // US state in 2018. 
   private ArrayList<VisualizationData> getDefaultRecommendations(String userId) {
     ArrayList<VisualizationData> defaultRecommendations = new ArrayList<VisualizationData>();
@@ -89,6 +89,7 @@ public class RecommendationsServlet extends HttpServlet {
       } else {
         invalidRecommendations.add(randomRecommendation);
       }
+      // If the user has looked at every visualization, return the first in the history.
       if (invalidRecommendations.size() >= 6885) {
         isValid = true;
       }
