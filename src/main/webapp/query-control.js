@@ -332,8 +332,7 @@ function replaceValueIfEmpty(dataListId) {
 
 // Change the year of data being visualized
 function changeYear(yearParam) {
-  const year = yearParam.value;
-  document.getElementById('year-list').value = year;
+  document.getElementById('year-list').value = yearParam.value;
   submitQuery();
 }
 
