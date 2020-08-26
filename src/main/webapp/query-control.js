@@ -289,6 +289,26 @@ function replaceValueIfEmpty(dataListId) {
   }
 }
 
+// When the user picks certain dropdown values,
+// exclude the combinations that don't have data available 
+const dropdownsToExclude = new Map();
+dropdownsToExclude.set(
+      'worked in', ['children'],
+    ).set(
+      'moved to', ['children', 'adults'],
+    ).set(
+      'children', ['worked in', 'moved to'],
+    ).set(
+      'adults', ['moved to'],
+    );
+const actionDefaults = ['lived in', 'worked in', 'moved to'];
+const personTypeDefaults = ['people', 'adults', 'children', 'men', 'women'];
+
+function updateDropdown(type) {
+  console.log('udpated!');
+}
+
+
 // Return an array of state number and name sorted alphabetically.
 // Excludes Puerto Rico.
 function getSortedStateInfoArray() {
