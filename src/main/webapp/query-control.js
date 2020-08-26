@@ -301,13 +301,39 @@ dropdownsToExclude.set(
     ).set(
       'adults', ['moved to'],
     );
-const actionDefaults = ['lived in', 'worked in', 'moved to'];
-const personTypeDefaults = ['people', 'adults', 'children', 'men', 'women'];
+const defaultDropdowns = new Map();
+defaultDropdowns.set(
+      'action', 
+      [['lived in', 'live'], ['worked in', 'work'], ['moved to', 'moved']],
+    ).set(
+      'person-type', 
+      [['people', 'all-ages'], ['adults', 'over-18'], ['children', 'under-18'],
+      ['men', 'male'], ['women', 'female']],
+    );
 
 function updateDropdown(type) {
-  console.log('udpated!');
-}
+  // When we have an input in one area,
+  // we actually want to update the other area based on this input
+  let dropdown;
+  let options;
+  if (type === 'action') {
+    dropdown = document.getElementById('person-type');
+    options = defaultDropdowns.get('person-type');
+  } else {
+    dropdown = document.getElementById('action');
+    options = defaultDropdowns.get('action');
+  }
+  dropdown.innerHTML = '';
+  const currentValue = document.getElementById(type + '-list').value;
 
+  options.forEach((option) => {
+    if (!(dropdownsToExclude.has(currentValue) &&
+        dropdownsToExclude.get(currentValue).includes(option[0]))) {
+          optionElem = createDropdownOption(option[0], option[1]);
+          dropdown.appendChild(optionElem);
+        }
+  });
+}
 
 // Return an array of state number and name sorted alphabetically.
 // Excludes Puerto Rico.
@@ -345,14 +371,19 @@ async function createStateDropdownList() {
   datalist.appendChild(optionElem);
   const stateInfoArray = getSortedStateInfoArray();
   stateInfoArray.forEach((value) => {
-    optionElem = document.createElement('option');
-    optionElem.value = value.name;
-    optionElem.setAttribute('data-value', value.number);
+    optionElem = createDropdownOption(value.name, value.number);
     datalist.appendChild(optionElem);
   });
   // This would be called in HTML onload
   // but will not work until createStateDropdownList is done
   submitHashQuery();
+}
+
+function createDropdownOption(value, dataValue) {
+  const optionElem = document.createElement('option');
+  optionElem.value = value;
+  optionElem.setAttribute('data-value', dataValue);
+  return optionElem;
 }
 
 // Set up an autocomplete dropdown, attached to the main location input
