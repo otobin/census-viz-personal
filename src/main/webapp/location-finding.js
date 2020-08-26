@@ -115,9 +115,9 @@ async function findStateOfLocation(location) {
       .catch((err) => {
         displayError(
             400,
-            'Either this location is not in one of the 50 U.S. states, or we \
-            are not able to find it (try being more specific or adding the \
-            state code).');
+            'Either this location is not in one of the 50 U.S. states, or we' +
+            'are not able to find it (try being more specific or adding the' +
+            'state code).');
         return;
       });
 }
