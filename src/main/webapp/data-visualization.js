@@ -94,11 +94,11 @@ function displayAmChartsMap(
       data.data.push({
         id: row.id,
         name: row.name,
-        value: row.value
+        value: row.value,
       });
     }
     return data;
-  });  
+  });
   chart.exporting.menu.items = [
     {
       'label': 'Download',
