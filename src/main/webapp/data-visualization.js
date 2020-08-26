@@ -29,7 +29,9 @@ async function displayVisualization(censusDataArray, description, title,
   document.getElementById('colors').style.display = 'block';
   document.getElementById('open-edit-title').style.display = 'inline';
   const color = getColor();
+  document.getElementById('year-slider').style.display = 'block';
   const geoData = await getGeoData(locationInfo, isCountyQuery);
+
   // Put all necessary data in the cache
   localStorage.setItem('geoData', JSON.stringify(geoData));
   localStorage.setItem('location', JSON.stringify(locationInfo));
@@ -39,6 +41,7 @@ async function displayVisualization(censusDataArray, description, title,
   const amChartsData = createDataArray(censusDataArray, isCountyQuery);
   localStorage.setItem('amChartsData', JSON.stringify(amChartsData));
   drawTable(amChartsData, description, isCountyQuery);
+
   if (isCountyQuery) {
       const mapsData = getMapsData(censusDataArray);
       localStorage.setItem(
