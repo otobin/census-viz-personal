@@ -26,6 +26,7 @@ function getColor() {
 function clearPreviousResult() {
   document.getElementById('data-table').innerHTML = '';
   document.getElementById('colors').style.display = 'none';
+  document.getElementById('year-slider').style.display = 'none';
   document.getElementById('census-link').style.display = 'none';
   document.getElementById('toggle-data-btn').style.display = 'none';
   document.getElementById('map-options').style.display = 'none';
@@ -333,6 +334,11 @@ function updateDropdown(type) {
           dropdown.appendChild(optionElem);
         }
   });
+  
+// Change the year of data being visualized
+function changeYear(yearParam) {
+  document.getElementById('year-list').value = yearParam.value;
+  submitQuery();
 }
 
 // Return an array of state number and name sorted alphabetically.
@@ -355,9 +361,10 @@ function getSortedStateInfoArray() {
   return stateInfoArray;
 }
 
-async function setupLocationDropdown() {
+async function setupQuery() {
   await createStateDropdownList();
   setupAutocompleteLocation();
+  setupYearSlider();
 }
 
 // Append all locations to the location dropdown element.
@@ -446,6 +453,16 @@ function debounce(func, waitTime) {
     // function will not be executed
     clearTimeout(timeout);
     timeout = setTimeout(later, waitTime);
+  };
+}
+
+function setupYearSlider() {
+  const slider = document.getElementById('set-year');
+  const text = document.getElementById('year-slider-text');
+  text.innerText = 'Change the year: ' + slider.value; // default value
+
+  slider.oninput = function() {
+    text.innerText = 'Change the year: ' + this.value; // update as user slides
   };
 }
 
