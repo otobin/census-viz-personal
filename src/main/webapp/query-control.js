@@ -125,7 +125,6 @@ function getHistory() {
         addHistoryToPage(historyElement, historyList);
       });
       new Splide('.splide', {
-        type: 'loop',
         gap: 20,
         fixedWidth: 230,
         padding: 20,
@@ -153,7 +152,6 @@ function getRecommendations() {
         addHistoryToPage(historyElement, recommendationList);
       });
       new Splide('.splide2', {
-        type: 'loop',
         gap: 20,
         fixedWidth: 230,
         padding: 20,

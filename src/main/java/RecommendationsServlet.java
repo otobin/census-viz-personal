@@ -25,18 +25,35 @@ import java.util.Set;
 
 @WebServlet("/recommendations")
 public class RecommendationsServlet extends HttpServlet {
-    private ArrayList<String> personType = new ArrayList<String>(
-      Arrays.asList("under-18", "over-18", "all-ages", "male", "female"));
-    private ArrayList<String> action = new ArrayList<String>(
-      Arrays.asList("live", "work", "moved"));
-    private ArrayList<String> location = new ArrayList<String>(
-      Arrays.asList("state","01","02","04","05","06","08","09","10","11","12","13","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42", "44", "45", "46","47","48","49","50","51","53","54","55","56"));
-    private ArrayList<String> years = new ArrayList<String> (
-      Arrays.asList("2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018")); 
-    private HashMap<String, Integer> personTypeMap = new HashMap<String, Integer>();
-    private HashMap<String, Integer> actionMap = new HashMap<String, Integer>();
-    private HashMap<String, Integer> locationMap = new HashMap<String, Integer>(); 
-    private HashMap<String, Integer> yearsMap = new HashMap<String, Integer>(); 
+  private ArrayList<String> personType = new ArrayList<String>(
+    Arrays.asList("under-18", "over-18", "all-ages", "male", "female"));
+  private ArrayList<String> action = new ArrayList<String>(
+    Arrays.asList("live", "work", "moved"));
+  private ArrayList<String> location = new ArrayList<String>(
+    Arrays.asList("state", "01", "02", "04", "05", "06", "08",
+    "09", "10", "11", "12", "13", "15", "16", "17", "18", "19",
+    "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
+    "30", "31", "32", "33", "34", "35", "36", "37", "38", "39",
+    "40", "41", "42", "44", "45", "46", "47", "48", "49", "50",
+    "51", "53", "54", "55", "56"));
+  private ArrayList<String> years = new ArrayList<String> (
+    Arrays.asList("2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018")); 
+  private HashMap<String, Integer> personTypeMap = new HashMap<String, Integer>();
+  private HashMap<String, Integer> actionMap = new HashMap<String, Integer>();
+  private HashMap<String, Integer> locationMap = new HashMap<String, Integer>(); 
+  private HashMap<String, Integer> yearsMap = new HashMap<String, Integer>(); 
+
+  // if the user doesn't have any history to draw from to get recommendations, 
+  // return default recommendations that would be applicable to most users,
+  // the number of children, adults, all people, men, and women who lived in each 
+  // US state in 2018. 
+  private ArrayList<HistoryElement> getDefaultRecommendations(String userId) {
+    ArrayList<HistoryElement> defaultRecommendations = new ArrayList<HistoryElement>();
+    for (String person: personType) {
+      defaultRecommendations.add(new HistoryElement(userId, person, "live", "state", "2018"));
+    }
+    return defaultRecommendations;
+  }
 
   // uses java.util.random to get a random integer between 
   // 0 and upperBound-1 in order to access a random element 
@@ -97,7 +114,7 @@ public class RecommendationsServlet extends HttpServlet {
       updateMap(personTypeMap, currentElement.getPersonType());
       updateMap(actionMap, currentElement.getAction());
       updateMap(locationMap, currentElement.getLocation());
-      updateMap(yearsMap, currentElement.year);
+      updateMap(yearsMap, currentElement.getYear());
     }
   }
 
@@ -123,10 +140,10 @@ public class RecommendationsServlet extends HttpServlet {
     Set<String> locationKeys = reverseSortedLocation.keySet();
     Set<String> yearKeys = reverseSortedYear.keySet();
     ArrayList<HistoryElement> recommendationList = new ArrayList<HistoryElement>();
-    for (String personType:personTypeKeys) {
-      for(String action:actionKeys) {
-        for (String location:locationKeys) {
-          for (String year:yearKeys) {
+    for (String personType : personTypeKeys) {
+      for(String action : actionKeys) {
+        for (String location : locationKeys) {
+          for (String year : yearKeys) {
             HistoryElement recommendation = new HistoryElement(userId, personType, action, location, year);
              if (isRecommendationValid(recommendation, userHistory)) {
                recommendationList.add(recommendation);
@@ -144,14 +161,18 @@ public class RecommendationsServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userId = request.getParameter("user-id");
-
     History userHistoryObj = new History(userId);
     ArrayList<HistoryElement> userHistory = userHistoryObj.getHistoryList();
-    ArrayList<HistoryElement> recommendations = getRecommendations(userHistory, userId);
-    HistoryElement randomRecommendation = getRandomRecommendation(userId, userHistory);
-    recommendations.add(randomRecommendation);
-    String json = new Gson().toJson(recommendations);
-    response.getWriter().write(json);
+    if (userHistory.isEmpty()) {
+      String json = new Gson().toJson(getDefaultRecommendations(userId));
+      response.getWriter().write(json);
+    } else {
+      ArrayList<HistoryElement> recommendations = getRecommendations(userHistory, userId);
+      HistoryElement randomRecommendation = getRandomRecommendation(userId, userHistory);
+      recommendations.add(randomRecommendation);
+      String json = new Gson().toJson(recommendations);
+      response.getWriter().write(json);
+    }
   }
 
 }

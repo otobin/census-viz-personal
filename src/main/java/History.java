@@ -29,7 +29,7 @@ public class History {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Filter propertyFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
     Query query = new Query("historyEntity").setFilter(propertyFilter);
-      PreparedQuery results = datastore.prepare(query);
+    PreparedQuery results = datastore.prepare(query);
 
       ArrayList<HistoryElement> queryList = new ArrayList<HistoryElement>();
       for (Entity entity : results.asIterable()) {
@@ -43,7 +43,7 @@ public class History {
               entityUserId, entityPersonType, entityAction, entityLocation, entityYear);
         // Check to see if it is already in the results to eliminate duplicates
         if (!queryList.contains(dataHistoryElement)) {
-        queryList.add(dataHistoryElement);
+          queryList.add(dataHistoryElement);
         }
       }
       return queryList;
