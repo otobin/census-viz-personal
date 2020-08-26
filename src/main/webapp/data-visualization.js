@@ -141,8 +141,8 @@ function displayAmChartsMap(
 
     // One location listing for the marker, one for the shadow (same location)
     imageSeries.data =
-      [{ 'latitude': locationInfo.lat, 'longitude': locationInfo.lng },
-      { 'latitude': locationInfo.lat, 'longitude': locationInfo.lng }];
+      [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng},
+      {'latitude': locationInfo.lat, 'longitude': locationInfo.lng}];
   }
 
   // Set up heat legend
@@ -238,7 +238,7 @@ function createDataArray(censusDataArray, isCountyQuery) {
     vizDataArray.push({
       id: getLocationId(location, isCountyQuery, regionIndex),
       locationName: location[0],
-      value: location[1]
+      value: location[1],
     });
   });
   return vizDataArray;
@@ -271,7 +271,7 @@ function getMapsData(censusDataArray) {
   const minAndMax = getMinAndMaxPopulation(populationsList);
   mapData = {
     map: countyToPopMap,
-    minValue: minAndMax.min, maxValue: minAndMax.max
+    minValue: minAndMax.min, maxValue: minAndMax.max,
   };
   return mapData;
 }
@@ -289,7 +289,7 @@ function getMinAndMaxPopulation(populationArray) {
       min = populationArray[i];
     }
   }
-  return { max: max, min: min };
+  return {max: max, min: min};
 }
 
 
@@ -300,14 +300,14 @@ async function displayCountyGeoJson(mapsData, description,
   locationInfo, geoData, color) {
   const state = stateInfo[locationInfo.stateNumber];
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: state.zoomLevel, center: { lat: state.lat, lng: state.lng },
+    zoom: state.zoomLevel, center: {lat: state.lat, lng: state.lng},
   });
 
   if (state.name !== locationInfo.originalName) {
     // user searched for a specific point; put a marker there
     const marker = new google.maps.Marker({
       map: map,
-      position: { lat: locationInfo.lat, lng: locationInfo.lng }, map: map
+      position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map,
     });
     const infowindow = new google.maps.InfoWindow({
       content: `<p>${locationInfo.originalName}<p>`,
@@ -363,14 +363,14 @@ async function displayCountyGeoJson(mapsData, description,
     infoWindow.setPosition(event.latLng);
     infoWindow.open(map);
     openInfoWindows.push(infoWindow);
-  }, { passive: true });
+  }, {passive: true});
   map.data.addListener('mouseout', function(event) {
     map.data.revertStyle();
     let i;
     for (i = 0; i < openInfoWindows.length; i++) {
       openInfoWindows[i].close();
     }
-  }, { passive: true });
+  }, {passive: true});
 }
 
 // Toggle between amcharts and maps.
@@ -437,7 +437,7 @@ function drawTable(dataArray, description, isCountyQuery) {
   // the for each loop used to populate the data table,
   // so I made a copy
   const dataArrayCopy = dataArray.slice();
-  google.charts.load('current', { 'packages': ['table'] });
+  google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
@@ -451,7 +451,7 @@ function drawTable(dataArray, description, isCountyQuery) {
     table.draw(data, {
       width: '30%',
       height: '100%',
-      cssClassNames: { headerRow: 'data-table-header' }
+      cssClassNames: {headerRow: 'data-table-header'},
     });
   });
 }
@@ -469,10 +469,10 @@ function toggleDataTable() {
   }
 }
 
-//
+// Create yearly population growth chart for the submitted query
 async function createYearlyChart(personType, action, location, description) {
-  const chart = am4core.create("yearly-chart", am4charts.XYChart);
-  let data = [];
+  const chart = am4core.create('yearly-chart', am4charts.XYChart);
+  const data = [];
   for (let year = 2010; year <= 2018; year++) {
     await fetch(getFetchUrl('query', personType, action, location, year))
       .then((response) => response.json().then((jsonResponse) => ({
@@ -489,23 +489,36 @@ async function createYearlyChart(personType, action, location, description) {
           censusData.forEach((county) => {
             totalPopulation += parseInt(county[1]);
           });
-          data.push({ 'year': year, 'value': totalPopulation });
+          data.push({'year': year.toString(), 'value': totalPopulation});
         }
       });
   }
   chart.data = data;
-  const categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-  categoryAxis.dataFields.category = "year";
-  categoryAxis.title.text = "Year";
+  const dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+  dateAxis.renderer.minGridDistance = 60;
+  dateAxis.dataFields.category = 'year';
+  dateAxis.title.text = 'Year';
+  dateAxis.baseInterval = {timeUnit: 'year'};
   const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
   valueAxis.title.text = description;
   const series = chart.series.push(new am4charts.LineSeries());
-  series.dataFields.valueY = "value";
-  series.dataFields.categoryX = "year";
+  series.dataFields.valueY = 'value';
+  series.dataFields.dateX = 'year';
   series.name = description;
-  series.tooltipText = `${description}: [bold]{valueY}[/]`;
+  series.tooltipText = '{valueY}';
   series.strokeWidth = 3;
+
+  // When merged with color PR this can be the selected color
+  series.stroke = am4core.color('red');
   series.yAxis = valueAxis;
+
+  const bullet = series.bullets.push(new am4charts.CircleBullet());
+  bullet.stroke = am4core.color('#fff');
+  bullet.fill = am4core.color('red');
+  bullet.strokeWidth = 2;
+  bullet.tooltipText = '{valueY}';
+  bullet.circle.radius = 4;
+
   chart.legend = new am4charts.Legend();
   chart.cursor = new am4charts.XYCursor();
 }

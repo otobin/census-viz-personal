@@ -184,6 +184,24 @@ select:focus {
   display: none;
 }
 
+#data-table {
+  display: none;
+}
+
+.data-table-header {
+  background-color: white;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#yearly-chart {
+  width: 50%;
+  height: 300px;
+}
+
 /* Visualization Options */
 
 /* The switch - the box around the slider */
@@ -314,19 +332,6 @@ input[type="color"] {
 
 #more-info {
   text-align: center;
-}
-
-#data-table {
-  display: none;
-}
-
-.data-table-header {
-  background-color: white;
-}
-
-table {
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* History */

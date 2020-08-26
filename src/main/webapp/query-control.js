@@ -259,7 +259,7 @@ async function passQuery(personType, action, location, year) {
           getHistory(userId);
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
-        if (isCountyQuery) createYearlyChart(personType, action, location, description);
+        createYearlyChart(personType, action, location, description);
         displayVisualization(
           data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
