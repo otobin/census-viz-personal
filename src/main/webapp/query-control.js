@@ -88,8 +88,12 @@ function createSlide(title, url, location) {
   image.alt = 'Small U.S. map';
   const isCountyQuery = location !== 'state';
   const zoom = isCountyQuery ? stateInfo[location].zoomLevel - 2 : 2;
-  const center  = isCountyQuery ? `${stateInfo[location].lat},${stateInfo[location].lng}` : 'United+States';
-  image.src = `https://maps.googleapis.com/maps/api/staticmap?center=${center}&style=feature:administrative.locality|element:labels|visibility:off&style=feature:road|visibility:off&zoom=${zoom}&size=200x200&key=AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ`;
+  const center  = isCountyQuery ? 
+      `${stateInfo[location].lat},${stateInfo[location].lng}` : 'United+States';
+  image.src = `https://maps.googleapis.com/maps/api/staticmap?center=${center}
+      &style=feature:administrative.locality|element:labels|visibility:off
+      &style=feature:road|visibility:off&zoom=${zoom}&size=200x200
+      &key=AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ`;
   imgWrapper.appendChild(image);
   link.appendChild(imgWrapper);
   link.appendChild(titleNode);
