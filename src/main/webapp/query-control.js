@@ -334,7 +334,8 @@ function updateDropdown(type) {
           dropdown.appendChild(optionElem);
         }
   });
-  
+}
+
 // Change the year of data being visualized
 function changeYear(yearParam) {
   document.getElementById('year-list').value = yearParam.value;
