@@ -84,12 +84,13 @@ function createSlide(title, url, location) {
   const titleNode = document.createTextNode(title);
   const imgWrapper = document.createElement('div');
   imgWrapper.className = 'img-wrapper';
-  const image = document.createElement('img');
-  image.alt = 'Small U.S. map';
   const isCountyQuery = location !== 'state';
   const zoom = isCountyQuery ? stateInfo[location].zoomLevel - 2 : 2;
   const center = isCountyQuery ?
       `${stateInfo[location].lat},${stateInfo[location].lng}` : 'United+States';
+  const image = document.createElement('img');
+  image.alt = isCountyQuery ?
+      `Small ${stateInfo[location].name} map` : 'Small U.S. map';
   image.src = `https://maps.googleapis.com/maps/api/staticmap?center=${center}
       &style=feature:administrative.locality|element:labels|visibility:off
       &style=feature:road|visibility:off&zoom=${zoom}&size=200x200
