@@ -8,7 +8,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.gson.Gson;
 import com.google.sps.data.History;
-import com.google.sps.data.HistoryElement;
+import com.google.sps.data.VisualizationData;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class HistoryServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userId = request.getParameter("user-id");
     History userHistoryObj = new History(userId);
-    ArrayList<HistoryElement> historyList = userHistoryObj.getHistoryList();
+    ArrayList<VisualizationData> historyList = userHistoryObj.getHistoryList();
     String json = new Gson().toJson(historyList);
     response.getWriter().write(json);
   }

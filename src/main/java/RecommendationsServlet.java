@@ -1,6 +1,6 @@
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
-import com.google.sps.data.HistoryElement;
+import com.google.sps.data.VisualizationData;
 import com.google.sps.data.History;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -47,10 +47,10 @@ public class RecommendationsServlet extends HttpServlet {
   // return default recommendations that would be applicable to most users,
   // the number of children, adults, all people, men, and women who lived in each 
   // US state in 2018. 
-  private ArrayList<HistoryElement> getDefaultRecommendations(String userId) {
-    ArrayList<HistoryElement> defaultRecommendations = new ArrayList<HistoryElement>();
+  private ArrayList<VisualizationData> getDefaultRecommendations(String userId) {
+    ArrayList<VisualizationData> defaultRecommendations = new ArrayList<VisualizationData>();
     for (String person: personType) {
-      defaultRecommendations.add(new HistoryElement(userId, person, "live", "state", "2018"));
+      defaultRecommendations.add(new VisualizationData(userId, person, "live", "state", "2018"));
     }
     return defaultRecommendations;
   }
@@ -66,25 +66,25 @@ public class RecommendationsServlet extends HttpServlet {
 
   // CHeck to see if the current recommendation is valid by making sure that it isn't an impossible combination 
   // and isn't already one that the user has viewed.
-  private boolean isRecommendationValid(HistoryElement recommendation, ArrayList<HistoryElement> userHistory) {
+  private boolean isRecommendationValid(VisualizationData recommendation, ArrayList<VisualizationData> userHistory) {
       return (!(userHistory.contains(recommendation) || 
         (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "work") ||
         (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "moved"))); 
   }
 
-  // Returns a HistoryElement whose contents are completely random
+  // Returns a VisualizationData whose contents are completely random
   // in order to alleviate recommendation fatigue. 
-  private HistoryElement getRandomRecommendation(String userId, ArrayList<HistoryElement> userHistory) {
+  private VisualizationData getRandomRecommendation(String userId, ArrayList<VisualizationData> userHistory) {
     // Max number of visualizations user could have viewed
     int maxCombinations = 6885;
     int counter = 0;
-    HistoryElement randomRecommendation = userHistory.get(0);
+    VisualizationData randomRecommendation = userHistory.get(0);
     while (counter < maxCombinations) {
       String randomPersonType = personType.get(getRandomInt(personType.size()));
       String randomAction = action.get(getRandomInt(action.size()));
       String randomLocation = location.get(getRandomInt(location.size()));
       String randomYear = years.get(getRandomInt(years.size()));
-      randomRecommendation = new HistoryElement(
+      randomRecommendation = new VisualizationData(
           userId, randomPersonType, randomAction, randomLocation, randomYear);
       // Check that the History element can be found in our database and isn't one
       // that the user has already viewed.
@@ -107,10 +107,10 @@ public class RecommendationsServlet extends HttpServlet {
     }
   }
 
-  private void getFrequencyMaps(ArrayList<HistoryElement> userHistory) {
+  private void getFrequencyMaps(ArrayList<VisualizationData> userHistory) {
     // calculate the frequencies of each type of query that the user has made
     for (int i = 0; i < userHistory.size(); i++) {
-      HistoryElement currentElement = userHistory.get(i);
+      VisualizationData currentElement = userHistory.get(i);
       updateMap(personTypeMap, currentElement.getPersonType());
       updateMap(actionMap, currentElement.getAction());
       updateMap(locationMap, currentElement.getLocation());
@@ -129,7 +129,7 @@ public class RecommendationsServlet extends HttpServlet {
 
   // Return suggested recommendations based on the history. Create hashmaps for each input for all of the queries,
   // then create four combinations based on the most frequented fields.
-  private ArrayList<HistoryElement> getRecommendations(ArrayList<HistoryElement> userHistory, String userId) {
+  private ArrayList<VisualizationData> getRecommendations(ArrayList<VisualizationData> userHistory, String userId) {
     getFrequencyMaps(userHistory);
     LinkedHashMap<String, Integer> reverseSortedPersonType = sortHashMapDescending(personTypeMap);
     LinkedHashMap<String, Integer> reverseSortedAction = sortHashMapDescending(actionMap);
@@ -139,12 +139,12 @@ public class RecommendationsServlet extends HttpServlet {
     Set<String> actionKeys = reverseSortedAction.keySet();
     Set<String> locationKeys = reverseSortedLocation.keySet();
     Set<String> yearKeys = reverseSortedYear.keySet();
-    ArrayList<HistoryElement> recommendationList = new ArrayList<HistoryElement>();
+    ArrayList<VisualizationData> recommendationList = new ArrayList<VisualizationData>();
     for (String personType : personTypeKeys) {
       for(String action : actionKeys) {
         for (String location : locationKeys) {
           for (String year : yearKeys) {
-            HistoryElement recommendation = new HistoryElement(userId, personType, action, location, year);
+            VisualizationData recommendation = new VisualizationData(userId, personType, action, location, year);
              if (isRecommendationValid(recommendation, userHistory)) {
                recommendationList.add(recommendation);
                if (recommendationList.size() > 3) {
@@ -162,13 +162,13 @@ public class RecommendationsServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userId = request.getParameter("user-id");
     History userHistoryObj = new History(userId);
-    ArrayList<HistoryElement> userHistory = userHistoryObj.getHistoryList();
+    ArrayList<VisualizationData> userHistory = userHistoryObj.getHistoryList();
     if (userHistory.isEmpty()) {
       String json = new Gson().toJson(getDefaultRecommendations(userId));
       response.getWriter().write(json);
     } else {
-      ArrayList<HistoryElement> recommendations = getRecommendations(userHistory, userId);
-      HistoryElement randomRecommendation = getRandomRecommendation(userId, userHistory);
+      ArrayList<VisualizationData> recommendations = getRecommendations(userHistory, userId);
+      VisualizationData randomRecommendation = getRandomRecommendation(userId, userHistory);
       recommendations.add(randomRecommendation);
       String json = new Gson().toJson(recommendations);
       response.getWriter().write(json);
