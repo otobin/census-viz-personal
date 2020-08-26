@@ -302,6 +302,7 @@ dropdownsToExclude.set(
     ).set(
       'adults', ['moved to'],
     );
+// All possible options, without anything excluded
 const defaultDropdowns = new Map();
 defaultDropdowns.set(
       'action',
@@ -327,7 +328,10 @@ function updateDropdown(type) {
   dropdown.innerHTML = '';
   const currentValue = document.getElementById(type + '-list').value;
 
+  // Iterate through all potential options
   options.forEach((option) => {
+    // Check if the current option is in the exclusions list for the value that
+    // the user entered; if it's not, add it to the dropdown
     if (!(dropdownsToExclude.has(currentValue) &&
         dropdownsToExclude.get(currentValue).includes(option[0]))) {
           optionElem = createDropdownOption(option[0], option[1]);
