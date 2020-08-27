@@ -109,10 +109,13 @@ function resetHistoryList() {
 
 function toggleHistory(shouldShow) {
   const historyDiv = document.getElementById('history');
+  const recommendationsDiv = document.getElementById('recommendations');
   if (shouldShow) {
     historyDiv.style.display = 'block';
+    recommendationsDiv.style.display = 'block';
   } else {
     historyDiv.style.display = 'none';
+    recommendationsDiv.style.display = 'none';
   }
 }
 
@@ -164,7 +167,6 @@ function getRecommendations() {
   })
     .then(function(jsonResponse) {
       // iterate through list of recommendations
-      console.log(jsonResponse);
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, recommendationList);
@@ -287,7 +289,8 @@ async function passQuery(personType, action, location, year) {
         if (getLoginStatus()) {
           const userId = getUserId();
           putHistory(personType, action, location, year, userId);
-          getHistory(userId);
+          getHistory();
+          getRecommendations();
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         displayVisualization(
