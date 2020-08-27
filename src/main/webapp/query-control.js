@@ -119,7 +119,6 @@ function toggleHistory(shouldShow) {
 function resetRecommendationList() {
   const recommendationDiv = document.getElementById('recommendation-list');
   recommendationDiv.innerHTML = '';
-  new Splide('.splide2').mount();
 }
 
 function getHistory() {
@@ -143,7 +142,7 @@ function getHistory() {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, historyList);
       });
-      new Splide('.splide', {
+      new Splide('#splide1', {
         gap: 20,
         fixedWidth: 230,
         padding: 20,
@@ -170,9 +169,8 @@ function getRecommendations() {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, recommendationList);
       });
-      new Splide('.splide2', {
+      new Splide('#splide2', {
         gap: 20,
-        rewind: true,
         fixedWidth: 230,
         padding: 20,
         pagination: false,
