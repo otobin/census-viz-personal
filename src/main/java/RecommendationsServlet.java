@@ -123,16 +123,22 @@ public class RecommendationsServlet extends HttpServlet {
   // Return suggested recommendations based on the history. Create hashmaps for each input for all of the queries,
   // then create four combinations based on the most frequented fields.
   private ArrayList<VisualizationData> getRecommendations(ArrayList<VisualizationData> userHistory, String userId) {
+    // Populate the frequency maps for each field
     getFrequencyMaps(userHistory);
+    // Sort the frequency maps in descending order by value such that the most common searches for each field 
+    // are first eg: {worked in: 7, lived in: 10, moved to: 2} => { lived in: 10, worked in: 7, moved to: 2}
     LinkedHashMap<String, Integer> reverseSortedPersonType = sortHashMapDescending(personTypeMap);
     LinkedHashMap<String, Integer> reverseSortedAction = sortHashMapDescending(actionMap);
     LinkedHashMap<String, Integer> reverseSortedLocation = sortHashMapDescending(locationMap);
     LinkedHashMap<String, Integer> reverseSortedYear = sortHashMapDescending(yearsMap);
+    // Get the keyset from each frequency map with the guaranteed order from sorting
     Set<String> personTypeKeys = reverseSortedPersonType.keySet();
     Set<String> actionKeys = reverseSortedAction.keySet();
     Set<String> locationKeys = reverseSortedLocation.keySet();
     Set<String> yearKeys = reverseSortedYear.keySet();
     ArrayList<VisualizationData> recommendationList = new ArrayList<VisualizationData>();
+    // Iterate through all fields and find combinations that the user hasn't made yet
+    // and return the top 3.
     for (String personType : personTypeKeys) {
       for(String action : actionKeys) {
         for (String location : locationKeys) {
@@ -161,12 +167,18 @@ public class RecommendationsServlet extends HttpServlet {
       response.getWriter().write(json);
     } else {
       ArrayList<VisualizationData> recommendations = getRecommendations(userHistory, userId);
+      // If the recommendation algorithm is unable to generate more than 4 possibilities
+      // which happens when the user makes very similar searches, populate the rest with random elements.
+      if (recommendations.size() < 4) {
+        for (int i = 0; i < 4 - recommendations.size(); i++) {
+          recommendations.add(getRandomRecommendation(userId, userHistory));
+        }
+      }
       VisualizationData randomRecommendation = getRandomRecommendation(userId, userHistory);
       recommendations.add(randomRecommendation);
       String json = new Gson().toJson(recommendations);
       response.getWriter().write(json);
     }
   }
-
 }
 
