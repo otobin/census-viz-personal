@@ -6,10 +6,12 @@ parserOptions:
   ecmaVersion: 11
   sourceType: module
 rules:
+  no-invalid-this: off
+  prefer-rest-params: off
   no-unused-vars: off
   require-jsdoc: off
   indent: off
   camelcase:
     - 2
-    - allow: ['^(am4geodata|client_id)']
+    - allow: ['^(am4|client_id)']
 
