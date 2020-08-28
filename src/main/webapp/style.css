@@ -197,8 +197,7 @@ table {
   margin-right: auto;
 }
 
-#yearly-chart {
-  width: 50%;
+.yearly-chart {
   height: 300px;
 }
 

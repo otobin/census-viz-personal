@@ -195,6 +195,18 @@ function submitQuery() {
   window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
 }
 
+function getDescription(action, personType) {
+  const actionToPerson = new Map();
+  actionToPerson.set(
+    'live', 'Population',
+  ).set(
+    'work', 'Workers',
+  ).set(
+    'moved', 'New inhabitants',
+  );
+  return `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+}
+
 // Get the query the user entered and display the result.
 // Breaks down the query and passes it to the backend to be analyzed;
 // the backend returns the appropriate data, which is then passed off
@@ -228,16 +240,8 @@ async function passQuery(personType, action, location, year) {
   }
   const actionInput = document.querySelector(
     '#action option[data-value=\'' + action + '\']').value;
-  const actionToPerson = new Map();
-  actionToPerson.set(
-    'live', 'Population',
-  ).set(
-    'work', 'Workers',
-  ).set(
-    'moved', 'New inhabitants',
-  );
-  const description =
-    `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+
+  const description = getDescription(action, personType);
 
   const isCountyQuery = location !== 'state';
   const title = getTitle(personType, location, year, state, actionInput);
@@ -259,7 +263,7 @@ async function passQuery(personType, action, location, year) {
           getHistory(userId);
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
-        createYearlyChart(personType, action, location, description);
+        createYearlyStateTotalChart(personType, action, location, description);
         displayVisualization(
           data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
@@ -472,20 +476,26 @@ function setDropdownValue(datalistId, value) {
   }
 }
 
+function getQueryFromHash(urlHash) {
+  const params = new URLSearchParams(urlHash.slice(1));
+  for (const [param, value] of params) {
+    setDropdownValue(param, value);
+  }
+  return {
+    'personType': params.get('person-type'),
+    'action': params.get('action'),
+    'location': params.get('location'),
+    'year': params.get('year'),
+  }
+}
+
 // Called on load and on hash change. Check for
 // query params in url and call passQuery() if found.
 function submitHashQuery() {
   const urlHash = window.location.hash;
   if (urlHash) {
-    const params = new URLSearchParams(urlHash.slice(1));
-    for (const [param, value] of params) {
-      setDropdownValue(param, value);
-    }
-    const personType = params.get('person-type');
-    const action = params.get('action');
-    const location = params.get('location');
-    const year = params.get('year');
-    passQuery(personType, action, location, year);
+    const query = getQueryFromHash(urlHash);
+    passQuery(query.personType, query.action, query.location, query.year);
   }
 }
 

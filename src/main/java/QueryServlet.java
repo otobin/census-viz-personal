@@ -134,6 +134,19 @@ public class QueryServlet extends HttpServlet {
     return jsonResponse.toString();
   }
 
+  private String getLocation(boolean stateTotal, boolean singleCounty,
+      String location, String county) {
+    if (stateTotal) {
+      return "state:" + location;
+    } else if (singleCounty) {
+      return "county:" + county + "&in=state:" + location;
+    } else if (location.equals("state")) {
+      return "state:*";
+    } else {
+      return "county:*&in=state:" + location;
+    }
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String personType = request.getParameter("person-type");
@@ -141,17 +154,29 @@ public class QueryServlet extends HttpServlet {
     String location = request.getParameter("location");
     String yearStr = request.getParameter("year");
     int year = Integer.parseInt(yearStr);
+    String stateTotalString = request.getParameter("state-total");
+    String county = request.getParameter("county");
+    boolean stateTotal = false;
+    boolean singleCounty = false;
+    if (stateTotalString != null) {
+      stateTotal = stateTotalString.equals("true");
+    }
+    if (county != null) {
+      singleCounty = true;
+    }
 
     response.setContentType("application/json;");
-
-    String query = personType + action + location + yearStr;
-    CensusData cachedData = ofy().load().type(CensusData.class).id(query).now();
-    if (cachedData != null) {
-      JsonObject jsonResponse = new JsonObject();
-      jsonResponse.addProperty("censusData", cachedData.getData());
-      jsonResponse.addProperty("tableLink", cachedData.getTableLink());
-      response.getWriter().println(jsonResponse.toString());
-      return;
+    String query = null;
+    if (!stateTotal && !singleCounty) {
+      query = personType + action + location + yearStr;
+      CensusData cachedData = ofy().load().type(CensusData.class).id(query).now();
+      if (cachedData != null) {
+        JsonObject jsonResponse = new JsonObject();
+        jsonResponse.addProperty("censusData", cachedData.getData());
+        jsonResponse.addProperty("tableLink", cachedData.getTableLink());
+        response.getWriter().println(jsonResponse.toString());
+        return;
+      }
     }
 
     if (!queryToDataRowGeneric.containsKey(action)) {
@@ -213,9 +238,8 @@ public class QueryServlet extends HttpServlet {
                 + "?get=NAME,"
                 + dataRow
                 + "&for="
-                + (location.equals("state") ? "state:*" : "county:*&in=state:" + location)
+                + getLocation(stateTotal, singleCounty, location, county)
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
-
     String censusTableLink = getCensusTableLink(dataRow, dataTablePrefix, yearStr);
 
     HttpURLConnection connection = (HttpURLConnection) fetchUrl.openConnection();
@@ -259,8 +283,12 @@ public class QueryServlet extends HttpServlet {
         return;
       }
 
-      // Save this response to cache
-      ofy().save().entity(new CensusData(query, formattedData, censusTableLink)).now();
+      if (!stateTotal && !singleCounty) {
+        if (query != null) {
+          // Save this response to cache
+          ofy().save().entity(new CensusData(query, formattedData, censusTableLink)).now();
+        }
+      }
       response.setStatus(HttpServletResponse.SC_OK);
       JsonObject jsonResponse = new JsonObject();
       jsonResponse.addProperty("censusData", formattedData);
