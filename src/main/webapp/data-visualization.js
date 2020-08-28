@@ -412,13 +412,12 @@ async function displayCountyGeoJson(mapsData, description,
 function toggleMap() {
   const checkbox = document.getElementById('map-toggle');
   if (checkbox.checked) {
-    document.getElementById('edit-title-container').style.display = 'none';
-    document.getElementById('edit-title').style.display = 'none';
+    document.getElementById('edit-title-container').style.visibility = 'hidden';
     document.getElementById('am-charts').style.display = 'none';
     document.getElementById('map').style.display = 'block';
     document.getElementById('map-toggle-msg').innerText = 'Disable map overlay';
   } else {
-    document.getElementById('edit-title-container').style.display = 'inline';
+    document.getElementById('edit-title-container').style.visibility = 'visible';
     document.getElementById('map').style.display = 'none';
     document.getElementById('am-charts').style.display = 'block';
     document.getElementById('map-toggle-msg').innerText = 'Enable map overlay';

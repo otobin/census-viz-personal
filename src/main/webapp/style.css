@@ -134,10 +134,6 @@ input[type=submit]:hover {
   transition: all .4s ease-in-out;
 }
 
-.top-button {
-  padding: 25px;
-}
-
 /* Dropdowns */
 input[type=list],
 select {
@@ -151,15 +147,6 @@ select {
 input[type=list]:focus,
 select:focus {
   outline: none;
-}
-
-/* The handle for the set-year slider (once for Chrome, once for Mozilla) */
-#set-year::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  background: var(--button-color);
-  border-radius: 25px;
-  height: 20px;
-  width: 20px;
 }
 
 .input-valid {
@@ -226,7 +213,7 @@ select:focus {
 /* The handle for the set-year slider (once for Chrome, once for Mozilla) */
 #set-year::-webkit-slider-thumb {
   -webkit-appearance: none;
-  background: #0dbd00;
+  background: var(--button-color);
   border-radius: 25px;
   height: 20px;
   width: 20px;
@@ -235,6 +222,10 @@ select:focus {
 #set-year::-moz-range-thumb {
   width: 25px;
   height: 25px;
+}
+
+.top-button {
+  padding: 25px;
 }
 
 .switch {
@@ -313,7 +304,6 @@ input:checked + .slider::before {
 .map-option {
   display: inline-block;
   line-height: 34px;
-  padding: 5px;
   text-transform: uppercase;
   font-weight: bolder;
 }
@@ -326,8 +316,14 @@ input[type="color"] {
   opacity: 0;
 }
 
+input[type="color" i] {
+  width: 28px;
+}
+
 #set-color-label {
   border-radius: 25px;
+  display: inline-block;
+  height: 34px;
 }
 
 #map-title {
