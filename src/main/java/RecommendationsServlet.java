@@ -53,9 +53,7 @@ public class RecommendationsServlet extends HttpServlet {
   // 0 and upperBound-1 in order to access a random element 
   // for each of the options
   private int getRandomInt(int upperBound) {
-    Random randomObject = new Random();
-    int randomInt = randomObject.nextInt(upperBound);
-    return randomInt;
+    return new Random().nextInt(upperBound);
   }
 
   // Check to see if the current recommendation is valid by making sure that it isn't an impossible combination 
