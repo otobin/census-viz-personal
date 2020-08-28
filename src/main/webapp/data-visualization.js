@@ -452,6 +452,8 @@ function changeColor(colorParam) {
   const color = colorParam.value;
   document.getElementById('set-color-label').style.backgroundColor = color;
   localStorage.setItem('color', color);
+  setButtonColor();
+
   // Get variables out of cache
   const cacheMapsData = JSON.parse(localStorage.getItem('mapsData'));
   const cacheGeoData = JSON.parse(localStorage.getItem('geoData'));

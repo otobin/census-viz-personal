@@ -397,6 +397,7 @@ async function setupQuery() {
   await createStateDropdownList();
   setupAutocompleteLocation();
   setupYearSlider();
+  setButtonColor();
 }
 
 // Append all locations to the location dropdown element.
@@ -507,6 +508,16 @@ function findMatchingOption(dropdownName, value) {
     }
   });
   return currentOption;
+}
+
+function setButtonColor() {
+  const color = getColor();
+  let chromaColor = chroma(color);
+  if (chromaColor.luminance() > 0.3) {
+    chromaColor = chromaColor.luminance(0.3);
+  }
+  document.documentElement.style.setProperty(
+      '--button-color', chromaColor.hex());
 }
 
 // Set dropdown for datalistId to value
