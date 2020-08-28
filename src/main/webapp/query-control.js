@@ -495,7 +495,7 @@ function setupYearSlider() {
   text.innerText = 'Change the year: ' + slider.value;
 
   slider.oninput = function() { // in the future, update as user slides
-    text.innerText = 'Change the year: ' + this.value; 
+    text.innerText = 'Change the year: ' + this.value;
   };
 }
 
