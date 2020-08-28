@@ -134,6 +134,10 @@ input[type=submit]:hover {
   transition: all .4s ease-in-out;
 }
 
+.top-button {
+  padding: 25px;
+}
+
 /* Dropdowns */
 input[type=list],
 select {
@@ -184,14 +188,6 @@ select:focus {
   margin: 30px 0 60px 0;
   padding: 30px;
   text-align: center;
-}
-
-#open-edit-title {
-  display: none;
-}
-
-#edit-title {
-  display: none;
 }
 
 #am-charts {
@@ -304,6 +300,10 @@ input:checked + .slider::before {
   width: 180px;
 }
 
+#color-msg {
+  padding: 10px;
+}
+
 #map-options {
   white-space: nowrap;
   display: none;
@@ -327,8 +327,6 @@ input[type="color"] {
 }
 
 #set-color-label {
-  height: 32px;
-  width: 32px;
   border-radius: 25px;
 }
 
