@@ -139,7 +139,7 @@ function getHistory() {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
-      toggleHistory(jsonResponse.length > 0);
+      toggleUserInfo(jsonResponse.length > 0);
       jsonResponse.reverse(); // latest query first
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;
