@@ -8,6 +8,10 @@ body {
   margin: 0;
 }
 
+h3 {
+  text-align: left;
+}
+
 /* Header */
 #header {
   border-bottom: 1px solid #e7e7e9;
@@ -215,13 +219,17 @@ table {
 }
 
 .yearly-chart {
-  height: 300px;
+  height: 500px;
 }
 
 #yearly-total-chart,
 #yearly-county-chart,
 #county-form {
   display: none;
+}
+
+#county-submit {
+  background: var(--button-color);
 }
 
 /* Visualization Options */

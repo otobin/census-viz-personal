@@ -128,13 +128,18 @@ public class QueryServlet extends HttpServlet {
         + dataRow.substring(0, (dataRow.contains("_") ? dataRow.indexOf("_") : dataRow.length()));
   }
 
+  // Return stirng representation of a JSON object containing
+  // an errorMessage
   private String sendError(String errorMessage) {
     JsonObject jsonResponse = new JsonObject();
     jsonResponse.addProperty("errorMessage", errorMessage);
     return jsonResponse.toString();
   }
 
-  private String getLocation(
+  // Return the string to pass in the "for" (location) parameter to
+  // the Census API based on whether the query is for a single state's
+  // total population, a single county, or multiple counties or states. 
+  private String getLocationQueryString(
       boolean stateTotal, boolean singleCounty, String location, String county) {
     if (stateTotal) {
       return "state:" + location;
@@ -238,7 +243,7 @@ public class QueryServlet extends HttpServlet {
                 + "?get=NAME,"
                 + dataRow
                 + "&for="
-                + getLocation(stateTotal, singleCounty, location, county)
+                + getLocationQueryString(stateTotal, singleCounty, location, county)
                 + "&key=ea65020114ffc1e71e760341a0285f99e73eabbc");
     String censusTableLink = getCensusTableLink(dataRow, dataTablePrefix, yearStr);
 

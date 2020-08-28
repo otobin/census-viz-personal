@@ -23,7 +23,7 @@ async function getGeoData(locationInfo, isCountyQuery) {
   }
 }
 
-// Create dropdown menu of couties in queried state
+// Create dropdown menu of coutnies in queried state
 // for yearly population change in county chart.
 function createCountyDropdown(geoDataFeatures) {
   const datalist = document.getElementById('county');
@@ -32,6 +32,8 @@ function createCountyDropdown(geoDataFeatures) {
   for (let i = 0; i < geoDataFeatures.length; i++) {
     const optionElem = document.createElement('option');
     optionElem.value = geoDataFeatures[i].properties.name;
+    // Get the last 3 numbers in the 5 digit county ID, which is the county
+    // number used by the Census API. (First 2 are state number)
     optionElem.setAttribute('data-value', geoDataFeatures[i].id.slice(2, 5));
     datalist.appendChild(optionElem);
   }
@@ -314,7 +316,7 @@ function getMapsData(censusDataArray) {
     // ^^ ["Contra Costa County", "California"]
     // Trim space and region suffix
     const countyRegex = new RegExp('( County| City and Borough|' +
-      ' Borough| Municipality| Census Area| city| City)$');
+      ' Borough| Municipality| Census Area| city| City| Parish)$');
     let countyString = countyAndStateArray[0].replace(countyRegex, '');
     if (countyString === 'District of Columbia') { // Handle D.C. name mismatch
       countyString = 'Washington, District of Columbia';
@@ -535,13 +537,14 @@ function displayYearlyChart(chartId, data, description, location) {
   const dateAxis = chart.xAxes.push(new am4charts.DateAxis());
   dateAxis.dataFields.category = 'year';
   dateAxis.title.text = 'Year';
-  dateAxis.baseInterval = {timeUnit: 'year'};
+  dateAxis.gridIntervals.setAll([
+    { timeUnit: 'year', count: 1 }
+  ]);
   const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
   valueAxis.title.text = description;
   const series = chart.series.push(new am4charts.LineSeries());
   series.dataFields.valueY = 'value';
   series.dataFields.dateX = 'year';
-  series.name = description;
   series.tooltip.getFillFromObject = true;
   series.tooltipText = '{valueY}';
   series.strokeWidth = 3;
@@ -553,9 +556,9 @@ function displayYearlyChart(chartId, data, description, location) {
   const bullet = series.bullets.push(new am4charts.CircleBullet());
   bullet.stroke = am4core.color('#fff');
   bullet.fill = am4core.color(color);
-  bullet.strokeWidth = 2;
+  bullet.strokeWidth = 4;
   bullet.tooltipText = '{valueY}';
-  bullet.circle.radius = 4;
+  bullet.circle.radius = 8;
 
   const mapTitle = chart.titles.create();
   let title;
@@ -566,8 +569,6 @@ function displayYearlyChart(chartId, data, description, location) {
     title = `${description} in ${location} by year`;
   }
   mapTitle.text = title;
-
-  chart.legend = new am4charts.Legend();
   document.getElementById(chartId).style.display = 'block';
 }
 
@@ -575,6 +576,12 @@ function displayYearlyChart(chartId, data, description, location) {
 async function createYearlyStateTotalChart(
   personType, action, location, description) {
   document.getElementById('county-form').style.display = 'block';
+  const personTypeNoun = document.querySelector(
+    '#person-type option[data-value=\'' + personType + '\']').value;
+  const actionVerb = document.querySelector(
+    '#action option[data-value=\'' + action + '\']').value;
+  document.getElementById('county-query-label').innerText = 
+    `How many ${personTypeNoun} ${actionVerb}`;
   const loadingMsg = document.getElementById('yearly-total-chart-loading-msg');
   loadingMsg.innerText = 'Yearly state data chart loading...';
   const data = [];
@@ -621,21 +628,8 @@ async function createYearlyCountyChart() {
   const data = [];
   const query = getQueryFromHash(window.location.hash);
   const description = getDescription(query.action, query.personType);
-  const locationDropdown = document.querySelector(
-    '#location option[data-value=\'' + query.location + '\']');
-  let locationInfo;
-  let stateNumber;
-  if (locationDropdown !== null &&
-    !locationDropdown.classList.contains('autocomplete-item')) {
-    // User picked a location from the dropdown
-    stateNumber = query.location;
-  } else { // Have to manually find which state the location is in
-    locationInfo = await findStateOfLocation(query.location);
-    if (locationInfo === undefined) {
-      return; // error was thrown inside findStateOfLocation()
-    }
-    stateNumber = locationInfo.stateNumber;
-  }
+  const locationInfo = getLocationInfo(query.location);
+  const stateNumber = locationInfo.stateNumber;
   for (let year = 2010; year <= 2018; year++) {
     await fetch(getFetchUrl('query', query.personType, query.action,
       stateNumber, year) +

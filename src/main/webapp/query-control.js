@@ -24,16 +24,14 @@ function getColor() {
 }
 
 function clearPreviousResult() {
+  const divsToHide = [
+    'colors', 'edit-title', 'year-slider', 'census-link', 'toggle-data-btn',
+    'map-options', 'yearly-total-chart', 'yearly-county-chart', 'county-form'
+  ]
+  divsToHide.forEach((id) => {
+    document.getElementById(id).style.display = 'none';
+  })
   document.getElementById('data-table').innerHTML = '';
-  document.getElementById('colors').style.display = 'none';
-  document.getElementById('edit-title').style.display = 'none';
-  document.getElementById('year-slider').style.display = 'none';
-  document.getElementById('census-link').style.display = 'none';
-  document.getElementById('toggle-data-btn').style.display = 'none';
-  document.getElementById('map-options').style.display = 'none';
-  document.getElementById('yearly-total-chart').style.display = 'none';
-  document.getElementById('yearly-county-chart').style.display = 'none';
-  document.getElementById('county-form').style.display = 'none';
   document.getElementById('county-list').value = 'Select a county';
   document.getElementById('yearly-county-chart-loading-msg').innerText = '';
   am4core.disposeAllCharts();
@@ -216,22 +214,15 @@ function getDescription(action, personType) {
   return `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 }
 
-// Get the query the user entered and display the result.
-// Breaks down the query and passes it to the backend to be analyzed;
-// the backend returns the appropriate data, which is then passed off
-// to be reformatted and visualized.
-async function passQuery(personType, action, location, year, title) {
-  clearPreviousResult();
+async function getLocationInfo(location) {
   const locationDropdown = document.querySelector(
     '#location option[data-value=\'' + location + '\']');
-  let locationInfo;
-  let state;
   if (locationDropdown !== null &&
     !locationDropdown.classList.contains('autocomplete-item')) {
     // User picked a location from the dropdown
-    state = locationDropdown.value;
-    locationInfo = {
-      stateName: state,
+    const state = locationDropdown.value;
+    return {
+      stateName: locationDropdown.value,
       stateNumber: location,
       originalName: state,
       // Either the center of the state,
@@ -241,17 +232,26 @@ async function passQuery(personType, action, location, year, title) {
     };
   } else { // Have to manually find which state the location is in
     locationInfo = await findStateOfLocation(location);
+    console.log(locationInfo);
     if (locationInfo === undefined) {
       return; // error was thrown inside findStateOfLocation()
     }
-    state = locationInfo.stateName;
-    location = locationInfo.stateNumber;
+    return locationInfo;
   }
+}
+
+// Get the query the user entered and display the result.
+// Breaks down the query and passes it to the backend to be analyzed;
+// the backend returns the appropriate data, which is then passed off
+// to be reformatted and visualized.
+async function passQuery(personType, action, location, year, title) {
+  clearPreviousResult();
+  let locationInfo = await getLocationInfo(location);
+  let state = locationInfo.stateName;
+  location = locationInfo.stateNumber;
   const actionInput = document.querySelector(
     '#action option[data-value=\'' + action + '\']').value;
-
   const description = getDescription(action, personType);
-
   const isCountyQuery = location !== 'state';
   if (title === '') { // no user-chosen title available
       title = getTitle(personType, location, year, state, actionInput);
