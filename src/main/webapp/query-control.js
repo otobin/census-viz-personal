@@ -30,6 +30,11 @@ function clearPreviousResult() {
   document.getElementById('census-link').style.display = 'none';
   document.getElementById('toggle-data-btn').style.display = 'none';
   document.getElementById('map-options').style.display = 'none';
+  document.getElementById('yearly-total-chart').style.display = 'none';
+  document.getElementById('yearly-county-chart').style.display = 'none';
+  document.getElementById('county-form').style.display = 'none';
+  document.getElementById('county-list').value = 'Select a county';
+  document.getElementById('yearly-county-chart-loading-msg').innerText = '';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('result').style.display = 'block';
@@ -263,7 +268,10 @@ async function passQuery(personType, action, location, year) {
           getHistory(userId);
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
-        createYearlyStateTotalChart(personType, action, location, description);
+        if (isCountyQuery) {
+          createYearlyStateTotalChart(
+            personType, action, location, description);
+        }
         displayVisualization(
           data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
@@ -486,7 +494,7 @@ function getQueryFromHash(urlHash) {
     'action': params.get('action'),
     'location': params.get('location'),
     'year': params.get('year'),
-  }
+  };
 }
 
 // Called on load and on hash change. Check for

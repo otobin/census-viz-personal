@@ -201,6 +201,12 @@ table {
   height: 300px;
 }
 
+#yearly-total-chart,
+#yearly-county-chart,
+#county-form {
+  display: none;
+}
+
 /* Visualization Options */
 
 /* The switch - the box around the slider */

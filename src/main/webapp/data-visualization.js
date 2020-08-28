@@ -23,6 +23,20 @@ async function getGeoData(locationInfo, isCountyQuery) {
   }
 }
 
+// Create dropdown menu of couties in queried state
+// for yearly population change in county chart.
+function createCountyDropdown(geoDataFeatures) {
+  const datalist = document.getElementById('county');
+  geoDataFeatures = geoDataFeatures.reverse(); // Make dropdown alphabetical
+  datalist.innerHTML = '';
+  for (let i = 0; i < geoDataFeatures.length; i++) {
+    const optionElem = document.createElement('option');
+    optionElem.value = geoDataFeatures[i].properties.name;
+    optionElem.setAttribute('data-value', geoDataFeatures[i].id.slice(2, 5));
+    datalist.appendChild(optionElem);
+  }
+}
+
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description, title,
   locationInfo, isCountyQuery) {
@@ -49,16 +63,7 @@ async function displayVisualization(censusDataArray, description, title,
     displayAmChartsMap(
       amChartsData, locationInfo, description, title, geoData, color);
     displayCountyGeoJson(mapsData, description, locationInfo, geoData, color);
-
-    const datalist = document.getElementById('county');
-    datalist.innerHTML = '';
-    for (let i = 0; i < geoData.features.length; i++) {
-      let optionElem = document.createElement('option');
-      console.log(geoData.features[i]);
-      optionElem.value = geoData.features[i].properties.name;
-      optionElem.setAttribute('data-value', geoData.features[i].id.slice(2, 5));
-      datalist.appendChild(optionElem);
-    }
+    createCountyDropdown(geoData.features);
   } else {
     displayAmChartsMap(
       amChartsData, locationInfo, description, title, geoData, color);
@@ -151,8 +156,8 @@ function displayAmChartsMap(
 
     // One location listing for the marker, one for the shadow (same location)
     imageSeries.data =
-      [{ 'latitude': locationInfo.lat, 'longitude': locationInfo.lng },
-      { 'latitude': locationInfo.lat, 'longitude': locationInfo.lng }];
+      [{'latitude': locationInfo.lat, 'longitude': locationInfo.lng},
+      {'latitude': locationInfo.lat, 'longitude': locationInfo.lng}];
   }
 
   // Set up heat legend
@@ -299,7 +304,7 @@ function getMinAndMaxPopulation(populationArray) {
       min = populationArray[i];
     }
   }
-  return { max: max, min: min };
+  return {max: max, min: min};
 }
 
 
@@ -310,14 +315,14 @@ async function displayCountyGeoJson(mapsData, description,
   locationInfo, geoData, color) {
   const state = stateInfo[locationInfo.stateNumber];
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: state.zoomLevel, center: { lat: state.lat, lng: state.lng },
+    zoom: state.zoomLevel, center: {lat: state.lat, lng: state.lng},
   });
 
   if (state.name !== locationInfo.originalName) {
     // user searched for a specific point; put a marker there
     const marker = new google.maps.Marker({
       map: map,
-      position: { lat: locationInfo.lat, lng: locationInfo.lng }, map: map,
+      position: {lat: locationInfo.lat, lng: locationInfo.lng}, map: map,
     });
     const infowindow = new google.maps.InfoWindow({
       content: `<p>${locationInfo.originalName}<p>`,
@@ -373,14 +378,14 @@ async function displayCountyGeoJson(mapsData, description,
     infoWindow.setPosition(event.latLng);
     infoWindow.open(map);
     openInfoWindows.push(infoWindow);
-  }, { passive: true });
+  }, {passive: true});
   map.data.addListener('mouseout', function(event) {
     map.data.revertStyle();
     let i;
     for (i = 0; i < openInfoWindows.length; i++) {
       openInfoWindows[i].close();
     }
-  }, { passive: true });
+  }, {passive: true});
 }
 
 // Toggle between amcharts and maps.
@@ -447,7 +452,7 @@ function drawTable(dataArray, description, isCountyQuery) {
   // the for each loop used to populate the data table,
   // so I made a copy
   const dataArrayCopy = dataArray.slice();
-  google.charts.load('current', { 'packages': ['table'] });
+  google.charts.load('current', {'packages': ['table']});
   google.charts.setOnLoadCallback(() => {
     const data = new google.visualization.DataTable();
     const nameHeader = isCountyQuery ? 'County' : 'State';
@@ -461,7 +466,7 @@ function drawTable(dataArray, description, isCountyQuery) {
     table.draw(data, {
       width: '30%',
       height: '100%',
-      cssClassNames: { headerRow: 'data-table-header' },
+      cssClassNames: {headerRow: 'data-table-header'},
     });
   });
 }
@@ -479,10 +484,55 @@ function toggleDataTable() {
   }
 }
 
+function displayYearlyChart(chartId, data, description, location) {
+  const chart = am4core.create(chartId, am4charts.XYChart);
+  chart.data = data;
+  const dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+  dateAxis.dataFields.category = 'year';
+  dateAxis.title.text = 'Year';
+  dateAxis.baseInterval = {timeUnit: 'year'};
+  const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  valueAxis.title.text = description;
+  const series = chart.series.push(new am4charts.LineSeries());
+  series.dataFields.valueY = 'value';
+  series.dataFields.dateX = 'year';
+  series.name = description;
+  series.tooltip.getFillFromObject = true;
+  series.tooltipText = '{valueY}';
+  series.strokeWidth = 3;
+
+  // When merged with color PR this can be the selected color
+  const color = 'red';
+  series.stroke = am4core.color(color);
+  series.yAxis = valueAxis;
+
+  const bullet = series.bullets.push(new am4charts.CircleBullet());
+  bullet.stroke = am4core.color('#fff');
+  bullet.fill = am4core.color(color);
+  bullet.strokeWidth = 2;
+  bullet.tooltipText = '{valueY}';
+  bullet.circle.radius = 4;
+
+  const mapTitle = chart.titles.create();
+  let title;
+  const state = stateInfo[location];
+  if (state != null) {
+    title = `${description} in ${state.name} by year`;
+  } else {
+    title = `${description} in ${location} by year`;
+  }
+  mapTitle.text = title;
+
+  chart.legend = new am4charts.Legend();
+  document.getElementById(chartId).style.display = 'block';
+}
+
 // Create yearly state total population growth chart for the submitted query
 async function createYearlyStateTotalChart(
   personType, action, location, description) {
-  const chart = am4core.create('yearly-total-chart', am4charts.XYChart);
+  document.getElementById('county-form').style.display = 'block';
+  const loadingMsg = document.getElementById('yearly-total-chart-loading-msg');
+  loadingMsg.innerText = 'Yearly state data chart loading...';
   const data = [];
   for (let year = 2010; year <= 2018; year++) {
     await fetch(getFetchUrl('query', personType, action, location, year) +
@@ -503,49 +553,39 @@ async function createYearlyStateTotalChart(
         }
       });
   }
-  chart.data = data;
-  const dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-  dateAxis.dataFields.category = 'year';
-  dateAxis.title.text = 'Year';
-  dateAxis.baseInterval = { timeUnit: 'year' };
-  const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-  valueAxis.title.text = description;
-  const series = chart.series.push(new am4charts.LineSeries());
-  series.dataFields.valueY = 'value';
-  series.dataFields.dateX = 'year';
-  series.name = description;
-  series.tooltip.getFillFromObject = true;
-  series.tooltipText = '{valueY}';
-  series.strokeWidth = 3;
-
-  // When merged with color PR this can be the selected color
-  const color = 'red';
-  series.stroke = am4core.color(color);
-  series.yAxis = valueAxis;
-
-  const bullet = series.bullets.push(new am4charts.CircleBullet());
-  bullet.stroke = am4core.color('#fff');
-  bullet.fill = am4core.color(color);
-  bullet.strokeWidth = 2;
-  bullet.tooltipText = '{valueY}';
-  bullet.circle.radius = 4;
-
-  chart.legend = new am4charts.Legend();
+  displayYearlyChart('yearly-total-chart', data, description, location);
+  loadingMsg.innerText = '';
 }
 
 // Create yearly county population growth chart for the submitted query
 async function createYearlyCountyChart() {
+  const loadingMsg = document.getElementById('yearly-county-chart-loading-msg');
+  loadingMsg.innerText = 'Yearly county data chart loading...';
   const countyForm = new FormData(document.getElementById('county-form'));
   const county = countyForm.get('county');
   const countyNumber = document.querySelector(
     '#county option[value=\'' + county + '\']').dataset.value;
-  const chart = am4core.create('yearly-county-chart', am4charts.XYChart);
   const data = [];
   const query = getQueryFromHash(window.location.hash);
   const description = getDescription(query.action, query.personType);
+  const locationDropdown = document.querySelector(
+    '#location option[data-value=\'' + query.location + '\']');
+  let locationInfo;
+  let stateNumber;
+  if (locationDropdown !== null &&
+    !locationDropdown.classList.contains('autocomplete-item')) {
+    // User picked a location from the dropdown
+    stateNumber = query.location;
+  } else { // Have to manually find which state the location is in
+    locationInfo = await findStateOfLocation(query.location);
+    if (locationInfo === undefined) {
+      return; // error was thrown inside findStateOfLocation()
+    }
+    stateNumber = locationInfo.stateNumber;
+  }
   for (let year = 2010; year <= 2018; year++) {
     await fetch(getFetchUrl('query', query.personType, query.action,
-       query.location, year) +
+      stateNumber, year) +
       '&county=' + countyNumber)
       .then((response) => response.json().then((jsonResponse) => ({
         data: jsonResponse,
@@ -563,34 +603,13 @@ async function createYearlyCountyChart() {
         }
       });
   }
-  chart.data = data;
-  const dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-  dateAxis.dataFields.category = 'year';
-  dateAxis.title.text = 'Year';
-  dateAxis.baseInterval = { timeUnit: 'year' };
-  const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-  valueAxis.title.text = description;
-  const series = chart.series.push(new am4charts.LineSeries());
-  series.dataFields.valueY = 'value';
-  series.dataFields.dateX = 'year';
-  series.name = description;
-  series.tooltip.getFillFromObject = true;
-  series.tooltipText = '{valueY}';
-  series.strokeWidth = 3;
-
-  // When merged with color PR this can be the selected color
-  const color = 'red';
-  series.stroke = am4core.color(color);
-  series.yAxis = valueAxis;
-
-  const bullet = series.bullets.push(new am4charts.CircleBullet());
-  bullet.stroke = am4core.color('#fff');
-  bullet.fill = am4core.color(color);
-  bullet.strokeWidth = 2;
-  bullet.tooltipText = '{valueY}';
-  bullet.circle.radius = 4;
-
-  chart.legend = new am4charts.Legend();
+  if (data.length === 0) {
+    document.getElementById('yearly-county-chart').style.display = 'none';
+    loadingMsg.innerText = 'No data available for selected county';
+  } else {
+    displayYearlyChart('yearly-county-chart', data, description, county);
+    loadingMsg.innerText = '';
+  }
 }
 
 // Display link to data.census.gov table for the table the displayed

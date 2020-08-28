@@ -273,8 +273,9 @@ public class QueryServlet extends HttpServlet {
       }
 
       String formattedData;
+      boolean isCountyQuery = (!location.equals("state") && !stateTotal) && !singleCounty;
       try {
-        formattedData = DataFormatter.reformatDataArray(data, dataRow, !location.equals("state"));
+        formattedData = DataFormatter.reformatDataArray(data, dataRow, isCountyQuery);
       } catch (InvalidObjectException e) {
         response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
         response

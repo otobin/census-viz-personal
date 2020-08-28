@@ -179,15 +179,18 @@
       <a id="census-link" target="_blank" rel="noopener">Explore more data from the Census API</a>
       <br>
       <div id="data-table"></div>
+      <div id="yearly-total-chart-loading-msg"></div>
       <div id="yearly-total-chart" class="yearly-chart"></div>
-      <div id="yearly-county-chart" class="yearly-chart"></div>
+      <div id="yearly-county-chart-loading-msg"></div>
       <form id="county-form" onsubmit="createYearlyCountyChart(); return false;">
+        <label for="county">View yearly data for a county</label>
         <input type="list" list="county" name="county" id="county-list" autocomplete="off" required
-        onfocus="storeValueAndEmpty('county')" onfocusout="replaceValueIfEmpty('county')">
+          onfocus="storeValueAndEmpty('county')" onfocusout="replaceValueIfEmpty('county')" value="Select a county">
         <datalist id="county"></datalist>
         </input>
         <input type="submit" value="Submit">
       </form>
+      <div id="yearly-county-chart" class="yearly-chart"></div>
     </div>
     <div id="history">
       <h3>Query History</h3>
