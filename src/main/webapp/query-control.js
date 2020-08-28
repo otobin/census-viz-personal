@@ -292,16 +292,9 @@ function replaceValueIfEmpty(dataListId) {
 
 // When the user picks certain dropdown values,
 // exclude the combinations that don't have data available
-const dropdownsToExclude = new Map();
-dropdownsToExclude.set(
-      'worked in', ['children'],
-    ).set(
-      'moved to', ['children', 'adults'],
-    ).set(
-      'children', ['worked in', 'moved to'],
-    ).set(
-      'adults', ['moved to'],
-    );
+const dropdownsToExclude =
+    ['worked inchildren', 'moved tochildren', 'moved toadults'];
+
 // All possible options, without anything excluded
 const defaultDropdowns = new Map();
 defaultDropdowns.set(
@@ -317,23 +310,25 @@ function updateDropdown(type) {
   // When we have an input in one area,
   // we actually want to update the other area based on this input
   let dropdown;
-  let options;
+  let allOptions;
   if (type === 'action') {
     dropdown = document.getElementById('person-type');
-    options = defaultDropdowns.get('person-type');
+    allOptions = defaultDropdowns.get('person-type');
   } else {
     dropdown = document.getElementById('action');
-    options = defaultDropdowns.get('action');
+    allOptions = defaultDropdowns.get('action');
   }
   dropdown.innerHTML = '';
   const currentValue = document.getElementById(type + '-list').value;
 
   // Iterate through all potential options
-  options.forEach((option) => {
-    // Check if the current option is in the exclusions list for the value that
-    // the user entered; if it's not, add it to the dropdown
-    if (!(dropdownsToExclude.has(currentValue) &&
-        dropdownsToExclude.get(currentValue).includes(option[0]))) {
+  allOptions.forEach((option) => {
+    // Check if the current option is in the exclusions list; if it's not,
+    // add it to the dropdown (Note: the exclusions list is in the order
+    // [action, person]; we simply check for either order so we don't have
+    // to know which one is our current value)
+    if (!(dropdownsToExclude.includes(currentValue + option[0]) ||
+        dropdownsToExclude.includes(option[0] + currentValue))) {
           optionElem = createDropdownOption(option[0], option[1]);
           dropdown.appendChild(optionElem);
         }
