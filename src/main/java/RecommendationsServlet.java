@@ -58,34 +58,30 @@ public class RecommendationsServlet extends HttpServlet {
     return randomInt;
   }
 
-  // CHeck to see if the current recommendation is valid by making sure that it isn't an impossible combination 
+  // Check to see if the current recommendation is valid by making sure that it isn't an impossible combination 
   // and isn't already one that the user has viewed.
   private boolean isRecommendationValid(VisualizationData recommendation, ArrayList<VisualizationData> userHistory) {
-      return (!(userHistory.contains(recommendation) || 
-        (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "work") ||
-        (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "moved"))); 
+    return (!(userHistory.contains(recommendation) || 
+      (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "work") ||
+      (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "moved"))); 
   }
 
   // Returns a VisualizationData whose contents are completely random
   // in order to alleviate recommendation fatigue. 
   private VisualizationData getRandomRecommendation(String userId, ArrayList<VisualizationData> userHistory) {
-    ArrayList<VisualizationData> invalidRecommendations = new ArrayList<VisualizationData>();
-    boolean isValid = false;
-    while (!isValid) {
+    ArrayList<VisualizationData> unuseableRecommendations = new ArrayList<VisualizationData>();
+    int maxVisualizations = personType.size() * action.size() * location.size() * years.size();
+    while (unuseableRecommendations.size() < maxVisualizations) {
       String randomPersonType = personType.get(getRandomInt(personType.size()));
       String randomAction = action.get(getRandomInt(action.size()));
       String randomLocation = location.get(getRandomInt(location.size()));
       String randomYear = years.get(getRandomInt(years.size()));
       VisualizationData randomRecommendation = new VisualizationData(
           userId, randomPersonType, randomAction, randomLocation, randomYear);
-      if (isRecommendationValid(randomRecommendation, userHistory) && !invalidRecommendations.contains(randomRecommendation)) {
+      if (isRecommendationValid(randomRecommendation, userHistory) && !unuseableRecommendations.contains(randomRecommendation)) {
         return randomRecommendation;
       } else {
-        invalidRecommendations.add(randomRecommendation);
-      }
-      // If the user has looked at every visualization, return the first in the history.
-      if (invalidRecommendations.size() >= 6885) {
-        isValid = true;
+        unuseableRecommendations.add(randomRecommendation);
       }
     }
     return userHistory.get(0);
@@ -138,7 +134,7 @@ public class RecommendationsServlet extends HttpServlet {
     Set<String> yearKeys = reverseSortedYear.keySet();
     ArrayList<VisualizationData> recommendationList = new ArrayList<VisualizationData>();
     // Iterate through all fields and find combinations that the user hasn't made yet
-    // and return the top 3.
+    // and return the top 4.
     for (String personType : personTypeKeys) {
       for(String action : actionKeys) {
         for (String location : locationKeys) {

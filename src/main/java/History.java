@@ -1,5 +1,4 @@
 package com.google.sps.data;
-import com.google.sps.data.VisualizationData;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -9,7 +8,6 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class History {
   String userId;
@@ -31,21 +29,21 @@ public class History {
     Query query = new Query("historyEntity").setFilter(propertyFilter);
     PreparedQuery results = datastore.prepare(query);
 
-      ArrayList<VisualizationData> queryList = new ArrayList<VisualizationData>();
-      for (Entity entity : results.asIterable()) {
-        String entityUserId = (String) entity.getProperty("userId");
-        String entityPersonType = (String) entity.getProperty("personType");
-        String entityAction = (String) entity.getProperty("action");
-        String entityLocation = (String) entity.getProperty("location");
-        String entityYear = (String) entity.getProperty("year");
-        VisualizationData dataHistoryElement =
-          new VisualizationData(
-              entityUserId, entityPersonType, entityAction, entityLocation, entityYear);
-        // Check to see if it is already in the results to eliminate duplicates
-        if (!queryList.contains(dataHistoryElement)) {
-          queryList.add(dataHistoryElement);
-        }
+    ArrayList<VisualizationData> queryList = new ArrayList<VisualizationData>();
+    for (Entity entity : results.asIterable()) {
+      String entityUserId = (String) entity.getProperty("userId");
+      String entityPersonType = (String) entity.getProperty("personType");
+      String entityAction = (String) entity.getProperty("action");
+      String entityLocation = (String) entity.getProperty("location");
+      String entityYear = (String) entity.getProperty("year");
+      VisualizationData dataHistoryElement =
+        new VisualizationData(
+            entityUserId, entityPersonType, entityAction, entityLocation, entityYear);
+      // Check to see if it is already in the results to eliminate duplicates
+      if (!queryList.contains(dataHistoryElement)) {
+        queryList.add(dataHistoryElement);
       }
-      return queryList;
     }
+    return queryList;
+  }
 }
