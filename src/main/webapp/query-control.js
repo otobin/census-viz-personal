@@ -107,7 +107,7 @@ function resetHistoryList() {
   historyDiv.innerHTML = '';
 }
 
-function toggleHistory(shouldShow) {
+function toggleUserInfo(shouldShow) {
   const historyDiv = document.getElementById('history');
   const recommendationsDiv = document.getElementById('recommendations');
   if (shouldShow) {

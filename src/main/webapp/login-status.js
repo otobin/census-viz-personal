@@ -43,7 +43,7 @@ function loginInit() {
     }).then(() => {
       gapi.signin2.render('sign-in-btn');
       displayLoginStatus();
-      toggleHistory(false);
+      toggleUserInfo(false);
     }).then(() => {
       if (getLoginStatus()) {
         getHistory();
