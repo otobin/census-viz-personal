@@ -40,7 +40,7 @@ public class RecommendationsServlet extends HttpServlet {
   // if the user doesn't have any history to draw from to get recommendations, 
   // return default recommendations that would be applicable to most users which is
   // the number of children, adults, people, men, and women who lived in each 
-  // US state in 2018. 
+  // US state in 2018
   private ArrayList<VisualizationData> getDefaultRecommendations(String userId) {
     ArrayList<VisualizationData> defaultRecommendations = new ArrayList<VisualizationData>();
     for (String person: personType) {
@@ -78,9 +78,8 @@ public class RecommendationsServlet extends HttpServlet {
           userId, randomPersonType, randomAction, randomLocation, randomYear);
       if (isRecommendationValid(randomRecommendation, userHistory) && !unuseableRecommendations.contains(randomRecommendation)) {
         return randomRecommendation;
-      } else {
-        unuseableRecommendations.add(randomRecommendation);
       }
+      unuseableRecommendations.add(randomRecommendation);
     }
     return userHistory.get(0);
   }
@@ -105,9 +104,17 @@ public class RecommendationsServlet extends HttpServlet {
     return reverseSortedMap;
   }
 
-  // Return suggested recommendations based on the history. Create hashmaps for each input for all of the queries,
-  // then create four combinations based on the most frequented fields.
+  // Return 5 recommendations based on the contents of the user's history.
+  // If the user's history is completely empty, return 4 default values and one random visualization.
+  // If the user has history populated by some entities, iterate through the most searched fields in each 
+  // map to create combinations of people, actions, years, and locations that the user hasn't searched yet.
   private ArrayList<VisualizationData> getRecommendations(ArrayList<VisualizationData> userHistory, String userId) {
+      // If the user's history is completely empty, return 4 default values and one random visualization.
+    if (userHistory.isEmpty()) {
+      ArrayList<VisualizationData> defaultRecs = getDefaultRecommendations(userId);
+      defaultRecs.add(getRandomRecommendation(userId, userHistory));
+      return defaultRecs;
+    }
     // Populate the frequency maps for each field
     updateFrequencyMaps(userHistory);
     // Sort the frequency maps in descending order by value such that the most common searches for each field 
@@ -132,12 +139,20 @@ public class RecommendationsServlet extends HttpServlet {
              if (isRecommendationValid(recommendation, userHistory)) {
                recommendationList.add(recommendation);
                if (recommendationList.size() >= 4) {
+                 recommendationList.add(getRandomRecommendation(userId, userHistory));
                  return recommendationList;
                }
              }
           }
         }
       }
+    }
+    // When the user has very similar queries in their search history, the recommendation algorithm
+    // may not generate 4. In this case, populate the remaining recommendations of the 5 with random ones.
+    if (recommendationList.size() < 4) {
+        for (int i = 0; i < 5 - recommendationList.size(); i++) {
+          recommendationList.add(getRandomRecommendation(userId, userHistory));
+        }
     }
     return recommendationList;
   }
@@ -147,23 +162,9 @@ public class RecommendationsServlet extends HttpServlet {
     String userId = request.getParameter("user-id");
     History userHistoryObj = new History(userId);
     ArrayList<VisualizationData> userHistory = userHistoryObj.getHistoryList();
-    if (userHistory.isEmpty()) {
-      String json = new Gson().toJson(getDefaultRecommendations(userId));
-      response.getWriter().write(json);
-    } else {
-      ArrayList<VisualizationData> recommendations = getRecommendations(userHistory, userId);
-      // If the recommendation algorithm is unable to generate more than 4 possibilities
-      // which happens when the user makes very similar searches, populate the rest with random elements.
-      if (recommendations.size() < 4) {
-        for (int i = 0; i < 4 - recommendations.size(); i++) {
-          recommendations.add(getRandomRecommendation(userId, userHistory));
-        }
-      }
-      VisualizationData randomRecommendation = getRandomRecommendation(userId, userHistory);
-      recommendations.add(randomRecommendation);
-      String json = new Gson().toJson(recommendations);
-      response.getWriter().write(json);
-    }
+    ArrayList<VisualizationData> recommendations = getRecommendations(userHistory, userId);
+    String json = new Gson().toJson(recommendations);
+    response.getWriter().write(json);
   }
 }
 
