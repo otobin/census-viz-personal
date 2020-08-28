@@ -536,6 +536,8 @@ function submitHashQuery() {
 // Listen for if user clicks back
 window.addEventListener('hashchange', function() {
   submitHashQuery();
+  location.reload();
+  window.scrollTo(0, 0);
 });
 
 // loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed
