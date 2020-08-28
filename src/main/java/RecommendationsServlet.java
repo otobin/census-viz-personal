@@ -61,7 +61,8 @@ public class RecommendationsServlet extends HttpServlet {
   private boolean isRecommendationValid(VisualizationData recommendation, ArrayList<VisualizationData> userHistory) {
     return (!(userHistory.contains(recommendation) || 
       (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "work") ||
-      (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "moved"))); 
+      (recommendation.getPersonType() == "under-18" && recommendation.getAction() == "moved") || 
+      (recommendation.getPersonType() == "over-18" && recommendation.getAction() == "moved"))); 
   }
 
   // Returns a VisualizationData whose contents are completely random

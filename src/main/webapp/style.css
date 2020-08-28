@@ -378,6 +378,10 @@ table {
   width: 150px;
 }
 
+#recommendation-list li:hover {
+  box-shadow: 8px 8px 16px #e7e7e9;
+}
+
 #recommendation-list li {
   border: 1px solid #e7e7e9;
   border-radius: 5px;
@@ -386,10 +390,6 @@ table {
   box-shadow: 4px 4px 8px #e7e7e9;
   padding: 15px;
   transition: .3s;
-}
-
-#recommendation-list li:hover {
-  box-shadow: 8px 8px 16px #e7e7e9;
 }
 
 #recommendations {
