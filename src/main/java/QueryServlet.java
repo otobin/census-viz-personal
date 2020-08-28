@@ -138,7 +138,7 @@ public class QueryServlet extends HttpServlet {
 
   // Return the string to pass in the "for" (location) parameter to
   // the Census API based on whether the query is for a single state's
-  // total population, a single county, or multiple counties or states. 
+  // total population, a single county, or multiple counties or states.
   private String getLocationQueryString(
       boolean stateTotal, boolean singleCounty, String location, String county) {
     if (stateTotal) {

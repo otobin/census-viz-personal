@@ -538,7 +538,7 @@ function displayYearlyChart(chartId, data, description, location) {
   dateAxis.dataFields.category = 'year';
   dateAxis.title.text = 'Year';
   dateAxis.gridIntervals.setAll([
-    { timeUnit: 'year', count: 1 }
+    {timeUnit: 'year', count: 1},
   ]);
   const valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
   valueAxis.title.text = description;
@@ -575,12 +575,13 @@ function displayYearlyChart(chartId, data, description, location) {
 // Create yearly state total population growth chart for the submitted query
 async function createYearlyStateTotalChart(
   personType, action, location, description) {
+  document.getElementById('year-data-header').style.display = 'block';
   document.getElementById('county-form').style.display = 'block';
   const personTypeNoun = document.querySelector(
     '#person-type option[data-value=\'' + personType + '\']').value;
   const actionVerb = document.querySelector(
     '#action option[data-value=\'' + action + '\']').value;
-  document.getElementById('county-query-label').innerText = 
+  document.getElementById('county-query-label').innerText =
     `How many ${personTypeNoun} ${actionVerb}`;
   const loadingMsg = document.getElementById('yearly-total-chart-loading-msg');
   loadingMsg.innerText = 'Yearly state data chart loading...';
@@ -628,7 +629,7 @@ async function createYearlyCountyChart() {
   const data = [];
   const query = getQueryFromHash(window.location.hash);
   const description = getDescription(query.action, query.personType);
-  const locationInfo = getLocationInfo(query.location);
+  const locationInfo = await getLocationInfo(query.location);
   const stateNumber = locationInfo.stateNumber;
   for (let year = 2010; year <= 2018; year++) {
     await fetch(getFetchUrl('query', query.personType, query.action,

@@ -26,11 +26,12 @@ function getColor() {
 function clearPreviousResult() {
   const divsToHide = [
     'colors', 'edit-title', 'year-slider', 'census-link', 'toggle-data-btn',
-    'map-options', 'yearly-total-chart', 'yearly-county-chart', 'county-form'
-  ]
+    'map-options', 'yearly-total-chart', 'yearly-county-chart', 'county-form',
+    'year-data-header',
+  ];
   divsToHide.forEach((id) => {
     document.getElementById(id).style.display = 'none';
-  })
+  });
   document.getElementById('data-table').innerHTML = '';
   document.getElementById('county-list').value = 'Select a county';
   document.getElementById('yearly-county-chart-loading-msg').innerText = '';
@@ -232,7 +233,6 @@ async function getLocationInfo(location) {
     };
   } else { // Have to manually find which state the location is in
     locationInfo = await findStateOfLocation(location);
-    console.log(locationInfo);
     if (locationInfo === undefined) {
       return; // error was thrown inside findStateOfLocation()
     }
@@ -246,8 +246,8 @@ async function getLocationInfo(location) {
 // to be reformatted and visualized.
 async function passQuery(personType, action, location, year, title) {
   clearPreviousResult();
-  let locationInfo = await getLocationInfo(location);
-  let state = locationInfo.stateName;
+  const locationInfo = await getLocationInfo(location);
+  const state = locationInfo.stateName;
   location = locationInfo.stateNumber;
   const actionInput = document.querySelector(
     '#action option[data-value=\'' + action + '\']').value;
