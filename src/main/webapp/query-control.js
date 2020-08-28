@@ -25,12 +25,9 @@ function getColor() {
 
 function clearPreviousResult() {
   document.getElementById('data-table').innerHTML = '';
-  document.getElementById('colors').style.display = 'none';
-  document.getElementById('edit-title').style.display = 'none';
   document.getElementById('year-slider').style.display = 'none';
+  document.getElementById('top-buttons').style.display = 'none';
   document.getElementById('census-link').style.display = 'none';
-  document.getElementById('toggle-data-btn').style.display = 'none';
-  document.getElementById('map-options').style.display = 'none';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('result').style.display = 'block';

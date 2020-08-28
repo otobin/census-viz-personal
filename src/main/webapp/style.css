@@ -226,6 +226,7 @@ select:focus {
 
 .top-button {
   padding: 25px;
+  display: inline;
 }
 
 .switch {
@@ -297,7 +298,6 @@ input:checked + .slider::before {
 
 #map-options {
   white-space: nowrap;
-  display: none;
   margin-bottom: 30px;
 }
 
@@ -324,6 +324,10 @@ input[type="color" i] {
   border-radius: 25px;
   display: inline-block;
   height: 34px;
+}
+
+#edit-title {
+  display: none;
 }
 
 #map-title {

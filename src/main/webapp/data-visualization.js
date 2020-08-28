@@ -26,10 +26,9 @@ async function getGeoData(locationInfo, isCountyQuery) {
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description, title,
   locationInfo, isCountyQuery) {
-  document.getElementById('colors').style.display = 'inline';
-  document.getElementById('edit-title-container').style.display = 'inline';
   const color = getColor();
   document.getElementById('year-slider').style.display = 'block';
+  document.getElementById('top-buttons').style.display = 'block';
   const geoData = await getGeoData(locationInfo, isCountyQuery);
 
   // Put all necessary data in the cache
@@ -426,7 +425,7 @@ function toggleMap() {
 
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
-  document.getElementById('toggle-data-btn').style.display = 'inline';
+  //document.getElementById('toggle-data-btn').style.display = 'inline';
   const mapOptions = document.getElementById('map-options');
   const chartsDiv = document.getElementById('am-charts');
   const mapsDiv = document.getElementById('map');
