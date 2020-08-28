@@ -85,23 +85,14 @@ public class RecommendationsServlet extends HttpServlet {
     return userHistory.get(0);
   }
 
-  // Takes in a map and updates the key/value pairs
-  private void updateMap(HashMap<String, Integer> frequencyMap, String item) {
-    if (frequencyMap.containsKey(item)) {
-      frequencyMap.put(item, frequencyMap.get(item) + 1);
-    } else {
-      frequencyMap.put(item, 1);
-    }
-  }
-
-  private void getFrequencyMaps(ArrayList<VisualizationData> userHistory) {
+  private void updateFrequencyMaps(ArrayList<VisualizationData> userHistory) {
     // calculate the frequencies of each type of query that the user has made
     for (int i = 0; i < userHistory.size(); i++) {
       VisualizationData currentElement = userHistory.get(i);
-      updateMap(personTypeMap, currentElement.getPersonType());
-      updateMap(actionMap, currentElement.getAction());
-      updateMap(locationMap, currentElement.getLocation());
-      updateMap(yearsMap, currentElement.getYear());
+      personTypeMap.merge(currentElement.getPersonType(), 1, Integer::sum);
+      actionMap.merge(currentElement.getAction(), 1, Integer::sum);
+      locationMap.merge(currentElement.getLocation(), 1, Integer::sum);
+      yearsMap.merge(currentElement.getYear(), 1, Integer::sum);
     }
   }
 
@@ -118,7 +109,7 @@ public class RecommendationsServlet extends HttpServlet {
   // then create four combinations based on the most frequented fields.
   private ArrayList<VisualizationData> getRecommendations(ArrayList<VisualizationData> userHistory, String userId) {
     // Populate the frequency maps for each field
-    getFrequencyMaps(userHistory);
+    updateFrequencyMaps(userHistory);
     // Sort the frequency maps in descending order by value such that the most common searches for each field 
     // are first eg: {worked in: 7, lived in: 10, moved to: 2} => { lived in: 10, worked in: 7, moved to: 2}
     LinkedHashMap<String, Integer> reverseSortedPersonType = sortHashMapDescending(personTypeMap);
@@ -140,7 +131,7 @@ public class RecommendationsServlet extends HttpServlet {
             VisualizationData recommendation = new VisualizationData(userId, personType, action, location, year);
              if (isRecommendationValid(recommendation, userHistory)) {
                recommendationList.add(recommendation);
-               if (recommendationList.size() > 3) {
+               if (recommendationList.size() >= 4) {
                  return recommendationList;
                }
              }
