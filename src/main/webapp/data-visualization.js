@@ -546,8 +546,7 @@ function displayYearlyChart(chartId, data, description, location) {
   series.tooltipText = '{valueY}';
   series.strokeWidth = 3;
 
-  // When merged with color PR this can be the selected color
-  const color = 'red';
+  const color = getColor();
   series.stroke = am4core.color(color);
   series.yAxis = valueAxis;
 
@@ -608,8 +607,16 @@ async function createYearlyCountyChart() {
   loadingMsg.innerText = 'Yearly county data chart loading...';
   const countyForm = new FormData(document.getElementById('county-form'));
   const county = countyForm.get('county');
-  const countyNumber = document.querySelector(
-    '#county option[value=\'' + county + '\']').dataset.value;
+  const countyDropdown = document.querySelector(
+    '#county option[value=\'' + county + '\']');
+  let countyNumber;
+  if (countyDropdown != null) {
+    countyNumber = countyDropdown.dataset.value;
+  } else {
+    document.getElementById('yearly-county-chart').style.display = 'none';
+    loadingMsg.innerText = 'Input must be a county name in the dropdown list.';
+    return;
+  }
   const data = [];
   const query = getQueryFromHash(window.location.hash);
   const description = getDescription(query.action, query.personType);
