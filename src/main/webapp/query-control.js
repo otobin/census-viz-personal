@@ -554,7 +554,7 @@ window.addEventListener('hashchange', function() {
 // false, the location settings are not changed and the current icon is shown.
 function loadAppropriateIcon(buttonPressed) {
   const locationSettings = localStorage.getItem('locationSettings');
-  const locationOffString = 'Your location settings are currently set to off.' +
+  const locationOffString = 'Your location settings are currently off.' +
     ' Click here to change your location settings.';
   const locationOnString = 'Your location settings are currently on.' +
     ' Click here to change your location settings.';

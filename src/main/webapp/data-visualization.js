@@ -614,7 +614,8 @@ async function createYearlyCountyChart() {
     countyNumber = countyDropdown.dataset.value;
   } else {
     document.getElementById('yearly-county-chart').style.display = 'none';
-    loadingMsg.innerText = 'Input must be a county name in the dropdown list.';
+    loadingMsg.innerText = 
+      'Input must be a county name in the dropdown list';
     return;
   }
   const data = [];
