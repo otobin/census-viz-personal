@@ -1,8 +1,7 @@
 {
     "extends": "stylelint-config-standard",
     "rules": {
-        "number-leading-zero": "never",
-        "no-duplicate-selectors": "never"
+        "number-leading-zero": "never"
       }
 }
   

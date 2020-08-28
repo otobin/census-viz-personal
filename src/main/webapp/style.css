@@ -149,15 +149,6 @@ select:focus {
   outline: none;
 }
 
-/* The handle for the set-year slider (once for Chrome, once for Mozilla) */
-#set-year::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  background: var(--button-color);
-  border-radius: 25px;
-  height: 20px;
-  width: 20px;
-}
-
 .input-valid {
   border-color: #767676;
   border-style: none none solid none;
@@ -253,7 +244,7 @@ table {
 /* The handle for the set-year slider (once for Chrome, once for Mozilla) */
 #set-year::-webkit-slider-thumb {
   -webkit-appearance: none;
-  background: #0dbd00;
+  background: var(--button-color);
   border-radius: 25px;
   height: 20px;
   width: 20px;

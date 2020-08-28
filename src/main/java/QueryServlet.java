@@ -135,7 +135,7 @@ public class QueryServlet extends HttpServlet {
   }
 
   private String getLocation(
-    boolean stateTotal, boolean singleCounty, String location, String county) {
+      boolean stateTotal, boolean singleCounty, String location, String county) {
     if (stateTotal) {
       return "state:" + location;
     } else if (singleCounty) {
