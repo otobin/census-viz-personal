@@ -416,7 +416,8 @@ function toggleMap() {
     document.getElementById('map').style.display = 'block';
     document.getElementById('map-toggle-msg').innerText = 'Disable map overlay';
   } else {
-    document.getElementById('edit-title-container').style.visibility = 'visible';
+    document.getElementById('edit-title-container').style.visibility =
+        'visible';
     document.getElementById('map').style.display = 'none';
     document.getElementById('am-charts').style.display = 'block';
     document.getElementById('map-toggle-msg').innerText = 'Enable map overlay';
@@ -425,7 +426,6 @@ function toggleMap() {
 
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
-  //document.getElementById('toggle-data-btn').style.display = 'inline';
   const mapOptions = document.getElementById('map-options');
   const chartsDiv = document.getElementById('am-charts');
   const mapsDiv = document.getElementById('map');
