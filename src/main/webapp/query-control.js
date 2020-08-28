@@ -171,12 +171,23 @@ function getRecommendations() {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, recommendationList);
       });
-      new Splide('#splide2', {
-        gap: 20,
-        fixedWidth: 230,
-        padding: 20,
-        pagination: false,
-      }).mount();
+      // Check to see if arrows are necessary depending on the width of the window
+      if (window.innerWidth > 1250) {
+        new Splide('#splide2', {
+          gap: 20,
+          fixedWidth: 230,
+          padding: 20,
+          pagination: false,
+          arrows: false,
+        }).mount();
+      } else {
+        new Splide('#splide2', {
+          gap: 20,
+          fixedWidth: 230,
+          padding: 20,
+          pagination: false,
+        }).mount();
+      }
     });
 }
 
