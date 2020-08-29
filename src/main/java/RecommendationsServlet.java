@@ -181,4 +181,3 @@ public class RecommendationsServlet extends HttpServlet {
     response.getWriter().write(json);
   }
 }
-
