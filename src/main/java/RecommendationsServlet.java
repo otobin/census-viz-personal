@@ -87,7 +87,7 @@ public class RecommendationsServlet extends HttpServlet {
     return userHistory.get(0);
   }
 
-private void updateFrequencyMaps(ArrayList<VisualizationData> userHistory) {
+  private void updateFrequencyMaps(ArrayList<VisualizationData> userHistory) {
     // calculate the frequencies of each type of query that the user has made
     for (int i = 0; i < userHistory.size(); i++) {
       VisualizationData currentElement = userHistory.get(i);
@@ -131,7 +131,6 @@ private void updateFrequencyMaps(ArrayList<VisualizationData> userHistory) {
     // each field
     // are first eg: {worked in: 7, lived in: 10, moved to: 2} => { lived in: 10, worked in: 7,
     // moved to: 2}
-        // moved to: 2}
     LinkedHashMap<String, Integer> reverseSortedPersonType = sortHashMapDescending(personTypeMap);
     LinkedHashMap<String, Integer> reverseSortedAction = sortHashMapDescending(actionMap);
     LinkedHashMap<String, Integer> reverseSortedLocation = sortHashMapDescending(locationMap);

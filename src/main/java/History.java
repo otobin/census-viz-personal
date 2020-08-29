@@ -44,9 +44,7 @@ public class History {
       if (!queryList.contains(dataHistoryElement)) {
         queryList.add(dataHistoryElement);
       }
-      return queryList;
     }
+    return queryList;
   }
 }
-
-
