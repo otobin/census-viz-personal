@@ -23,7 +23,7 @@ public class VisualizationData {
   public String getPersonType() {
     return personType;
   }
-  
+
   public String getAction() {
     return action;
   }
@@ -31,7 +31,7 @@ public class VisualizationData {
   public String getLocation() {
     return location;
   }
-  
+
   public String getYear() {
     return year;
   }

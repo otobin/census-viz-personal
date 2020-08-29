@@ -45,7 +45,7 @@ public class History {
         queryList.add(dataHistoryElement);
       }
       return queryList;
-    } 
+    }
   }
 }
 
