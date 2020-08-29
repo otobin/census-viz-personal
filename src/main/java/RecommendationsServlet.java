@@ -151,7 +151,7 @@ public class RecommendationsServlet extends HttpServlet {
                 new VisualizationData(userId, personType, action, location, year);
             if (isRecommendationValid(recommendation, userHistory)) {
               recommendationList.add(recommendation);
-              if (recommendationList.size() >= 4) {
+              if (recommendationList.size() == 4) {
                 recommendationList.add(getRandomRecommendation(userId, userHistory));
                 return recommendationList;
               }
@@ -163,7 +163,7 @@ public class RecommendationsServlet extends HttpServlet {
     // When the user has very similar queries in their search history, the recommendation algorithm
     // may not generate 4. In this case, populate the remaining recommendations of the 5 with random
     // ones.
-    if (recommendationList.size() < 4) {
+    if (recommendationList.size() < 5) {
       for (int i = 0; i < 5 - recommendationList.size(); i++) {
         recommendationList.add(getRandomRecommendation(userId, userHistory));
       }
