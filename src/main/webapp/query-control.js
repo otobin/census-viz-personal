@@ -172,7 +172,8 @@ function getRecommendations() {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, recommendationList);
       });
-      // Check to see if arrows are necessary depending on the width of the window
+      // Check to see if arrows are necessary depending on the width 
+      // of the window
       if (window.innerWidth > 1250) {
         new Splide('#splide2', {
           gap: 20,
