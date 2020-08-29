@@ -605,8 +605,13 @@ async function createYearlyStateTotalChart(
         }
       });
   }
-  displayYearlyChart('yearly-total-chart', data, description, location);
-  loadingMsg.innerText = '';
+  if (data.length === 0) {
+    document.getElementById('yearly-total-chart').style.display = 'none';
+    loadingMsg.innerText = 'No data available for selected state';
+  } else {
+    displayYearlyChart('yearly-total-chart', data, description, county);
+    loadingMsg.innerText = '';
+  }
 }
 
 // Create yearly county population growth chart for the submitted query
