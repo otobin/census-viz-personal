@@ -163,8 +163,9 @@ public class RecommendationsServlet extends HttpServlet {
     // When the user has very similar queries in their search history, the recommendation algorithm
     // may not generate 4. In this case, populate the remaining recommendations of the 5 with random
     // ones.
+    int recommendationSize = recommendationList.size();
     if (recommendationList.size() < 5) {
-      for (int i = 0; i < 5 - recommendationList.size(); i++) {
+      for (int i = 0; i < 5 - recommendationSize; i++) {
         recommendationList.add(getRandomRecommendation(userId, userHistory));
       }
     }
