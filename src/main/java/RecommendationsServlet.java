@@ -164,7 +164,7 @@ public class RecommendationsServlet extends HttpServlet {
     // may not generate 4. In this case, populate the remaining recommendations of the 5 with random
     // ones.
     int recommendationSize = recommendationList.size();
-    if (recommendationList.size() < 5) {
+    if (recommendationSize < 5) {
       for (int i = 0; i < 5 - recommendationSize; i++) {
         recommendationList.add(getRandomRecommendation(userId, userHistory));
       }
