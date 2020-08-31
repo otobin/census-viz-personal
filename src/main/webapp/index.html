@@ -146,35 +146,36 @@
       </form>
     </div>
     <div id="result">
-      <div id="map-options">
-        <div class="map-option">
-          <label class="switch" id="map-toggle-switch">
-            <input type="checkbox" id="map-toggle" onchange="toggleMap()">
-            <span class="slider round"></span>
-          </label>
+      <div id="top-buttons">
+        <div id="map-options" class="top-button">
+          <div class="map-option" id="map-toggle-msg">Enable map overlay</div>
+          <div class="map-option">
+            <label class="switch" id="map-toggle-switch">
+              <input type="checkbox" id="map-toggle" onchange="toggleMap()">
+              <span class="slider round"></span>
+            </label>
+          </div>
         </div>
-        <div class="map-option" id="map-toggle-msg">Enable map overlay</div>
-      </div>
-      <div id="colors">
-        <p>Change the color of the visualization
+        <div id="colors" class="top-button">
+          <span class="map-option" id="color-msg">Change color</span>
           <label id="set-color-label" for="set-color">
             <input type="color" id="set-color" name="set-color" onchange="changeColor(this)">
           </label>
-        </p>
+        </div>
+        <div id="edit-title-container" class="top-button">
+          <button id="open-edit-title" onclick="showEditTitle()">Edit title</button>
+          <form id="edit-title" onsubmit="editTitle();return false;">
+            <input type="text" id="edit-title-text">
+            <input type="submit" value="done">
+          </form>
+        </div>
       </div>
       <div id="year-slider">
-        <p>
-          <span id="year-slider-text"></span>
-          <label id="set-year-label" for="set-year">
-            <input type="range" min="2010" max="2018" value="2018" id="set-year" onchange="changeYear(this)">
-          </label>
-        </p>
+        <span id="year-slider-text"></span>
+        <label id="set-year-label" for="set-year">
+          <input type="range" min="2010" max="2018" value="2018" id="set-year" onchange="changeYear(this)">
+        </label>
       </div>
-      <button id="open-edit-title" onclick="showEditTitle()">Edit title</button>
-      <form id="edit-title" onsubmit="editTitle();return false;">
-        <input type="text" id="edit-title-text">
-        <input type="submit" value="done">
-      </form>
       <div id="more-info"></div>
       <br>
       <div id="am-charts"></div>
