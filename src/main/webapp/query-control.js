@@ -27,7 +27,7 @@ function clearPreviousResult() {
   const divsToHide = [
     'edit-title', 'year-slider', 'top-buttons', 'census-link',
     'yearly-total-chart', 'yearly-county-chart', 'county-form',
-    'year-data-header'
+    'year-data-header',
   ];
   divsToHide.forEach((id) => {
     document.getElementById(id).style.display = 'none';
