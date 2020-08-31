@@ -483,9 +483,19 @@ function changeColor(colorParam) {
   const cacheTitle = localStorage.getItem('title');
   // map is undefined on a state query, so check to be sure that
   // it is undefined before calling displayCountyGeoJson.
+  am4core.disposeAllCharts();
   if (cacheLocation !== 'state') {
     displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation,
       cacheGeoData, color);
+    const yearStateData = JSON.parse(localStorage.getItem('yearStateData'));
+    displayYearlyChart('yearly-total-chart', yearStateData, 
+      cacheDescription, cacheLocation.stateNumber);
+    if (document.getElementById('yearly-county-chart').style.display !== 'none') {
+      const yearCountyData = JSON.parse(localStorage.getItem('yearCountyData'));
+      const yearCounty = localStorage.getItem('yearCounty');
+      displayYearlyChart('yearly-county-chart', yearCountyData,
+        cacheDescription, yearCounty);
+    }
   }
   displayAmChartsMap(cacheAmCharts, cacheLocation, cacheDescription, cacheTitle,
     cacheGeoData, color);
@@ -607,6 +617,7 @@ async function createYearlyStateTotalChart(
     document.getElementById('yearly-total-chart').style.display = 'none';
     loadingMsg.innerText = 'No data available for selected state';
   } else {
+    localStorage.setItem('yearStateData', JSON.stringify(data));
     displayYearlyChart('yearly-total-chart', data, description, location);
     loadingMsg.innerText = '';
   }
@@ -658,6 +669,8 @@ async function createYearlyCountyChart() {
     document.getElementById('yearly-county-chart').style.display = 'none';
     loadingMsg.innerText = 'No data available for selected county';
   } else {
+    localStorage.setItem('yearCountyData', JSON.stringify(data));
+    localStorage.setItem('yearCounty', county);
     displayYearlyChart('yearly-county-chart', data, description, county);
     loadingMsg.innerText = '';
   }
