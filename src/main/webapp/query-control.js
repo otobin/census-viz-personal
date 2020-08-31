@@ -30,6 +30,7 @@ function clearPreviousResult() {
   document.getElementById('census-link').style.display = 'none';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
+  document.getElementById('toggle-data-btn').style.display = 'none';
   document.getElementById('result').style.display = 'block';
 }
 
