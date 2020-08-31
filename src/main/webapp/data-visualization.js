@@ -426,6 +426,7 @@ function toggleMap() {
 
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
+  document.getElementById('toggle-data-btn').style.display = 'inline-block';
   const mapOptions = document.getElementById('map-options');
   const chartsDiv = document.getElementById('am-charts');
   const mapsDiv = document.getElementById('map');
