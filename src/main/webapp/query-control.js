@@ -500,6 +500,8 @@ async function setupQuery() {
   setupAutocompleteLocation();
   setupYearSlider();
   setButtonColor();
+  updateDropdown('action');
+  updateDropdown('person-type');
 }
 
 // Append all locations to the location dropdown element.
