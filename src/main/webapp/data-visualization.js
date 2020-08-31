@@ -609,7 +609,7 @@ async function createYearlyStateTotalChart(
     document.getElementById('yearly-total-chart').style.display = 'none';
     loadingMsg.innerText = 'No data available for selected state';
   } else {
-    displayYearlyChart('yearly-total-chart', data, description, county);
+    displayYearlyChart('yearly-total-chart', data, description, location);
     loadingMsg.innerText = '';
   }
 }
