@@ -1,39 +1,14 @@
 :root {
   font-family: 'Roboto', sans-serif;
+
+  --button-color: #0071bd;
 }
 
 body {
   margin: 0;
 }
 
-input[type=list],
-select {
-  background-color: transparent;
-  border-radius: 2px;
-  border-style: none none solid none;
-  font: 16px 'Roboto', sans-serif;
-  padding: 10px;
-}
-
-input[type=list]:focus,
-select:focus {
-  outline: none;
-}
-
-.input-valid {
-  border-color: #767676;
-  border-style: none none solid none;
-}
-
-.input-invalid {
-  border-color: red;
-  border-style: solid !important;
-}
-
-.wrapper {
-  margin: 0 60px 0 60px;
-}
-
+/* Header */
 #header {
   border-bottom: 1px solid #e7e7e9;
   display: flex;
@@ -77,215 +52,6 @@ select:focus {
 
 .tooltip:hover .tooltiptext {
   display: flex;
-}
-
-#query-form {
-  display: inline-flex;
-}
-
-#query {
-  text-align: center;
-}
-
-button,
-input[type=submit] {
-  border: 0;
-  border-radius: 2px;
-  color: #fff;
-  cursor: pointer;
-  font-weight: bolder;
-  margin: 30px;
-  padding: 10px;
-  text-transform: uppercase;
-}
-
-input[type=submit] {
-  background: #0dbd00;
-}
-
-button {
-  background: #0071bd;
-}
-
-button,
-input[type=submit]:focus {
-  outline: 0;
-}
-
-button:hover,
-input[type=submit]:hover {
-  filter: brightness(90%);
-  transition: all .4s ease-in-out;
-}
-
-#year-slider {
-  width: 100%;
-}
-
-#set-year {
-  -moz-appearance: none;
-  -webkit-appearance: none;  /* Override default style for Chrome and Mozilla */
-  background: #d3d3d3;
-  border-radius: 25px;
-  height: 10px;
-  outline: none;
-  width: 40%;
-}
-
-/* The handle for the set-year slider (once for Chrome, once for Mozilla) */
-#set-year::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  background: #0dbd00;
-  border-radius: 25px;
-  height: 20px;
-  width: 20px;
-}
-
-#set-year::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-}
-
-#result {
-  border-radius: 10px;
-  box-shadow: 5px 5px 15px #e7e7e9;
-  display: none;
-  margin: 30px 0 60px 0;
-  padding: 30px;
-  text-align: center;
-}
-
-#am-charts {
-  height: 650px;
-}
-
-#map {
-  height: 700px;
-  display: none;
-}
-
-/* The switch - the box around the slider */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider */
-.slider {
-  position: absolute;
-  border-radius: 34px;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider::before {
-  position: absolute;
-  border-radius: 50%;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #2196f3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
-}
-
-input:checked + .slider::before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-#map-toggle-switch {
-  display: inline-block;
-}
-
-#map-toggle-msg {
-  width: 180px;
-}
-
-#map-options {
-  white-space: nowrap;
-  display: none;
-  margin-bottom: 30px;
-}
-
-.map-option {
-  display: inline-block;
-  line-height: 34px;
-  padding: 5px;
-  text-transform: uppercase;
-  font-weight: bolder;
-}
-
-#map-title {
-  text-align: center;
-  font-weight: bolder;
-  font-size: 20px;
-}
-
-#more-info {
-  text-align: center;
-}
-
-#data-table {
-  display: none;
-}
-
-.data-table-header {
-  background-color: white;
-}
-
-table {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-footer {
-  background-color: white;
-  border-top: 1px solid #e7e7e9;
-  bottom: 0;
-  padding: 30px 0;
-  text-align: center;
-  width: 100%;
-}
-
-#colors {
-  text-align: center;
-}
-
-input[type="color"] {
-  opacity: 0;
-}
-
-#set-color-label {
-  height: 32px;
-  width: 32px;
-  border-radius: 25px;
 }
 
 #location-off-icon {
@@ -334,4 +100,347 @@ input[type="color"] {
   width: 18px;
   padding: 8px;
   height: 18px;
+}
+
+/* Buttons */
+button,
+input[type=submit] {
+  border: 0;
+  border-radius: 2px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bolder;
+  margin: 30px;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+input[type=submit] {
+  background: #0dbd00;
+}
+
+button {
+  background: var(--button-color);
+}
+
+button,
+input[type=submit]:focus {
+  outline: 0;
+}
+
+button:hover,
+input[type=submit]:hover {
+  filter: brightness(90%);
+  transition: all .4s ease-in-out;
+}
+
+/* Dropdowns */
+input[type=list],
+select {
+  background-color: transparent;
+  border-radius: 2px;
+  border-style: none none solid none;
+  font: 16px 'Roboto', sans-serif;
+  padding: 10px;
+}
+
+input[type=list]:focus,
+select:focus {
+  outline: none;
+}
+
+/* The handle for the set-year slider (once for Chrome, once for Mozilla) */
+#set-year::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: var(--button-color);
+  border-radius: 25px;
+  height: 20px;
+  width: 20px;
+}
+
+.input-valid {
+  border-color: #767676;
+  border-style: none none solid none;
+}
+
+.input-invalid {
+  border-color: red;
+  border-style: solid !important;
+}
+
+#query-form {
+  display: inline-flex;
+}
+
+#query {
+  text-align: center;
+}
+
+/* Visualizations */
+#result {
+  border-radius: 10px;
+  box-shadow: 5px 5px 15px #e7e7e9;
+  display: none;
+  margin: 30px 0 60px 0;
+  padding: 30px;
+  text-align: center;
+}
+
+#open-edit-title {
+  display: none;
+}
+
+#edit-title {
+  display: none;
+}
+
+#am-charts {
+  height: 650px;
+}
+
+/* Download/export button for amcharts */
+.amcharts-amexport-item-level-0 {
+  width: 100px !important;
+  height: 35px !important;
+  padding: 7px 0 0 0 !important;
+}
+
+#map {
+  height: 700px;
+  display: none;
+}
+
+/* Visualization Options */
+
+/* The switch - the box around the slider */
+#year-slider {
+  width: 100%;
+}
+
+#set-year {
+  -moz-appearance: none;
+  -webkit-appearance: none;  /* Override default style for Chrome and Mozilla */
+  background: #d3d3d3;
+  border-radius: 25px;
+  height: 10px;
+  outline: none;
+  width: 40%;
+}
+
+/* The handle for the set-year slider (once for Chrome, once for Mozilla) */
+#set-year::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: #0dbd00;
+  border-radius: 25px;
+  height: 20px;
+  width: 20px;
+}
+
+#set-year::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  border-radius: 34px;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider::before {
+  position: absolute;
+  border-radius: 50%;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--button-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--button-color);
+}
+
+input:checked + .slider::before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+#map-toggle-switch {
+  display: inline-block;
+}
+
+#map-toggle-msg {
+  width: 180px;
+}
+
+#map-options {
+  white-space: nowrap;
+  display: none;
+  margin-bottom: 30px;
+}
+
+.map-option {
+  display: inline-block;
+  line-height: 34px;
+  padding: 5px;
+  text-transform: uppercase;
+  font-weight: bolder;
+}
+
+#colors {
+  text-align: center;
+}
+
+input[type="color"] {
+  opacity: 0;
+}
+
+#set-color-label {
+  height: 32px;
+  width: 32px;
+  border-radius: 25px;
+}
+
+#map-title {
+  text-align: center;
+  font-weight: bolder;
+  font-size: 20px;
+}
+
+#more-info {
+  text-align: center;
+}
+
+#data-table {
+  display: none;
+}
+
+.data-table-header {
+  background-color: white;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/*Recommendations*/
+#recommendation-list a {
+  color: black;
+  text-decoration: none;
+}
+
+#recommendation-list a img {
+  border-bottom: 1px solid #e7e7e9;
+  display: block;
+  padding-bottom: 15px;
+  margin: 0 auto 15px auto;
+  width: 150px;
+}
+
+#recommendation-list li {
+  border: 1px solid #e7e7e9;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 4px 8px #e7e7e9;
+  padding: 15px;
+  transition: .3s;
+}
+
+#recommendation-list li:hover {
+  box-shadow: 8px 8px 16px #e7e7e9;
+}
+
+#recommendations {
+  padding-bottom: 100px;
+}
+
+#recommendations h3 {
+  padding-left: 35px;
+}
+
+/* History */
+#history-list a {
+  color: black;
+  text-decoration: none;
+}
+
+#history-list a img {
+  border-bottom: 1px solid #e7e7e9;
+  display: block;
+  padding-bottom: 15px;
+  margin: 0 auto 15px auto;
+  width: 150px;
+}
+
+#history-list li {
+  border: 1px solid #e7e7e9;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 4px 8px #e7e7e9;
+  padding: 15px;
+  transition: .3s;
+}
+
+#history-list li:hover {
+  box-shadow: 8px 8px 16px #e7e7e9;
+}
+
+#history {
+  padding-bottom: 30px;
+}
+
+#history h3 {
+  padding-left: 35px;
+}
+
+.splide__track {
+  overflow: visible;
+}
+
+.splide__arrow {
+  top: 70px;
+}
+
+/* Footer */
+footer {
+  background-color: white;
+  border-top: 1px solid #e7e7e9;
+  bottom: 0;
+  padding: 30px 0;
+  text-align: center;
+  width: 100%;
 }

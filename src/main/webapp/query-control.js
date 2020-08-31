@@ -26,6 +26,7 @@ function getColor() {
 function clearPreviousResult() {
   document.getElementById('data-table').innerHTML = '';
   document.getElementById('colors').style.display = 'none';
+  document.getElementById('edit-title').style.display = 'none';
   document.getElementById('year-slider').style.display = 'none';
   document.getElementById('census-link').style.display = 'none';
   document.getElementById('toggle-data-btn').style.display = 'none';
@@ -46,12 +47,12 @@ function getTitle(personType, location, year, locationInput, actionInput) {
   // Change the actionInput to be gramatically correct
   const gramaticallyCorrectAction = new Map();
   gramaticallyCorrectAction.set(
-        'live', 'lived in',
-      ).set(
-        'work', 'worked in',
-      ).set(
-        'moved', 'moved to',
-      );
+    'live', 'lived in',
+  ).set(
+    'work', 'worked in',
+  ).set(
+    'moved', 'moved to',
+  );
   let action;
   if (gramaticallyCorrectAction.has(actionInput)) {
     action = gramaticallyCorrectAction.get(actionInput);
@@ -76,47 +77,132 @@ function putHistory(personType, action, location, year, userId) {
   });
 }
 
+function createSlide(title, url, location) {
+  const historyItem = document.createElement('li');
+  historyItem.className = 'splide__slide';
+  const link = document.createElement('a');
+  link.href = url;
+  const titleNode = document.createTextNode(title);
+  const imgWrapper = document.createElement('div');
+  imgWrapper.className = 'img-wrapper';
+  const isCountyQuery = location !== 'state';
+  const zoom = isCountyQuery ? stateInfo[location].zoomLevel - 2 : 2;
+  const center = isCountyQuery ?
+      `${stateInfo[location].lat},${stateInfo[location].lng}` : 'United+States';
+  const image = document.createElement('img');
+  image.alt = isCountyQuery ?
+      `Small ${stateInfo[location].name} map` : 'Small U.S. map';
+  image.src = `https://maps.googleapis.com/maps/api/staticmap?center=${center}
+      &style=feature:administrative.locality|element:labels|visibility:off
+      &style=feature:road|visibility:off&zoom=${zoom}&size=200x200
+      &key=AIzaSyB5cba6r-suEYL-0E_nRQfXDtT4XW0WxbQ`;
+  imgWrapper.appendChild(image);
+  link.appendChild(imgWrapper);
+  link.appendChild(titleNode);
+  historyItem.appendChild(link);
+  return historyItem;
+}
+
+function resetHistoryList() {
+  const historyDiv = document.getElementById('history-list');
+  historyDiv.innerHTML = '';
+}
+
+function toggleUserInfo(shouldShow) {
+  const historyDiv = document.getElementById('history');
+  const recommendationsDiv = document.getElementById('recommendations');
+  if (shouldShow) {
+    historyDiv.style.display = 'block';
+    recommendationsDiv.style.display = 'block';
+  } else {
+    historyDiv.style.display = 'none';
+    recommendationsDiv.style.display = 'none';
+  }
+}
+
+function resetRecommendationList() {
+  const recommendationDiv = document.getElementById('recommendation-list');
+  recommendationDiv.innerHTML = '';
+}
+
 function getHistory() {
-  // clear previous results
-  const historyContainer = document.getElementById('history');
-  historyContainer.innerHTML = '';
-  const header = document.createElement('p');
-  header.innerText = 'Pages you\'ve Viewed';
-  historyContainer.appendChild(header);
+  resetHistoryList();
+  const historyList = document.getElementById('history-list');
   const fetchUrl = '/history?user-id=' + getUserId();
   fetch(fetchUrl).then(function(response) {
-      if (!response.ok) {
-        return;
-      } else {
-        return response.json();
-      }
-    })
+    if (!response.ok) {
+      return;
+    } else {
+      return response.json();
+    }
+  })
     .then(function(jsonResponse) {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
+      toggleUserInfo(jsonResponse.length > 0);
+      jsonResponse.reverse(); // latest query first
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;
-        addHistoryToPage(historyElement, historyContainer);
-        });
+        addHistoryToPage(historyElement, historyList);
       });
-  }
+      new Splide('#splide1', {
+        gap: 20,
+        fixedWidth: 230,
+        padding: 20,
+        pagination: false,
+      }).mount();
+    });
+}
 
-function addHistoryToPage(historyElement, historyContainer) {
+function getRecommendations() {
+  resetRecommendationList();
+  const recommendationList = document.getElementById('recommendation-list');
+  const fetchUrl = '/recommendations?user-id=' + getUserId();
+  fetch(fetchUrl).then(function(response) {
+    if (!response.ok) {
+      return;
+    } else {
+      return response.json();
+    }
+  })
+    .then(function(jsonResponse) {
+      // iterate through list of recommendations
+      jsonResponse.forEach((historyElement) => {
+        if (historyElement === null) return;
+        addHistoryToPage(historyElement, recommendationList);
+      });
+      // Check to see if arrows are necessary depending on the width
+      // of the window
+      if (window.innerWidth > 1250) {
+        new Splide('#splide2', {
+          gap: 20,
+          fixedWidth: 230,
+          padding: 20,
+          pagination: false,
+          arrows: false,
+        }).mount();
+      } else {
+        new Splide('#splide2', {
+          gap: 20,
+          fixedWidth: 230,
+          padding: 20,
+          pagination: false,
+        }).mount();
+      }
+    });
+}
+
+function addHistoryToPage(historyElement, historyList) {
   const location = historyElement.location ===
-          'state' ? 'Each U.S. state' :
-          stateInfo[historyElement.location].name;
+    'state' ? 'Each U.S. state' :
+    stateInfo[historyElement.location].name;
   const historyText = getTitle(historyElement.personType,
     historyElement.location, historyElement.year, location,
     historyElement.action);
-  // Create the text node and add link to it
-  const historyTextNode = document.createTextNode(historyText);
-  const linkElement = document.createElement('a');
-  linkElement.href = getHistoryUrl(historyElement);
-  linkElement.appendChild(historyTextNode);
-  historyContainer.appendChild(linkElement);
-  const breakElement = document.createElement('br');
-  historyContainer.appendChild(breakElement);
+  historyList.appendChild(
+    createSlide(
+      historyText, getHistoryUrl(historyElement), historyElement.location));
 }
 
 // Given a history element, return the appropriate url
@@ -138,11 +224,14 @@ function submitQuery() {
   const personTypeInput = query.get('person-type');
   const actionInput = query.get('action');
   const locationInput = query.get('location').replace(/'/g, '');
-  const year = query.get('year');
+  const yearInput = query.get('year');
+
   const personType = document.querySelector(
     '#person-type option[value=\'' + personTypeInput + '\']').dataset.value;
   const action = document.querySelector(
     '#action option[value=\'' + actionInput + '\']').dataset.value;
+  const year = document.querySelector(
+    '#year option[value=\'' + yearInput + '\']').dataset.value;
   const locationDropdown = document.querySelector(
     '#location option[value=\'' + locationInput + '\']');
   let location;
@@ -159,7 +248,7 @@ function submitQuery() {
 // Breaks down the query and passes it to the backend to be analyzed;
 // the backend returns the appropriate data, which is then passed off
 // to be reformatted and visualized.
-async function passQuery(personType, action, location, year) {
+async function passQuery(personType, action, location, year, title) {
   clearPreviousResult();
   const locationDropdown = document.querySelector(
     '#location option[data-value=\'' + location + '\']');
@@ -169,14 +258,15 @@ async function passQuery(personType, action, location, year) {
     !locationDropdown.classList.contains('autocomplete-item')) {
     // User picked a location from the dropdown
     state = locationDropdown.value;
-    locationInfo = {stateName: state,
+    locationInfo = {
+      stateName: state,
       stateNumber: location,
       originalName: state,
       // Either the center of the state,
       // or the (slightly shifted for UX) center of the US
       lat: location in stateInfo ? stateInfo[location].lat : 40.5,
       lng: location in stateInfo ? stateInfo[location].lng : -96.5,
-      };
+    };
   } else { // Have to manually find which state the location is in
     locationInfo = await findStateOfLocation(location);
     if (locationInfo === undefined) {
@@ -189,17 +279,21 @@ async function passQuery(personType, action, location, year) {
     '#action option[data-value=\'' + action + '\']').value;
   const actionToPerson = new Map();
   actionToPerson.set(
-        'live', 'Population',
-      ).set(
-        'work', 'Workers',
-      ).set(
-        'moved', 'New inhabitants',
-      );
+    'live', 'Population',
+  ).set(
+    'work', 'Workers',
+  ).set(
+    'moved', 'New inhabitants',
+  );
   const description =
-      `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+    `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
 
   const isCountyQuery = location !== 'state';
-  const title = getTitle(personType, location, year, state, actionInput);
+  if (title === '') { // no user-chosen title available
+      title = getTitle(personType, location, year, state, actionInput);
+  }
+  localStorage.setItem('title', title);
+
   const fetchUrl = getFetchUrl('query', personType, action, location, year);
   fetch(fetchUrl)
     .then((response) => response.json().then((jsonResponse) => ({
@@ -215,11 +309,12 @@ async function passQuery(personType, action, location, year) {
         if (getLoginStatus()) {
           const userId = getUserId();
           putHistory(personType, action, location, year, userId);
-          getHistory(userId);
+          getHistory();
+          getRecommendations();
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         displayVisualization(
-            data, description, title, locationInfo, isCountyQuery);
+          data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
         document.getElementById('more-info').innerText = '';
       } else {
@@ -335,6 +430,22 @@ function updateDropdown(type) {
   });
 }
 
+// Show the div that allows for AmCharts map title editing
+function showEditTitle() {
+  document.getElementById('edit-title').style.display = 'inline';
+  const currentTitle = localStorage.getItem('title');
+  if (currentTitle !== undefined) {
+    document.getElementById('edit-title-text').value = currentTitle;
+  }
+}
+
+// Update the title in the AmCharts map
+function editTitle() {
+  const title = document.getElementById('edit-title-text').value;
+  submitHashQuery(title);
+  return false;
+}
+
 // Change the year of data being visualized
 function changeYear(yearParam) {
   document.getElementById('year-list').value = yearParam.value;
@@ -365,6 +476,7 @@ async function setupQuery() {
   await createStateDropdownList();
   setupAutocompleteLocation();
   setupYearSlider();
+  setButtonColor();
 }
 
 // Append all locations to the location dropdown element.
@@ -411,13 +523,13 @@ function setupAutocompleteLocation() {
     const resultsHtml = [];
     predictions.forEach(function(prediction) {
       resultsHtml.push(
-          '<option class="autocomplete-item" value="' +
-          prediction.description + '" data-value="' +
-          prediction.description +
-          '"></option>');
+        '<option class="autocomplete-item" value="' +
+        prediction.description + '" data-value="' +
+        prediction.description +
+        '"></option>');
     });
     autocompleteResults.innerHTML =
-        resultsHtml.join('') + defaultLocationOptions;
+      resultsHtml.join('') + defaultLocationOptions;
   };
 
   // When the input box changes (due to typing), get what has been typed and
@@ -466,12 +578,22 @@ function setupYearSlider() {
   };
 }
 
+function setButtonColor() {
+  const color = getColor();
+  let chromaColor = chroma(color);
+  if (chromaColor.luminance() > 0.3) {
+    chromaColor = chromaColor.luminance(0.3);
+  }
+  document.documentElement.style.setProperty(
+      '--button-color', chromaColor.hex());
+}
+
 // Set dropdown for datalistId to value
 function setDropdownValue(datalistId, value) {
   const inputList = document.getElementById(datalistId + '-list');
   const dropdown = document.querySelector(
     '#' + datalistId + ' option[data-value=\'' + value + '\']');
-  if (dropdown !== null ) {
+  if (dropdown !== null) {
     inputList.value = dropdown.value;
   } else {
     // Value is not in dropdown
@@ -482,7 +604,7 @@ function setDropdownValue(datalistId, value) {
 
 // Called on load and on hash change. Check for
 // query params in url and call passQuery() if found.
-function submitHashQuery() {
+function submitHashQuery(title='') {
   const urlHash = window.location.hash;
   if (urlHash) {
     const params = new URLSearchParams(urlHash.slice(1));
@@ -493,13 +615,15 @@ function submitHashQuery() {
     const action = params.get('action');
     const location = params.get('location');
     const year = params.get('year');
-    passQuery(personType, action, location, year);
+    passQuery(personType, action, location, year, title);
   }
 }
 
 // Listen for if user clicks back
 window.addEventListener('hashchange', function() {
   submitHashQuery();
+  location.reload();
+  window.scrollTo(0, 0);
 });
 
 // loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed

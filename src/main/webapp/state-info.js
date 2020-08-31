@@ -18,7 +18,7 @@ const stateInfo = {
         'ISO': 'US-AZ',
         'lat': 34.274,
         'lng': -111.658,
-        'zoomLevel': 6,
+        'zoomLevel': 7,
     },
     '05': {
         'name': 'Arkansas',
@@ -53,7 +53,7 @@ const stateInfo = {
         'ISO': 'US-DE',
         'lat': 38.989,
         'lng': -75.505,
-        'zoomLevel': 8,
+        'zoomLevel': 9,
     },
     '11': {
         'name': 'District of Columbia',
@@ -67,7 +67,7 @@ const stateInfo = {
         'ISO': 'US-FL',
         'lat': 28.628,
         'lng': -82.443,
-        'zoomLevel': 6,
+        'zoomLevel': 7,
     },
     '13': {
         'name': 'Georgia',
@@ -95,7 +95,7 @@ const stateInfo = {
         'ISO': 'US-IL',
         'lat': 40.041,
         'lng': -89.197,
-        'zoomLevel': 6,
+        'zoomLevel': 7,
     },
     '18': {
         'name': 'Indiana',
@@ -123,7 +123,7 @@ const stateInfo = {
         'ISO': 'US-KY',
         'lat': 37.536,
         'lng': -85.302,
-        'zoomLevel': 7,
+        'zoomLevel': 8,
     },
     '22': {
         'name': 'Louisiana',
@@ -186,7 +186,7 @@ const stateInfo = {
         'ISO': 'US-MT',
         'lat': 47.053,
         'lng': -109.645,
-        'zoomLevel': 6,
+        'zoomLevel': 7,
     },
     '31': {
         'name': 'Nebraska',
@@ -221,7 +221,7 @@ const stateInfo = {
         'ISO': 'US-NM',
         'lat': 34.067,
         'lng': -106.113,
-        'zoomLevel': 6,
+        'zoomLevel': 7,
     },
     '36': {
         'name': 'New York',
@@ -235,7 +235,7 @@ const stateInfo = {
         'ISO': 'US-NC',
         'lat': 35.558,
         'lng': -79.386,
-        'zoomLevel': 7,
+        'zoomLevel': 8,
     },
     '38': {
         'name': 'North Dakota',
@@ -284,7 +284,7 @@ const stateInfo = {
         'ISO': 'US-SC',
         'lat': 33.917,
         'lng': -80.896,
-        'zoomLevel': 7,
+        'zoomLevel': 8,
     },
     '46': {
         'name': 'South Dakota',
@@ -298,7 +298,7 @@ const stateInfo = {
         'ISO': 'US-TN',
         'lat': 35.861,
         'lng': -86.350,
-        'zoomLevel': 7,
+        'zoomLevel': 8,
     },
     '48': {
         'name': 'Texas',

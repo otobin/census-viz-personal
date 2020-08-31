@@ -27,6 +27,7 @@ async function getGeoData(locationInfo, isCountyQuery) {
 async function displayVisualization(censusDataArray, description, title,
   locationInfo, isCountyQuery) {
   document.getElementById('colors').style.display = 'block';
+  document.getElementById('open-edit-title').style.display = 'inline';
   const color = getColor();
   document.getElementById('year-slider').style.display = 'block';
   const geoData = await getGeoData(locationInfo, isCountyQuery);
@@ -85,7 +86,46 @@ function displayAmChartsMap(
   chart.exporting.menu = new am4core.ExportMenu();
   chart.exporting.menu.align = 'left';
   chart.exporting.menu.verticalAlign = 'top';
-  chart.exporting.filePrefix = 'CensusViz';
+  chart.exporting.filePrefix = title;
+  chart.exporting.adapter.add('data', function(data) {
+    data.data = [];
+    for (let i = 0; i < polygonSeries.data.length; i++) {
+      const row = polygonSeries.data[i];
+      data.data.push({
+        id: row.id,
+        name: row.name,
+        value: row.value,
+      });
+    }
+    return data;
+  });
+  chart.exporting.menu.items = [
+    {
+      'label': 'Download',
+      'menu': [
+        {
+          'label': 'Image',
+          'menu': [
+            {'type': 'png', 'label': 'PNG'},
+            {'type': 'jpg', 'label': 'JPG'},
+            {'type': 'svg', 'label': 'SVG'},
+            {'type': 'pdf', 'label': 'PDF'},
+          ],
+        }, {
+          'label': 'Data',
+          'menu': [
+            {'type': 'json', 'label': 'JSON'},
+            {'type': 'csv', 'label': 'CSV'},
+            {'type': 'xlsx', 'label': 'XLSX'},
+            {'type': 'html', 'label': 'HTML'},
+            {'type': 'pdfdata', 'label': 'PDF'},
+          ],
+        }, {
+          'label': 'Print', 'type': 'print',
+        },
+      ],
+    },
+  ];
 
   const isCountyQuery = data[0].id.indexOf('US') === -1;
   // Albers projection for state level, Mercator for county level
@@ -258,7 +298,7 @@ function getMapsData(censusDataArray) {
     // ^^ ["Contra Costa County", "California"]
     // Trim space and region suffix
     const countyRegex = new RegExp('( County| City and Borough|' +
-        ' Borough| Municipality| Census Area| city| City)$');
+        ' Borough| Municipality| Census Area| city| City| Parish)$');
     let countyString = countyAndStateArray[0].replace(countyRegex, '');
     if (countyString === 'District of Columbia') { // Handle D.C. name mismatch
       countyString = 'Washington, District of Columbia';
@@ -372,10 +412,13 @@ async function displayCountyGeoJson(mapsData, description,
 function toggleMap() {
   const checkbox = document.getElementById('map-toggle');
   if (checkbox.checked) {
+    document.getElementById('open-edit-title').style.display = 'none';
+    document.getElementById('edit-title').style.display = 'none';
     document.getElementById('am-charts').style.display = 'none';
     document.getElementById('map').style.display = 'block';
     document.getElementById('map-toggle-msg').innerText = 'Disable map overlay';
   } else {
+    document.getElementById('open-edit-title').style.display = 'inline';
     document.getElementById('map').style.display = 'none';
     document.getElementById('am-charts').style.display = 'block';
     document.getElementById('map-toggle-msg').innerText = 'Enable map overlay';
@@ -409,6 +452,8 @@ function changeColor(colorParam) {
   const color = colorParam.value;
   document.getElementById('set-color-label').style.backgroundColor = color;
   localStorage.setItem('color', color);
+  setButtonColor();
+
   // Get variables out of cache
   const cacheMapsData = JSON.parse(localStorage.getItem('mapsData'));
   const cacheGeoData = JSON.parse(localStorage.getItem('geoData'));
