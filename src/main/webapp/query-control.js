@@ -385,6 +385,51 @@ function replaceValueIfEmpty(dataListId) {
   }
 }
 
+// When the user picks certain dropdown values,
+// exclude the combinations that don't have data available
+const dropdownsToExclude =
+    ['worked inchildren', 'moved tochildren', 'moved toadults'];
+
+// All possible options, without anything excluded
+const defaultDropdowns = new Map();
+defaultDropdowns.set(
+      'action',
+      [['lived in', 'live'], ['worked in', 'work'], ['moved to', 'moved']],
+    ).set(
+      'person-type',
+      [['people', 'all-ages'], ['adults', 'over-18'], ['children', 'under-18'],
+      ['men', 'male'], ['women', 'female']],
+    );
+
+function updateDropdown(type) {
+  // When we have an input in one area,
+  // we actually want to update the other area based on this input
+  let dropdown;
+  let allOptions;
+  if (type === 'action') {
+    dropdown = document.getElementById('person-type');
+    allOptions = defaultDropdowns.get('person-type');
+  } else {
+    dropdown = document.getElementById('action');
+    allOptions = defaultDropdowns.get('action');
+  }
+  dropdown.innerHTML = '';
+  const currentValue = document.getElementById(type + '-list').value;
+
+  // Iterate through all potential options
+  allOptions.forEach((option) => {
+    // Check if the current option is in the exclusions list; if it's not,
+    // add it to the dropdown (Note: the exclusions list is in the order
+    // [action, person]; we simply check for either order so we don't have
+    // to know which one is our current value)
+    if (!(dropdownsToExclude.includes(currentValue + option[0]) ||
+        dropdownsToExclude.includes(option[0] + currentValue))) {
+          optionElem = createDropdownOption(option[0], option[1]);
+          dropdown.appendChild(optionElem);
+        }
+  });
+}
+
 // Show the div that allows for AmCharts map title editing
 function showEditTitle() {
   document.getElementById('edit-title').style.display = 'inline';
@@ -445,14 +490,19 @@ async function createStateDropdownList() {
   datalist.appendChild(optionElem);
   const stateInfoArray = getSortedStateInfoArray();
   stateInfoArray.forEach((value) => {
-    optionElem = document.createElement('option');
-    optionElem.value = value.name;
-    optionElem.setAttribute('data-value', value.number);
+    optionElem = createDropdownOption(value.name, value.number);
     datalist.appendChild(optionElem);
   });
   // This would be called in HTML onload
   // but will not work until createStateDropdownList is done
   submitHashQuery();
+}
+
+function createDropdownOption(value, dataValue) {
+  const optionElem = document.createElement('option');
+  optionElem.value = value;
+  optionElem.setAttribute('data-value', dataValue);
+  return optionElem;
 }
 
 // Set up an autocomplete dropdown, attached to the main location input

@@ -98,7 +98,7 @@
         <p>
           How many
           <input type="list" list="person-type" name="person-type" id="person-type-list" autocomplete="off" required
-            onkeyup="validateInput('person-type')" onfocus="storeValueAndEmpty('person-type')"
+            onkeyup="validateInput('person-type')" onfocus="storeValueAndEmpty('person-type')" onchange="updateDropdown('person-type')"
             onfocusout="replaceValueIfEmpty('person-type')" value="people" pattern="children|adults|people|men|women">
           <datalist id="person-type">
             <option data-value="under-18" value="children"></option>
@@ -110,7 +110,7 @@
           </input>
 
           <input type="list" list="action" name="action" id="action-list" autocomplete="off" required
-            onkeyup="validateInput('action')" onfocus="storeValueAndEmpty('action')"
+            onkeyup="validateInput('action')" onfocus="storeValueAndEmpty('action')" onchange="updateDropdown('action')"
             onfocusout="replaceValueIfEmpty('action')" value="lived in" pattern="lived in|worked in|moved to">
           <datalist id="action">
             <option data-value="live" value="lived in"></option>
