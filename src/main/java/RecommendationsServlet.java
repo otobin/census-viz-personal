@@ -165,7 +165,7 @@ public class RecommendationsServlet extends HttpServlet {
     // ones.
     int recommendationSize = recommendationList.size();
     if (recommendationSize < 5) {
-      for (int i = 0; i < 5 - recommendationSize; i++) {
+      while (recommendationList.size() < 5) {
         recommendationList.add(getRandomRecommendation(userId, userHistory));
       }
     }
