@@ -42,10 +42,9 @@ function createCountyDropdown(geoDataFeatures) {
 // Display amCharts and geoJson visulizations for given data.
 async function displayVisualization(censusDataArray, description, title,
   locationInfo, isCountyQuery) {
-  document.getElementById('colors').style.display = 'block';
-  document.getElementById('open-edit-title').style.display = 'inline';
   const color = getColor();
   document.getElementById('year-slider').style.display = 'block';
+  document.getElementById('top-buttons').style.display = 'block';
   const geoData = await getGeoData(locationInfo, isCountyQuery);
 
   // Put all necessary data in the cache
@@ -434,13 +433,13 @@ async function displayCountyGeoJson(mapsData, description,
 function toggleMap() {
   const checkbox = document.getElementById('map-toggle');
   if (checkbox.checked) {
-    document.getElementById('open-edit-title').style.display = 'none';
-    document.getElementById('edit-title').style.display = 'none';
+    document.getElementById('edit-title-container').style.visibility = 'hidden';
     document.getElementById('am-charts').style.display = 'none';
     document.getElementById('map').style.display = 'block';
     document.getElementById('map-toggle-msg').innerText = 'Disable map overlay';
   } else {
-    document.getElementById('open-edit-title').style.display = 'inline';
+    document.getElementById('edit-title-container').style.visibility =
+        'visible';
     document.getElementById('map').style.display = 'none';
     document.getElementById('am-charts').style.display = 'block';
     document.getElementById('map-toggle-msg').innerText = 'Enable map overlay';
@@ -449,12 +448,11 @@ function toggleMap() {
 
 // Sets up the webpage for the appropriate query.
 function setStyle(isCountyQuery) {
-  document.getElementById('toggle-data-btn').style.display = 'inline-block';
   const mapOptions = document.getElementById('map-options');
   const chartsDiv = document.getElementById('am-charts');
   const mapsDiv = document.getElementById('map');
   if (isCountyQuery) {
-    mapOptions.style.display = 'block';
+    mapOptions.style.display = 'inline';
     if (!document.getElementById('map-toggle').checked) {
       chartsDiv.style.display = 'block';
       mapsDiv.style.display = 'none';

@@ -181,14 +181,6 @@ select:focus {
   text-align: center;
 }
 
-#open-edit-title {
-  display: none;
-}
-
-#edit-title {
-  display: none;
-}
-
 #am-charts {
   height: 650px;
 }
@@ -263,6 +255,11 @@ table {
   height: 25px;
 }
 
+.top-button {
+  padding: 25px;
+  display: inline;
+}
+
 .switch {
   position: relative;
   display: inline-block;
@@ -326,16 +323,18 @@ input:checked + .slider::before {
   width: 180px;
 }
 
+#color-msg {
+  padding: 10px;
+}
+
 #map-options {
   white-space: nowrap;
-  display: none;
   margin-bottom: 30px;
 }
 
 .map-option {
   display: inline-block;
   line-height: 34px;
-  padding: 5px;
   text-transform: uppercase;
   font-weight: bolder;
 }
@@ -348,10 +347,18 @@ input[type="color"] {
   opacity: 0;
 }
 
+input[type="color" i] {
+  width: 28px;
+}
+
 #set-color-label {
-  height: 32px;
-  width: 32px;
   border-radius: 25px;
+  display: inline-block;
+  height: 34px;
+}
+
+#edit-title {
+  display: none;
 }
 
 #map-title {

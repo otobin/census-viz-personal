@@ -25,9 +25,9 @@ function getColor() {
 
 function clearPreviousResult() {
   const divsToHide = [
-    'colors', 'edit-title', 'year-slider', 'census-link', 'toggle-data-btn',
-    'map-options', 'yearly-total-chart', 'yearly-county-chart', 'county-form',
-    'year-data-header',
+    'colors', 'edit-title', 'year-slider', 'top-button', 'census-link',
+    'toggle-data-btn', 'map-options', 'yearly-total-chart',
+    'yearly-county-chart', 'county-form', 'year-data-header',
   ];
   divsToHide.forEach((id) => {
     document.getElementById(id).style.display = 'none';
