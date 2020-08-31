@@ -112,13 +112,21 @@ function resetHistoryList() {
   historyDiv.innerHTML = '';
 }
 
-function toggleHistory(shouldShow) {
+function toggleUserInfo(shouldShow) {
   const historyDiv = document.getElementById('history');
+  const recommendationsDiv = document.getElementById('recommendations');
   if (shouldShow) {
     historyDiv.style.display = 'block';
+    recommendationsDiv.style.display = 'block';
   } else {
     historyDiv.style.display = 'none';
+    recommendationsDiv.style.display = 'none';
   }
+}
+
+function resetRecommendationList() {
+  const recommendationDiv = document.getElementById('recommendation-list');
+  recommendationDiv.innerHTML = '';
 }
 
 function getHistory() {
@@ -136,19 +144,56 @@ function getHistory() {
       // iterate through list of history elements returned by
       // the history servlet and create title elements using
       // the attributes.
-      toggleHistory(jsonResponse.length > 0);
+      toggleUserInfo(jsonResponse.length > 0);
       jsonResponse.reverse(); // latest query first
       jsonResponse.forEach((historyElement) => {
         if (historyElement === null) return;
         addHistoryToPage(historyElement, historyList);
       });
-      new Splide('.splide', {
+      new Splide('#splide1', {
         gap: 20,
-        rewind: true,
         fixedWidth: 230,
         padding: 20,
         pagination: false,
       }).mount();
+    });
+}
+
+function getRecommendations() {
+  resetRecommendationList();
+  const recommendationList = document.getElementById('recommendation-list');
+  const fetchUrl = '/recommendations?user-id=' + getUserId();
+  fetch(fetchUrl).then(function(response) {
+    if (!response.ok) {
+      return;
+    } else {
+      return response.json();
+    }
+  })
+    .then(function(jsonResponse) {
+      // iterate through list of recommendations
+      jsonResponse.forEach((historyElement) => {
+        if (historyElement === null) return;
+        addHistoryToPage(historyElement, recommendationList);
+      });
+      // Check to see if arrows are necessary depending on the width
+      // of the window
+      if (window.innerWidth > 1250) {
+        new Splide('#splide2', {
+          gap: 20,
+          fixedWidth: 230,
+          padding: 20,
+          pagination: false,
+          arrows: false,
+        }).mount();
+      } else {
+        new Splide('#splide2', {
+          gap: 20,
+          fixedWidth: 230,
+          padding: 20,
+          pagination: false,
+        }).mount();
+      }
     });
 }
 
@@ -273,7 +318,8 @@ async function passQuery(personType, action, location, year, title) {
         if (getLoginStatus()) {
           const userId = getUserId();
           putHistory(personType, action, location, year, userId);
-          getHistory(userId);
+          getHistory();
+          getRecommendations();
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
         if (isCountyQuery) {
@@ -546,6 +592,8 @@ function submitHashQuery(title='') {
 // Listen for if user clicks back
 window.addEventListener('hashchange', function() {
   submitHashQuery();
+  location.reload();
+  window.scrollTo(0, 0);
 });
 
 // loadAppropriateIcon takes in a boolean buttonPressed. When buttonPressed

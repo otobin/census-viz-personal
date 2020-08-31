@@ -1,13 +1,13 @@
 package com.google.sps.data;
 
-public class HistoryElement {
+public class VisualizationData {
   String userId;
   String personType;
   String action;
   String location;
   String year;
 
-  public HistoryElement(
+  public VisualizationData(
       String userId, String personType, String action, String location, String year) {
     this.userId = userId;
     this.personType = personType;
@@ -23,7 +23,7 @@ public class HistoryElement {
   public String getPersonType() {
     return personType;
   }
-  
+
   public String getAction() {
     return action;
   }
@@ -31,14 +31,14 @@ public class HistoryElement {
   public String getLocation() {
     return location;
   }
-  
+
   public String getYear() {
     return year;
   }
 
   @Override
   public boolean equals(Object other) {
-    HistoryElement otherElement = (HistoryElement) other;
+    VisualizationData otherElement = (VisualizationData) other;
     String otherPersonType = otherElement.getPersonType();
     String otherAction = otherElement.getAction();
     String otherLocation = otherElement.getLocation();

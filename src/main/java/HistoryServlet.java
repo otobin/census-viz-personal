@@ -1,16 +1,11 @@
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.gson.Gson;
-import com.google.sps.data.HistoryElement;
+import com.google.sps.data.History;
+import com.google.sps.data.VisualizationData;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,31 +16,10 @@ public class HistoryServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Get queries with the user's id from the database
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     String userId = request.getParameter("user-id");
-    Filter propertyFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
-    Query query = new Query("historyEntity").setFilter(propertyFilter);
-    PreparedQuery results = datastore.prepare(query);
-
-    List<HistoryElement> queryList = new ArrayList<HistoryElement>();
-    for (Entity entity : results.asIterable()) {
-      String entityUserId = (String) entity.getProperty("userId");
-      if (entityUserId != null && userId != null) {
-        String entityPersonType = (String) entity.getProperty("personType");
-        String entityAction = (String) entity.getProperty("action");
-        String entityLocation = (String) entity.getProperty("location");
-        String entityYear = (String) entity.getProperty("year");
-        HistoryElement dataHistoryElement =
-             new HistoryElement(
-                 entityUserId, entityPersonType, entityAction, entityLocation, entityYear);
-        // Check to see if it is already in the results to eliminate duplicates
-        if (!queryList.contains(dataHistoryElement)) {
-          queryList.add(dataHistoryElement);
-        }
-      }
-    }
-    String json = new Gson().toJson(queryList);
+    History userHistoryObj = new History(userId);
+    ArrayList<VisualizationData> historyList = userHistoryObj.getHistoryList();
+    String json = new Gson().toJson(historyList);
     response.getWriter().write(json);
   }
 
