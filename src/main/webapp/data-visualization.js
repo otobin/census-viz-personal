@@ -489,9 +489,10 @@ function changeColor(colorParam) {
     displayCountyGeoJson(cacheMapsData, cacheDescription, cacheLocation,
       cacheGeoData, color);
     const yearStateData = JSON.parse(localStorage.getItem('yearStateData'));
-    displayYearlyChart('yearly-total-chart', yearStateData, 
+    displayYearlyChart('yearly-total-chart', yearStateData,
       cacheDescription, cacheLocation.stateNumber);
-    if (document.getElementById('yearly-county-chart').style.display !== 'none') {
+    if (document.getElementById('yearly-county-chart')
+      .style.display !== 'none') {
       const yearCountyData = JSON.parse(localStorage.getItem('yearCountyData'));
       const yearCounty = localStorage.getItem('yearCounty');
       displayYearlyChart('yearly-county-chart', yearCountyData,

@@ -4,7 +4,8 @@
   --button-color: #0071bd;
 }
 
-html, body {
+html,
+body {
   max-width: 100%;
   overflow-x: hidden;
 }
