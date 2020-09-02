@@ -402,22 +402,6 @@ function replaceValueIfEmpty(dataListId) {
   }
 }
 
-// Show the div that allows for AmCharts map title editing
-function showEditTitle() {
-  document.getElementById('edit-title').style.display = 'inline';
-  const currentTitle = localStorage.getItem('title');
-  if (currentTitle !== undefined) {
-    document.getElementById('edit-title-text').value = currentTitle;
-  }
-}
-
-// Update the title in the AmCharts map
-function editTitle() {
-  const title = document.getElementById('edit-title-text').value;
-  submitHashQuery(title);
-  return false;
-}
-
 // When the user picks certain dropdown values,
 // exclude the combinations that don't have data available
 const dropdownsToExclude =
@@ -461,6 +445,22 @@ function updateDropdown(type) {
           dropdown.appendChild(optionElem);
         }
   });
+}
+
+// Show the div that allows for AmCharts map title editing
+function showEditTitle() {
+  document.getElementById('edit-title').style.display = 'inline';
+  const currentTitle = localStorage.getItem('title');
+  if (currentTitle !== undefined) {
+    document.getElementById('edit-title-text').value = currentTitle;
+  }
+}
+
+// Update the title in the AmCharts map
+function editTitle() {
+  const title = document.getElementById('edit-title-text').value;
+  submitHashQuery(title);
+  return false;
 }
 
 // Change the year of data being visualized
