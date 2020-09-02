@@ -248,6 +248,11 @@ function submitQuery() {
 // to be reformatted and visualized.
 async function passQuery(personType, action, location, year, title) {
   clearPreviousResult();
+
+  document.getElementById('set-year').value = year;
+  document.getElementById('year-slider-text').innerText =
+      'Change the year: ' + year;
+
   const locationDropdown = document.querySelector(
     '#location option[data-value=\'' + location + '\']');
   let locationInfo;
@@ -446,7 +451,14 @@ function editTitle() {
 
 // Change the year of data being visualized
 function changeYear(yearParam) {
-  document.getElementById('year-list').value = yearParam.value;
+  const dropdown = document.getElementById('year');
+  dropdown.options.forEach((option) => {
+    // yearParam records the data-value (internal value),
+    // but we want to update the front-end value that users see
+    if (option.dataset.value === yearParam.value) {
+      document.getElementById('year-list').value = option.value;
+    }
+  });
   submitQuery();
 }
 
@@ -568,12 +580,28 @@ function debounce(func, waitTime) {
 
 function setupYearSlider() {
   const slider = document.getElementById('set-year');
-  const text = document.getElementById('year-slider-text');
-  text.innerText = 'Change the year: ' + slider.value; // default value
 
-  slider.oninput = function() {
-    text.innerText = 'Change the year: ' + this.value; // update as user slides
+  // get current (default) value and set that
+  slider.value =
+      findMatchingOption(
+          'year', document.getElementById('year-list').value).dataset.value;
+  const text = document.getElementById('year-slider-text');
+  text.innerText = 'Change the year: ' + slider.value;
+
+  slider.oninput = function() { // in the future, update as user slides
+    text.innerText = 'Change the year: ' + this.value;
   };
+}
+
+function findMatchingOption(dropdownName, value) {
+  const dropdown = document.getElementById(dropdownName);
+  let currentOption;
+  dropdown.options.forEach((option) => {
+    if (option.value === value) {
+      currentOption = option;
+    }
+  });
+  return currentOption;
 }
 
 function setButtonColor() {
