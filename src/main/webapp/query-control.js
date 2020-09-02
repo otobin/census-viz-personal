@@ -24,10 +24,17 @@ function getColor() {
 }
 
 function clearPreviousResult() {
+  const divsToHide = [
+    'edit-title', 'year-slider', 'top-buttons', 'census-link',
+    'yearly-total-chart', 'yearly-county-chart', 'county-form',
+    'year-data-header',
+  ];
+  divsToHide.forEach((id) => {
+    document.getElementById(id).style.display = 'none';
+  });
   document.getElementById('data-table').innerHTML = '';
-  document.getElementById('year-slider').style.display = 'none';
-  document.getElementById('top-buttons').style.display = 'none';
-  document.getElementById('census-link').style.display = 'none';
+  document.getElementById('county-list').value = 'Select a county';
+  document.getElementById('yearly-county-chart-loading-msg').innerText = '';
   am4core.disposeAllCharts();
   document.getElementById('more-info').innerText = 'Please wait. Loading...';
   document.getElementById('toggle-data-btn').style.display = 'none';
@@ -242,27 +249,27 @@ function submitQuery() {
   window.location.hash = `#${fetchUrl.replace('/query?', '')}`;
 }
 
-// Get the query the user entered and display the result.
-// Breaks down the query and passes it to the backend to be analyzed;
-// the backend returns the appropriate data, which is then passed off
-// to be reformatted and visualized.
-async function passQuery(personType, action, location, year, title) {
-  clearPreviousResult();
+function getDescription(action, personType) {
+  const actionToPerson = new Map();
+  actionToPerson.set(
+    'live', 'Population',
+  ).set(
+    'work', 'Workers',
+  ).set(
+    'moved', 'New inhabitants',
+  );
+  return `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
+}
 
-  document.getElementById('set-year').value = year;
-  document.getElementById('year-slider-text').innerText =
-      'Change the year: ' + year;
-
+async function getLocationInfo(location) {
   const locationDropdown = document.querySelector(
     '#location option[data-value=\'' + location + '\']');
-  let locationInfo;
-  let state;
   if (locationDropdown !== null &&
     !locationDropdown.classList.contains('autocomplete-item')) {
     // User picked a location from the dropdown
-    state = locationDropdown.value;
-    locationInfo = {
-      stateName: state,
+    const state = locationDropdown.value;
+    return {
+      stateName: locationDropdown.value,
       stateNumber: location,
       originalName: state,
       // Either the center of the state,
@@ -275,22 +282,25 @@ async function passQuery(personType, action, location, year, title) {
     if (locationInfo === undefined) {
       return; // error was thrown inside findStateOfLocation()
     }
-    state = locationInfo.stateName;
-    location = locationInfo.stateNumber;
+    return locationInfo;
   }
+}
+
+// Get the query the user entered and display the result.
+// Breaks down the query and passes it to the backend to be analyzed;
+// the backend returns the appropriate data, which is then passed off
+// to be reformatted and visualized.
+async function passQuery(personType, action, location, year, title) {
+  clearPreviousResult();
+  document.getElementById('set-year').value = year;
+  document.getElementById('year-slider-text').innerText =
+      'Change the year: ' + year;
+  const locationInfo = await getLocationInfo(location);
+  const state = locationInfo.stateName;
+  location = locationInfo.stateNumber;
   const actionInput = document.querySelector(
     '#action option[data-value=\'' + action + '\']').value;
-  const actionToPerson = new Map();
-  actionToPerson.set(
-    'live', 'Population',
-  ).set(
-    'work', 'Workers',
-  ).set(
-    'moved', 'New inhabitants',
-  );
-  const description =
-    `${actionToPerson.get(action)} (${personType.replace('-', ' ')})`;
-
+  const description = getDescription(action, personType);
   const isCountyQuery = location !== 'state';
   if (title === '') { // no user-chosen title available
       title = getTitle(personType, location, year, state, actionInput);
@@ -316,6 +326,10 @@ async function passQuery(personType, action, location, year, title) {
           getRecommendations();
         }
         const data = removeErroneousData(JSON.parse(response.data.censusData));
+        if (isCountyQuery) {
+          createYearlyStateTotalChart(
+            personType, action, location, description);
+        }
         displayVisualization(
           data, description, title, locationInfo, isCountyQuery);
         displayLinkToCensusTable(response.data.tableLink);
@@ -487,6 +501,8 @@ async function setupQuery() {
   setupAutocompleteLocation();
   setupYearSlider();
   setButtonColor();
+  updateDropdown('action');
+  updateDropdown('person-type');
 }
 
 // Append all locations to the location dropdown element.
@@ -628,20 +644,27 @@ function setDropdownValue(datalistId, value) {
   }
 }
 
+function getQueryFromHash(urlHash) {
+  const params = new URLSearchParams(urlHash.slice(1));
+  for (const [param, value] of params) {
+    setDropdownValue(param, value);
+  }
+  return {
+    'personType': params.get('person-type'),
+    'action': params.get('action'),
+    'location': params.get('location'),
+    'year': params.get('year'),
+  };
+}
+
 // Called on load and on hash change. Check for
 // query params in url and call passQuery() if found.
 function submitHashQuery(title='') {
   const urlHash = window.location.hash;
   if (urlHash) {
-    const params = new URLSearchParams(urlHash.slice(1));
-    for (const [param, value] of params) {
-      setDropdownValue(param, value);
-    }
-    const personType = params.get('person-type');
-    const action = params.get('action');
-    const location = params.get('location');
-    const year = params.get('year');
-    passQuery(personType, action, location, year, title);
+    const query = getQueryFromHash(urlHash);
+    passQuery(
+      query.personType, query.action, query.location, query.year, title);
   }
 }
 
@@ -658,7 +681,7 @@ window.addEventListener('hashchange', function() {
 // false, the location settings are not changed and the current icon is shown.
 function loadAppropriateIcon(buttonPressed) {
   const locationSettings = localStorage.getItem('locationSettings');
-  const locationOffString = 'Your location settings are currently set to off.' +
+  const locationOffString = 'Your location settings are currently off.' +
     ' Click here to change your location settings.';
   const locationOnString = 'Your location settings are currently on.' +
     ' Click here to change your location settings.';

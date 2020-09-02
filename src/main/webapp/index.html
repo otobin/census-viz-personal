@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/geodata/usaLow.js"></script>
   <script src="//cdn.amcharts.com/lib/4/plugins/bullets.js"></script>
@@ -184,20 +185,34 @@
       <a id="census-link" target="_blank" rel="noopener">Explore more data from the Census API</a>
       <br>
       <div id="data-table"></div>
+      <h3 id="year-data-header">Year by year data</h3>
+      <div id="yearly-total-chart-loading-msg"></div>
+      <div id="yearly-total-chart" class="yearly-chart"></div>
+      <form id="county-form" onsubmit="createYearlyCountyChart(); return false;">
+        <label for="county-list" id="county-query-label"></label>
+        <input type="list" list="county" name="county" id="county-list" autocomplete="off" required
+          onfocus="storeValueAndEmpty('county')" onfocusout="replaceValueIfEmpty('county')" value="Select a county">
+        <datalist id="county"></datalist>
+        </input>
+        each year?
+        <input type="submit" id="county-submit" value="Go">
+      </form>
+      <div id="yearly-county-chart-loading-msg"></div>
+      <div id="yearly-county-chart" class="yearly-chart"></div>
     </div>
-    <div id="history">
+    <div id="history" class="wrapper">
       <h3>Query History</h3>
       <div class="splide" id="splide1">
         <div class="splide__track">
-          <ul class="splide__list" id="history-list"></ul>
+          <ul class="splide__list query-thumbnails" id="history-list"></ul>
         </div>
       </div>
     </div>
-    <div id="recommendations">
+    <div id="recommendations" class="wrapper">
       <h3>Recommended Visualizations</h3>
       <div class="splide" id="splide2">
         <div class="splide__track">
-          <ul class="splide__list" id="recommendation-list"></ul>
+          <ul class="splide__list query-thumbnails" id="recommendation-list"></ul>
         </div>
       </div>
     </div>

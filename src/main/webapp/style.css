@@ -4,8 +4,18 @@
   --button-color: #0071bd;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
+}
+
+h3 {
+  text-align: left;
 }
 
 /* Header */
@@ -14,11 +24,6 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 0 30px 0 30px;
-}
-
-#header a {
-  color: black;
-  text-decoration: none;
 }
 
 #header-buttons {
@@ -193,6 +198,20 @@ select:focus {
   display: none;
 }
 
+.yearly-chart {
+  height: 500px;
+}
+
+#yearly-total-chart,
+#yearly-county-chart,
+#county-form {
+  display: none;
+}
+
+#county-submit {
+  background: var(--button-color);
+}
+
 /* Visualization Options */
 
 /* The switch - the box around the slider */
@@ -353,13 +372,18 @@ table {
   margin-right: auto;
 }
 
-/* Recommendations */
-#recommendation-list a {
+/* History/Recommendations */
+ul.query-thumbnails a {
   color: black;
   text-decoration: none;
 }
 
-#recommendation-list a img {
+#header a {
+  color: black;
+  text-decoration: none;
+}
+
+ul.query-thumbnails a img {
   border-bottom: 1px solid #e7e7e9;
   display: block;
   padding-bottom: 15px;
@@ -367,7 +391,7 @@ table {
   width: 150px;
 }
 
-#recommendation-list li {
+ul.query-thumbnails li {
   border: 1px solid #e7e7e9;
   border-radius: 5px;
   display: flex;
@@ -377,51 +401,15 @@ table {
   transition: .3s;
 }
 
-#recommendation-list li:hover {
+ul.query-thumbnails li:hover {
   box-shadow: 8px 8px 16px #e7e7e9;
 }
 
-#recommendations {
-  padding-bottom: 100px;
-}
-
-#recommendations h3 {
-  padding-left: 35px;
-}
-
-/* History */
-#history-list a {
-  color: black;
-  text-decoration: none;
-}
-
-#history-list a img {
-  border-bottom: 1px solid #e7e7e9;
-  display: block;
-  padding-bottom: 15px;
-  margin: 0 auto 15px auto;
-  width: 150px;
-}
-
-#history-list li {
-  border: 1px solid #e7e7e9;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 4px 4px 8px #e7e7e9;
-  padding: 15px;
-  transition: .3s;
-}
-
-#history-list li:hover {
-  box-shadow: 8px 8px 16px #e7e7e9;
-}
-
-#history {
+.wrapper {
   padding-bottom: 30px;
 }
 
-#history h3 {
+.wrapper h3 {
   padding-left: 35px;
 }
 
